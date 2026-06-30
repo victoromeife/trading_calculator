@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradeRisk Pro — Trading Risk Calculator</title>
+    <style>
+        /* ── reset & base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --bg: #0b0e14;
+            --bg2: #131a24;
+            --bg3: #1c2633;
+            --border: #2a3648;
+            --text: #e8edf5;
+            --text-dim: #8a9bb5;
+            --green: #00d4aa;
+            --green-dim: #00a88a;
+            --red: #ff6b6b;
+            --red-dim: #cc4444;
+            --gold: #f0b429;
+            --blue: #4a9eff;
+            --radius: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --transition: 0.2s ease;
+        }
+        html {
+            font-size: 15px;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        /* ── scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dim);
+        }
+
+        /* ── app container ── */
+        .app {
+            max-width: 1280px;
+            width: 100%;
+            background: var(--bg2);
+            border-radius: var(--radius);
+            padding: 24px 28px 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+        }
+
+        /* ── header ── */
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px 20px;
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+        .logo span {
+            color: var(--green);
+        }
+        .logo .icon {
+            font-size: 1.5rem;
+        }
+        .header-right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px 22px;
+        }
+        .header-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .header-stat strong {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .header-stat .val-green {
+            color: var(--green);
+        }
+        .header-stat .val-red {
+            color: var(--red);
+        }
+
+        /* ── risk presets ── */
+        .risk-presets {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .risk-presets .label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            margin-right: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .risk-btn {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .risk-btn:hover {
+            border-color: var(--text-dim);
+            color: var(--text);
+        }
+        .risk-btn.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: #0b0e14;
+        }
+
+        /* ── main grid ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+        @media (max-width: 820px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── cards ── */
+        .card {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 18px 20px 20px;
+            border: 1px solid var(--border);
+            transition: border var(--transition);
+        }
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .badge {
+            background: var(--bg3);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        /* ── form rows ── */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            margin-bottom: 12px;
+        }
+        .form-row:last-of-type {
+            margin-bottom: 0;
+        }
+        .form-group {
+            flex: 1 1 140px;
+            min-width: 100px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }
+        .form-group .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .form-group .input-wrap .prefix {
+            position: absolute;
+            left: 10px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border var(--transition);
+            outline: none;
+            -moz-appearance: textfield;
+        }
+        .form-group input::-webkit-outer-spin-button,
+        .form-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--blue);
+        }
+        .form-group input.prefix-pad {
+            padding-left: 28px;
+        }
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a9bb5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 34px;
+        }
+        .form-group .hint {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* ── direction toggle ── */
+        .dir-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--bg2);
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid var(--border);
+        }
+        .dir-toggle button {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .dir-toggle button.active-long {
+            background: var(--green);
+            color: #0b0e14;
+        }
+        .dir-toggle button.active-short {
+            background: var(--red);
+            color: #0b0e14;
+        }
+        .dir-toggle button:hover:not(.active-long):not(.active-short) {
+            color: var(--text);
+        }
+
+        /* ── results ── */
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            margin-top: 4px;
+        }
+        .result-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .result-item .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-dim);
+        }
+        .result-item .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 1px;
+        }
+        .result-item .value.green {
+            color: var(--green);
+        }
+        .result-item .value.red {
+            color: var(--red);
+        }
+        .result-item .value.gold {
+            color: var(--gold);
+        }
+        .result-item .value.blue {
+            color: var(--blue);
+        }
+        .result-item .sub {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* ── rr visual bar ── */
+        .rr-visual {
+            margin: 14px 0 6px;
+            padding: 10px 0 6px;
+            position: relative;
+        }
+        .rr-bar {
+            position: relative;
+            height: 28px;
+            background: var(--bg2);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+        }
+        .rr-bar .segment {
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 2px;
+        }
+        .rr-bar .segment.risk {
+            background: var(--red);
+        }
+        .rr-bar .segment.reward {
+            background: var(--green);
+        }
+        .rr-bar .segment.reward-alt {
+            background: var(--gold);
+        }
+        .rr-bar .segment.entry-marker {
+            background: var(--blue);
+            width: 3px !important;
+            min-width: 3px !important;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+        .rr-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+            padding: 0 2px;
+        }
+        .rr-labels span {
+            font-weight: 500;
+        }
+
+        /* ── tp levels table ── */
+        .tp-table-wrap {
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+        .tp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .tp-table th {
+            text-align: left;
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 4px 8px 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .tp-table td {
+            padding: 6px 8px 6px 0;
+            border-bottom: 1px solid var(--border);
+            border-color: rgba(42, 54, 72, 0.4);
+            font-weight: 500;
+        }
+        .tp-table tr:last-child td {
+            border-bottom: none;
+        }
+        .tp-table .tp-label {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        .tp-table .tp-price {
+            font-weight: 600;
+        }
+        .tp-table .tp-pl {
+            font-weight: 600;
+        }
+        .tp-table .tp-pl.positive {
+            color: var(--green);
+        }
+        .tp-table .tp-pl.negative {
+            color: var(--red);
+        }
+        .tp-table .tp-rr {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* ── save / action row ── */
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: var(--blue);
+            color: #0b0e14;
+        }
+        .btn-primary:hover {
+            background: #6bb0ff;
+            transform: translateY(-1px);
+        }
+        .btn-green {
+            background: var(--green);
+            color: #0b0e14;
+        }
+        .btn-green:hover {
+            background: #00e6c0;
+            transform: translateY(-1px);
+        }
+        .btn-red {
+            background: var(--red);
+            color: #0b0e14;
+        }
+        .btn-red:hover {
+            background: #ff8888;
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+        .btn-outline:hover {
+            border-color: var(--text-dim);
+            color: var(--text);
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.7rem;
+        }
+
+        /* ── saved setups ── */
+        .setups-section {
+            margin-top: 6px;
+        }
+        .setups-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .setups-header .count {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .setups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .setup-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .setup-card:hover {
+            border-color: var(--text-dim);
+            transform: translateY(-2px);
+        }
+        .setup-card .setup-dir {
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .setup-card .setup-dir.long {
+            color: var(--green);
+        }
+        .setup-card .setup-dir.short {
+            color: var(--red);
+        }
+        .setup-card .setup-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 4px 0 2px;
+        }
+        .setup-card .setup-detail {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .setup-card .setup-detail strong {
+            color: var(--text);
+        }
+        .setup-card .setup-rr {
+            display: inline-block;
+            background: var(--bg3);
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-top: 4px;
+        }
+        .setup-card .delete-setup {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color var(--transition);
+            padding: 0 4px;
+            line-height: 1;
+        }
+        .setup-card .delete-setup:hover {
+            color: var(--red);
+        }
+        .empty-setups {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding: 20px 0 8px;
+            text-align: center;
+        }
+
+        /* ── toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: all 0.35s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── responsive tweaks ── */
+        @media (max-width: 600px) {
+            .app {
+                padding: 14px 14px 20px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .header-right {
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-group {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+            .main-grid {
+                gap: 14px;
+            }
+            .card {
+                padding: 14px 14px 16px;
+            }
+            .setups-grid {
+                grid-template-columns: 1fr;
+            }
+            .tp-table {
+                font-size: 0.7rem;
+            }
+            .risk-presets .label {
+                display: none;
+            }
+        }
+        @media (max-width: 420px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-stat {
+                font-size: 0.75rem;
+            }
+            .logo {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* ── utility ── */
+        .gap-2 {
+            gap: 8px;
+        }
+        .mt-1 {
+            margin-top: 6px;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-center {
+            align-items: center;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .text-dim {
+            color: var(--text-dim);
+        }
+        .text-sm {
+            font-size: 0.75rem;
+        }
+        .fw-600 {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="icon">📊</span>
+                Trade<span>Risk</span> Pro
+            </div>
+            <div class="header-right">
+                <div class="risk-presets">
+                    <span class="label">Risk %</span>
+                    <button class="risk-btn" data-risk="0.5">0.5%</button>
+                    <button class="risk-btn active" data-risk="1">1%</button>
+                    <button class="risk-btn" data-risk="2">2%</button>
+                    <button class="risk-btn" data-risk="3">3%</button>
+                </div>
+                <div class="header-stat">
+                    Balance <strong id="displayBalance">$10,000</strong>
+                </div>
+                <div class="header-stat">
+                    Risk <strong id="displayRiskPct" class="val-green">1.00%</strong>
+                </div>
+                <div class="header-stat">
+                    Risk Amt <strong id="displayRiskAmt" class="val-red">$100.00</strong>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN GRID -->
+        <div class="main-grid">
+            <!-- LEFT: INPUTS -->
+            <div class="card">
+                <div class="card-title">
+                    ⚙️ Trade Setup
+                    <span class="badge">entry planner</span>
+                </div>
+
+                <!-- Direction -->
+                <div class="form-row">
+                    <div class="form-group" style="flex:0 0 auto; min-width:0;">
+                        <label>Direction</label>
+                        <div class="dir-toggle" id="dirToggle">
+                            <button class="active-long" data-dir="long">📈 Long</button>
+                            <button data-dir="short">📉 Short</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Account Balance ($)</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="balanceInput" value="10000" step="100" min="1" />
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex:0 0 100px;">
+                        <label>Risk %</label>
+                        <div class="input-wrap">
+                            <input type="number" id="riskPctInput" value="1" step="0.1" min="0.1" max="100" />
+                            <span style="position:absolute;right:10px;font-size:0.75rem;color:var(--text-dim);">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entry / SL / TP -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Entry Price</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="entryInput" value="100.00" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="slInput" value="98.50" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Take Profit 1 (1R)</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="tp1Input" value="102.50" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TP2 / TP3 / TP4 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>TP2 (2R)</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="tp2Input" value="105.00" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>TP3 (3R)</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="tp3Input" value="107.50" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>TP4 (4R)</label>
+                        <div class="input-wrap">
+                            <span class="prefix">$</span>
+                            <input type="number" class="prefix-pad" id="tp4Input" value="110.00" step="0.01" min="0.01" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action row -->
+                <div class="action-row">
+                    <button class="btn btn-green" id="saveSetupBtn">💾 Save Setup</button>
+                    <button class="btn btn-outline" id="resetDefaultsBtn">↺ Reset</button>
+                    <span style="flex:1;"></span>
+                    <span class="text-dim text-sm" id="lastUpdate" style="align-self:center;">Ready</span>
+                </div>
+            </div>
+
+            <!-- RIGHT: RESULTS -->
+            <div class="card">
+                <div class="card-title">
+                    📈 Risk / Reward
+                    <span class="badge">live</span>
+                </div>
+
+                <!-- Result grid -->
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="label">Risk per unit</span>
+                        <span class="value blue" id="riskPerUnit">$1.50</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Position Size</span>
+                        <span class="value gold" id="positionSize">66.67</span>
+                        <span class="sub" id="sizeUnit">units</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Risk Amount</span>
+                        <span class="value red" id="riskAmountResult">$100.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">R:R Ratio (1R)</span>
+                        <span class="value green" id="rrRatio">1:1.67</span>
+                    </div>
+                </div>
+
+                <!-- RR Visual Bar -->
+                <div class="rr-visual">
+                    <div class="rr-bar" id="rrBar">
+                        <div class="segment risk" id="barRisk" style="width:37.5%;">Risk</div>
+                        <div class="segment entry-marker" style="width:3px;"></div>
+                        <div class="segment reward" id="barReward" style="width:62.5%;">Reward</div>
+                    </div>
+                    <div class="rr-labels">
+                        <span>SL</span>
+                        <span id="barEntryLabel">Entry $100.00</span>
+                        <span>TP1 $102.50</span>
+                    </div>
+                </div>
+
+                <!-- TP Table -->
+                <div class="tp-table-wrap">
+                    <table class="tp-table" id="tpTable">
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Price</th>
+                                <th style="text-align:right;">P&amp;L</th>
+                                <th style="text-align:right;">R:R</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tpTableBody">
+                            <!-- filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAVED SETUPS -->
+        <div class="setups-section">
+            <div class="setups-header">
+                <div class="card-title" style="margin-bottom:0;">
+                    📂 Saved Setups
+                    <span class="badge" id="setupCount">0</span>
+                </div>
+                <button class="btn btn-outline btn-sm" id="clearAllSetups">Clear All</button>
+            </div>
+            <div class="setups-grid" id="setupsGrid">
+                <div class="empty-setups">No setups saved yet. Configure a trade and click "Save Setup".</div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ── DOM refs ──
+            const balanceInput = document.getElementById('balanceInput');
+            const riskPctInput = document.getElementById('riskPctInput');
+            const entryInput = document.getElementById('entryInput');
+            const slInput = document.getElementById('slInput');
+            const tp1Input = document.getElementById('tp1Input');
+            const tp2Input = document.getElementById('tp2Input');
+            const tp3Input = document.getElementById('tp3Input');
+            const tp4Input = document.getElementById('tp4Input');
+
+            const displayBalance = document.getElementById('displayBalance');
+            const displayRiskPct = document.getElementById('displayRiskPct');
+            const displayRiskAmt = document.getElementById('displayRiskAmt');
+
+            const riskPerUnit = document.getElementById('riskPerUnit');
+            const positionSize = document.getElementById('positionSize');
+            const sizeUnit = document.getElementById('sizeUnit');
+            const riskAmountResult = document.getElementById('riskAmountResult');
+            const rrRatio = document.getElementById('rrRatio');
+
+            const barRisk = document.getElementById('barRisk');
+            const barReward = document.getElementById('barReward');
+            const barEntryLabel = document.getElementById('barEntryLabel');
+
+            const tpTableBody = document.getElementById('tpTableBody');
+
+            const dirToggle = document.getElementById('dirToggle');
+            const saveBtn = document.getElementById('saveSetupBtn');
+            const resetBtn = document.getElementById('resetDefaultsBtn');
+            const clearAllBtn = document.getElementById('clearAllSetups');
+            const setupsGrid = document.getElementById('setupsGrid');
+            const setupCount = document.getElementById('setupCount');
+            const lastUpdate = document.getElementById('lastUpdate');
+            const toast = document.getElementById('toast');
+
+            const riskBtns = document.querySelectorAll('.risk-btn');
+
+            // ── state ──
+            let direction = 'long'; // 'long' | 'short'
+            let savedSetups = [];
+
+            // ── load from localStorage ──
+            function loadSetups() {
+                try {
+                    const raw = localStorage.getItem('tradeRiskSetups');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) savedSetups = parsed;
+                    }
+                } catch (_) { savedSetups = []; }
+                renderSetups();
+            }
+
+            function saveSetupsToStorage() {
+                try {
+                    localStorage.setItem('tradeRiskSetups', JSON.stringify(savedSetups));
+                } catch (_) {}
+                renderSetups();
+            }
+
+            // ── toast ──
+            let toastTimer = null;
+
+            function showToast(msg, duration = 2200) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+            }
+
+            // ── calculations ──
+            function getValues() {
+                const balance = parseFloat(balanceInput.value) || 0;
+                const riskPct = parseFloat(riskPctInput.value) || 0;
+                const entry = parseFloat(entryInput.value) || 0;
+                const sl = parseFloat(slInput.value) || 0;
+                const tp1 = parseFloat(tp1Input.value) || 0;
+                const tp2 = parseFloat(tp2Input.value) || 0;
+                const tp3 = parseFloat(tp3Input.value) || 0;
+                const tp4 = parseFloat(tp4Input.value) || 0;
+                return { balance, riskPct, entry, sl, tp1, tp2, tp3, tp4 };
+            }
+
+            function compute() {
+                const { balance, riskPct, entry, sl, tp1, tp2, tp3, tp4 } = getValues();
+                const isLong = direction === 'long';
+
+                // risk per unit
+                let riskPerUnitVal = 0;
+                if (isLong) {
+                    riskPerUnitVal = entry - sl;
+                } else {
+                    riskPerUnitVal = sl - entry;
+                }
+                riskPerUnitVal = Math.max(riskPerUnitVal, 0);
+
+                const riskAmount = balance * (riskPct / 100);
+                let posSize = 0;
+                if (riskPerUnitVal > 0) {
+                    posSize = riskAmount / riskPerUnitVal;
+                }
+
+                // build TP levels
+                const tps = [
+                    { label: 'TP1', price: tp1 },
+                    { label: 'TP2', price: tp2 },
+                    { label: 'TP3', price: tp3 },
+                    { label: 'TP4', price: tp4 },
+                ];
+
+                // compute R:R and P&L for each TP
+                const levels = tps.map(tp => {
+                    let rewardPerUnit = 0;
+                    if (isLong) {
+                        rewardPerUnit = tp.price - entry;
+                    } else {
+                        rewardPerUnit = entry - tp.price;
+                    }
+                    const rr = riskPerUnitVal > 0 ? (rewardPerUnit / riskPerUnitVal) : 0;
+                    const pl = posSize * rewardPerUnit;
+                    return {
+                        ...tp,
+                        rewardPerUnit,
+                        rr,
+                        pl,
+                        isPositive: pl >= 0,
+                    };
+                });
+
+                // overall R:R (using TP1)
+                const rrOverall = (levels[0] && riskPerUnitVal > 0) ? (levels[0].rewardPerUnit / riskPerUnitVal) : 0;
+
+                // ── update UI ──
+                // header
+                displayBalance.textContent = '$' + balance.toFixed(0);
+                displayRiskPct.textContent = riskPct.toFixed(2) + '%';
+                displayRiskAmt.textContent = '$' + riskAmount.toFixed(2);
+
+                // results
+                riskPerUnit.textContent = '$' + riskPerUnitVal.toFixed(4);
+                positionSize.textContent = posSize.toFixed(4);
+                sizeUnit.textContent = 'units';
+                riskAmountResult.textContent = '$' + riskAmount.toFixed(2);
+                rrRatio.textContent = '1:' + (rrOverall >= 0 ? rrOverall.toFixed(2) : '0.00');
+
+                // bar
+                const totalRiskReward = riskPerUnitVal + (levels[0]?.rewardPerUnit || 0);
+                let riskPctBar = 50;
+                let rewardPctBar = 50;
+                if (totalRiskReward > 0) {
+                    riskPctBar = (riskPerUnitVal / totalRiskReward) * 100;
+                    rewardPctBar = ((levels[0]?.rewardPerUnit || 0) / totalRiskReward) * 100;
+                }
+                // clamp for display
+                riskPctBar = Math.max(5, Math.min(95, riskPctBar));
+                rewardPctBar = Math.max(5, Math.min(95, rewardPctBar));
+                // adjust to sum 100
+                const total = riskPctBar + rewardPctBar;
+                const normRisk = (riskPctBar / total) * 100;
+                const normReward = (rewardPctBar / total) * 100;
+                barRisk.style.width = normRisk + '%';
+                barReward.style.width = normReward + '%';
+                barEntryLabel.textContent = 'Entry $' + entry.toFixed(2);
+
+                // tp table
+                let html = '';
+                levels.forEach((l, idx) => {
+                    const rrDisplay = l.rr >= 0 ? l.rr.toFixed(2) : '0.00';
+                    const plDisplay = l.pl >= 0 ? '+$' + l.pl.toFixed(2) : '-$' + Math.abs(l.pl).toFixed(2);
+                    const plClass = l.pl >= 0 ? 'positive' : 'negative';
+                    const rrClass = l.rr >= 1 ? 'positive' : (l.rr > 0 ? '' : 'negative');
+                    html += `<tr>
+                        <td class="tp-label">${l.label}</td>
+                        <td class="tp-price">$${l.price.toFixed(4)}</td>
+                        <td class="tp-pl ${plClass}" style="text-align:right;">${plDisplay}</td>
+                        <td class="tp-rr" style="text-align:right;">${rrDisplay}R</td>
+                    </tr>`;
+                });
+                tpTableBody.innerHTML = html;
+
+                lastUpdate.textContent = 'Updated ' + new Date().toLocaleTimeString();
+
+                return { balance, riskPct, entry, sl, riskPerUnitVal, riskAmount, posSize, levels, rrOverall, direction };
+            }
+
+            // ── render saved setups ──
+            function renderSetups() {
+                if (savedSetups.length === 0) {
+                    setupsGrid.innerHTML =
+                        `<div class="empty-setups">No setups saved yet. Configure a trade and click "Save Setup".</div>`;
+                    setupCount.textContent = '0';
+                    return;
+                }
+                setupCount.textContent = savedSetups.length;
+                let html = '';
+                savedSetups.forEach((s, idx) => {
+                    const dirLabel = s.direction === 'long' ? '📈 Long' : '📉 Short';
+                    const dirClass = s.direction === 'long' ? 'long' : 'short';
+                    const rr = s.rrOverall !== undefined ? s.rrOverall.toFixed(2) : '?';
+                    html += `
+                        <div class="setup-card" data-index="${idx}">
+                            <button class="delete-setup" data-index="${idx}" title="Delete">✕</button>
+                            <div class="setup-dir ${dirClass}">${dirLabel}</div>
+                            <div class="setup-name">${s.name || 'Trade Setup'}</div>
+                            <div class="setup-detail">
+                                Entry <strong>$${s.entry?.toFixed(4) || '?'}</strong> &middot;
+                                SL <strong>$${s.sl?.toFixed(4) || '?'}</strong>
+                            </div>
+                            <div class="setup-detail">
+                                TP1 <strong>$${s.tp1?.toFixed(4) || '?'}</strong>
+                                ${s.tp2 ? ' &middot; TP2 $' + s.tp2.toFixed(4) : ''}
+                            </div>
+                            <div class="setup-rr">R:R 1:${rr}</div>
+                            <div style="font-size:0.6rem;color:var(--text-dim);margin-top:6px;">
+                                ${s.date ? new Date(s.date).toLocaleString() : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                setupsGrid.innerHTML = html;
+
+                // event listeners for delete & load
+                document.querySelectorAll('.setup-card').forEach(card => {
+                    const idx = parseInt(card.dataset.index);
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.delete-setup')) return;
+                        loadSetup(idx);
+                    });
+                });
+                document.querySelectorAll('.delete-setup').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = parseInt(btn.dataset.index);
+                        deleteSetup(idx);
+                    });
+                });
+            }
+
+            // ── load a setup into inputs ──
+            function loadSetup(idx) {
+                const s = savedSetups[idx];
+                if (!s) return;
+                balanceInput.value = s.balance || 10000;
+                riskPctInput.value = s.riskPct || 1;
+                entryInput.value = s.entry || 100;
+                slInput.value = s.sl || 98.5;
+                tp1Input.value = s.tp1 || 102.5;
+                tp2Input.value = s.tp2 || 105;
+                tp3Input.value = s.tp3 || 107.5;
+                tp4Input.value = s.tp4 || 110;
+                // direction
+                if (s.direction === 'short') {
+                    setDirection('short');
+                } else {
+                    setDirection('long');
+                }
+                // update risk preset highlight
+                highlightRiskPreset(parseFloat(s.riskPct) || 1);
+                compute();
+                showToast('📂 Setup loaded: ' + (s.name || 'Trade'));
+            }
+
+            function deleteSetup(idx) {
+                if (idx < 0 || idx >= savedSetups.length) return;
+                savedSetups.splice(idx, 1);
+                saveSetupsToStorage();
+                showToast('🗑️ Setup deleted');
+            }
+
+            // ── direction ──
+            function setDirection(dir) {
+                direction = dir;
+                document.querySelectorAll('.dir-toggle button').forEach(b => {
+                    b.className = '';
+                    if (b.dataset.dir === dir) {
+                        b.classList.add(dir === 'long' ? 'active-long' : 'active-short');
+                    }
+                });
+                compute();
+            }
+
+            // ── highlight risk preset ──
+            function highlightRiskPreset(val) {
+                riskBtns.forEach(b => {
+                    const p = parseFloat(b.dataset.risk);
+                    b.classList.toggle('active', Math.abs(p - val) < 0.01);
+                });
+            }
+
+            // ── save setup ──
+            function saveCurrentSetup() {
+                const { balance, riskPct, entry, sl, tp1, tp2, tp3, tp4 } = getValues();
+                const result = compute();
+                if (!entry || !sl || !tp1) {
+                    showToast('⚠️ Please fill in Entry, SL, and TP1');
+                    return;
+                }
+                const name = prompt('Name this setup (optional):', 'Trade ' + (savedSetups.length + 1));
+                const setup = {
+                    id: Date.now(),
+                    name: name || 'Trade Setup',
+                    date: Date.now(),
+                    direction: direction,
+                    balance,
+                    riskPct,
+                    entry,
+                    sl,
+                    tp1,
+                    tp2,
+                    tp3,
+                    tp4,
+                    rrOverall: result.rrOverall || 0,
+                };
+                savedSetups.push(setup);
+                saveSetupsToStorage();
+                showToast('✅ Setup saved!');
+            }
+
+            // ── reset defaults ──
+            function resetDefaults() {
+                balanceInput.value = 10000;
+                riskPctInput.value = 1;
+                entryInput.value = 100;
+                slInput.value = 98.5;
+                tp1Input.value = 102.5;
+                tp2Input.value = 105;
+                tp3Input.value = 107.5;
+                tp4Input.value = 110;
+                setDirection('long');
+                highlightRiskPreset(1);
+                compute();
+                showToast('↺ Reset to defaults');
+            }
+
+            // ── clear all setups ──
+            function clearAllSetups() {
+                if (savedSetups.length === 0) return;
+                if (confirm('Delete all saved setups?')) {
+                    savedSetups = [];
+                    saveSetupsToStorage();
+                    showToast('🗑️ All setups cleared');
+                }
+            }
+
+            // ── event binding ──
+            // direction toggle
+            dirToggle.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn || !btn.dataset.dir) return;
+                if (btn.dataset.dir === direction) return;
+                setDirection(btn.dataset.dir);
+            });
+
+            // risk preset buttons
+            riskBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = parseFloat(btn.dataset.risk);
+                    riskPctInput.value = val;
+                    highlightRiskPreset(val);
+                    compute();
+                });
+            });
+
+            // all inputs → recompute
+            [balanceInput, riskPctInput, entryInput, slInput, tp1Input, tp2Input, tp3Input, tp4Input].forEach(el => {
+                el.addEventListener('input', () => {
+                    // sync risk preset highlight
+                    const r = parseFloat(riskPctInput.value);
+                    if (!isNaN(r)) highlightRiskPreset(r);
+                    compute();
+                });
+                el.addEventListener('change', compute);
+            });
+
+            // save
+            saveBtn.addEventListener('click', saveCurrentSetup);
+
+            // reset
+            resetBtn.addEventListener('click', resetDefaults);
+
+            // clear all
+            clearAllBtn.addEventListener('click', clearAllSetups);
+
+            // ── init ──
+            loadSetups();
+            setDirection('long');
+            highlightRiskPreset(1);
+            compute();
+
+            // keyboard shortcut: Ctrl+Enter to save
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    saveCurrentSetup();
+                }
+            });
+
+            // auto-save to localStorage every 2s (just the inputs state? no, we only save setups on demand)
+            // but we can save the last used values in localStorage for convenience
+            function saveState() {
+                const state = {
+                    balance: balanceInput.value,
+                    riskPct: riskPctInput.value,
+                    entry: entryInput.value,
+                    sl: slInput.value,
+                    tp1: tp1Input.value,
+                    tp2: tp2Input.value,
+                    tp3: tp3Input.value,
+                    tp4: tp4Input.value,
+                    direction: direction,
+                };
+                try {
+                    localStorage.setItem('tradeRiskState', JSON.stringify(state));
+                } catch (_) {}
+            }
+
+            function loadState() {
+                try {
+                    const raw = localStorage.getItem('tradeRiskState');
+                    if (!raw) return;
+                    const state = JSON.parse(raw);
+                    if (state.balance) balanceInput.value = state.balance;
+                    if (state.riskPct) riskPctInput.value = state.riskPct;
+                    if (state.entry) entryInput.value = state.entry;
+                    if (state.sl) slInput.value = state.sl;
+                    if (state.tp1) tp1Input.value = state.tp1;
+                    if (state.tp2) tp2Input.value = state.tp2;
+                    if (state.tp3) tp3Input.value = state.tp3;
+                    if (state.tp4) tp4Input.value = state.tp4;
+                    if (state.direction) setDirection(state.direction);
+                    const r = parseFloat(state.riskPct);
+                    if (!isNaN(r)) highlightRiskPreset(r);
+                } catch (_) {}
+            }
+
+            // load state after setup load
+            loadState();
+            // re-compute after loading state
+            setTimeout(compute, 10);
+
+            // save state on input change
+            [balanceInput, riskPctInput, entryInput, slInput, tp1Input, tp2Input, tp3Input, tp4Input].forEach(el => {
+                el.addEventListener('change', saveState);
+                el.addEventListener('input', saveState);
+            });
+            // also save when direction changes
+            const origSetDir = setDirection;
+            setDirection = function(dir) {
+                origSetDir(dir);
+                saveState();
+            };
+            // override compute to save state too (but we already save on input)
+
+            // ── extra: show instructions ──
+            console.log('📊 TradeRisk Pro loaded. Use Ctrl+Enter to save a setup.');
+
+        })();
+    </script>
+</body>
+</html>
