@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>TradeRisk Pro - Simple & Powerful</title>
+    <title>TradeRisk Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
@@ -20,15 +20,8 @@
             --radius: 12px;
         }
         [data-theme="light"] {
-            --bg: #f8f9fa;
-            --bg2: #ffffff;
-            --bg3: #e9ecef;
-            --border: #dee2e6;
-            --text: #212529;
-            --text-dim: #6c757d;
-            --green: #00b38a;
-            --red: #e63939;
-            --gold: #f4a261;
+            --bg: #f8f9fa; --bg2: #ffffff; --bg3: #e9ecef;
+            --border: #dee2e6; --text: #212529; --text-dim: #6c757d;
         }
         * { box-sizing: border-box; margin:0; padding:0; }
         body {
@@ -37,7 +30,6 @@
             color: var(--text);
             min-height: 100vh;
             padding: 10px;
-            transition: background 0.3s;
         }
         .app { max-width: 1280px; margin: 0 auto; }
         .header {
@@ -54,14 +46,8 @@
         .logo { font-size: 1.5rem; font-weight: 700; }
         .logo span { color: var(--green); }
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 18px;
-        }
-        @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
+        .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 18px; }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
 
         .card {
             background: var(--bg2);
@@ -79,12 +65,7 @@
 
         .form-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
         .form-group { flex: 1; min-width: 130px; }
-        .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-bottom: 5px;
-        }
+        .form-group label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 5px; }
         input, select {
             width: 100%;
             padding: 10px 12px;
@@ -92,7 +73,6 @@
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text);
-            font-size: 1rem;
         }
         input:focus { border-color: var(--blue); outline: none; }
 
@@ -109,16 +89,13 @@
             margin: 12px 0;
             font-weight: 500;
         }
-        .warning { background: #3a2a00; color: var(--gold); border: 1px solid var(--gold); }
-        .block { background: #3a1a1a; color: var(--red); border: 1px solid var(--red); }
+        .warning { background: #3a2a00; color: var(--gold); }
+        .block { background: #3a1a1a; color: var(--red); }
 
         .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
+            display: flex; justify-content: space-between; padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
-        .result-item:last-child { border: none; }
 
         .btn-row button {
             padding: 12px 20px;
@@ -129,7 +106,6 @@
             cursor: pointer;
         }
         .btn-primary { background: var(--blue); color: #000; }
-        .btn-green { background: var(--green); color: #000; }
 
         .stats-grid {
             display: grid;
@@ -144,49 +120,44 @@
             border: 1px solid var(--border);
             text-align: center;
         }
-        .stat-value { font-size: 1.4rem; font-weight: 700; }
 
         .journal-section { margin-top: 24px; }
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .filters input, .filters select {
-            padding: 8px 12px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
+        .filters { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg3); position: sticky; top: 0; z-index: 1; }
-        .trade-img { max-width: 60px; height: auto; border-radius: 4px; cursor: pointer; }
+        th { background: var(--bg3); position: sticky; top: 0; }
+        .trade-img { max-width: 60px; border-radius: 4px; cursor: pointer; }
 
         .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg3);
-            color: var(--text);
-            padding: 14px 28px;
-            border-radius: 9999px;
-            border: 1px solid var(--border);
-            z-index: 9999;
-            opacity: 0;
-            transition: 0.3s;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--bg3); color: var(--text);
+            padding: 14px 28px; border-radius: 9999px;
+            border: 1px solid var(--border); z-index: 9999;
+            opacity: 0; transition: 0.3s;
         }
         .toast.show { opacity: 1; }
+
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none;
+            align-items: center; justify-content: center; z-index: 10000;
+        }
+        .modal-content {
+            background: var(--bg2);
+            padding: 20px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body data-theme="dark">
 
 <div class="app">
     <header class="header">
-        <div class="logo">Trade<span>Risk</span> Pro</div>
+        <div class="logo">TradeRisk Pro</div>
         <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
             <span id="themeToggle" style="cursor:pointer;font-size:1.5rem;">🌙</span>
             <span>Balance: <strong id="displayBalance">$10,000</strong></span>
@@ -194,16 +165,15 @@
     </header>
 
     <div class="main-grid">
-        <!-- INPUT CARD -->
         <div class="card">
-            <div class="card-title">⚙️ New Trade Setup</div>
+            <div class="card-title">Trade Setup</div>
             
             <div class="form-row">
                 <div class="form-group">
                     <label>Direction</label>
                     <div class="dir-toggle" id="dirToggle">
-                        <button class="active-long" data-dir="long">LONG 📈</button>
-                        <button data-dir="short">SHORT 📉</button>
+                        <button class="active-long" data-dir="long">LONG</button>
+                        <button data-dir="short">SHORT</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -225,37 +195,42 @@
                     <input type="number" id="balanceInput" value="10000" step="100">
                 </div>
                 <div class="form-group">
-                    <label>Risk %</label>
-                    <input type="number" id="riskPctInput" value="1" step="0.1" min="0.1">
+                    <label>Risk Profile</label>
+                    <select id="riskProfile">
+                        <option value="1">Conservative (1%)</option>
+                        <option value="1.5">Moderate (1.5%)</option>
+                        <option value="2" selected>Aggressive (2%)</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-row">
+                <div class="form-group"><label>Entry</label><input type="number" id="entryInput" value="1.0850" step="0.00001"></div>
+                <div class="form-group"><label>Stop Loss</label><input type="number" id="slInput" value="1.0800" step="0.00001"></div>
+                <div class="form-group"><label>Take Profit</label><input type="number" id="tpInput" value="1.0950" step="0.00001"></div>
+            </div>
+
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Entry Price</label>
-                    <input type="number" id="entryInput" value="1.0850" step="0.00001">
-                </div>
-                <div class="form-group">
-                    <label>Stop Loss</label>
-                    <input type="number" id="slInput" value="1.0800" step="0.00001">
-                </div>
-                <div class="form-group">
-                    <label>Take Profit</label>
-                    <input type="number" id="tpInput" value="1.0950" step="0.00001">
+                    <label>Lot Preset</label>
+                    <select id="lotPreset">
+                        <option value="0.01">Micro (0.01)</option>
+                        <option value="0.1" selected>Mini (0.1)</option>
+                        <option value="1">Standard (1.0)</option>
+                    </select>
                 </div>
             </div>
 
             <div id="guardrailContainer"></div>
 
             <div class="btn-row">
-                <button class="btn-primary" id="addTradeBtn">📝 Add Trade</button>
-                <button id="resetBtn">↺ Reset Form</button>
+                <button class="btn-primary" id="addTradeBtn">Add Trade</button>
+                <button id="resetBtn">Reset Form</button>
             </div>
         </div>
 
-        <!-- RESULT CARD -->
         <div class="card">
-            <div class="card-title">📊 Live Calculation</div>
+            <div class="card-title">Risk Calculation</div>
             <div id="results">
                 <div class="result-item"><span>Pip Distance (SL)</span><span id="pipDistance">50.0</span></div>
                 <div class="result-item"><span>Lot Size</span><span id="lotSize" style="color:var(--gold)">0.20</span></div>
@@ -265,50 +240,46 @@
         </div>
     </div>
 
-    <!-- PERFORMANCE STATS -->
     <div class="stats-grid card" id="statsGrid"></div>
 
-    <!-- CHART -->
     <div class="card" style="margin-top:20px;">
-        <div class="card-title">📈 Monthly P&amp;L</div>
+        <div class="card-title">Monthly P&amp;L</div>
         <canvas id="plChart" height="110"></canvas>
     </div>
 
-    <!-- JOURNAL -->
     <div class="journal-section card">
-        <div class="card-title">📓 Trading Journal <span id="journalCount">(0 trades)</span></div>
+        <div class="card-title">Trading Journal <span id="journalCount">(0)</span></div>
         
         <div class="filters">
-            <input type="text" id="searchInput" placeholder="Search pair or notes..." style="flex:1; min-width:200px;">
-            <select id="filterPair" style="min-width:140px;">
-                <option value="">All Pairs</option>
-            </select>
+            <input type="text" id="searchInput" placeholder="Search..." style="flex:1;">
+            <select id="filterPair"></select>
+            <button onclick="exportJournal()">Export JSON</button>
+            <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJournal(event)">
         </div>
 
-        <div style="overflow-x:auto; max-height: 600px;">
+        <div style="overflow-x:auto;">
             <table id="journalTable">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Pair</th>
-                        <th>Dir</th>
-                        <th>Entry</th>
-                        <th>SL Pips</th>
-                        <th>TP</th>
-                        <th>Exit</th>
-                        <th>Risk $</th>
-                        <th>P&amp;L $</th>
-                        <th>R:R</th>
-                        <th>Planned</th>
-                        <th>Followed</th>
-                        <th>Notes</th>
-                        <th>Image</th>
-                        <th></th>
+                        <th>Date</th><th>Pair</th><th>Dir</th><th>Entry</th><th>SL Pips</th>
+                        <th>TP</th><th>Exit</th><th>Risk $</th><th>P&amp;L $</th><th>R:R</th>
+                        <th>Planned</th><th>Followed</th><th>Notes</th><th>Image</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="journalBody"></tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3>Edit Trade</h3>
+        <div id="modalContent"></div>
+        <button onclick="saveEdit()">Save</button>
+        <button onclick="closeModal()">Cancel</button>
     </div>
 </div>
 
@@ -326,6 +297,7 @@
 
     let trades = [];
     let direction = 'long';
+    let currentEditId = null;
     let plChartInstance = null;
 
     function loadData() {
@@ -348,7 +320,7 @@
 
     function compute() {
         const balance = parseFloat(document.getElementById('balanceInput').value) || 10000;
-        const riskPct = parseFloat(document.getElementById('riskPctInput').value) || 1;
+        const riskPct = parseFloat(document.getElementById('riskProfile').value) || 1;
         const entry = parseFloat(document.getElementById('entryInput').value) || 0;
         const sl = parseFloat(document.getElementById('slInput').value) || 0;
         const tp = parseFloat(document.getElementById('tpInput').value) || 0;
@@ -357,19 +329,23 @@
         const riskAmount = balance * (riskPct / 100);
         const pipDist = getPipDistance(entry, sl, pair);
         const pipValue = PIP_CONFIG[pair]?.pipValue || 10;
-        const lotSize = pipDist > 0 ? riskAmount / (pipDist * pipValue) : 0;
-        const rewardPips = getPipDistance(entry, tp, pair);
-        const rr = pipDist > 0 ? rewardPips / pipDist : 0;
+        let lotSize = pipDist > 0 ? riskAmount / (pipDist * pipValue) : 0;
+
+        // Apply lot preset
+        const preset = parseFloat(document.getElementById('lotPreset').value);
+        if (preset) lotSize = preset;
+
+        const rr = pipDist > 0 ? getPipDistance(entry, tp, pair) / pipDist : 0;
 
         let guardHTML = '';
-        if (riskPct > 2) guardHTML += `<div class="guardrail warning">⚠️ Risk % exceeds 2%</div>`;
-        if (rr < 1.5 && rr > 0) guardHTML += `<div class="guardrail block">🚫 R:R below 1:1.5</div>`;
+        if (riskPct > 2) guardHTML += `<div class="guardrail warning">Risk exceeds 2%</div>`;
+        if (rr < 1.5 && rr > 0) guardHTML += `<div class="guardrail block">R:R below 1:1.5</div>`;
         document.getElementById('guardrailContainer').innerHTML = guardHTML;
 
         document.getElementById('pipDistance').textContent = pipDist.toFixed(1);
         document.getElementById('lotSize').textContent = lotSize.toFixed(2);
         document.getElementById('riskAmount').textContent = '$' + riskAmount.toFixed(0);
-        document.getElementById('rrRatio').textContent = rr > 0 ? '1:' + rr.toFixed(2) : '—';
+        document.getElementById('rrRatio').textContent = '1:' + rr.toFixed(2);
         document.getElementById('displayBalance').textContent = '$' + balance.toFixed(0);
 
         return { balance, riskPct, entry, sl, tp, pair, pipDist, lotSize, riskAmount, rr, direction };
@@ -386,24 +362,7 @@
 
     function addTrade() {
         const data = compute();
-        if (data.rr < 1.5 && !confirm('R:R is below 1.5. Add anyway?')) return;
-
-        const prePlanned = confirm('Was this setup pre-planned?') ? 'Yes' : 'No';
-        const followed = confirm('Did you follow the plan?') ? 'Yes' : 'No';
-        const exitStr = prompt('Exit price (leave empty if open):');
-        let exit = exitStr ? parseFloat(exitStr) : null;
-        let pl = 0;
-        let realizedRR = data.rr;
-
-        if (exit) {
-            const exitPips = data.direction === 'long' 
-                ? getPipDistance(data.entry, exit, data.pair)
-                : getPipDistance(exit, data.entry, data.pair);
-            realizedRR = data.pipDist > 0 ? exitPips / data.pipDist : 0;
-            pl = data.lotSize * exitPips * (PIP_CONFIG[data.pair]?.pipValue || 10);
-        }
-
-        const image = prompt('Trade screenshot URL (optional):', '');
+        if (data.rr < 1.5 && !confirm('R:R below 1.5. Add?')) return;
 
         const trade = {
             id: Date.now(),
@@ -413,36 +372,92 @@
             entry: data.entry,
             sl: data.sl,
             tp: data.tp,
-            exit: exit,
+            exit: null,
             pipDist: data.pipDist,
             lotSize: data.lotSize,
             riskAmount: data.riskAmount,
-            pl: pl,
-            rr: realizedRR,
-            prePlanned: prePlanned,
-            followed: followed,
-            image: image || null,
-            notes: prompt('Notes (optional):', '') || ''
+            pl: 0,
+            rr: data.rr,
+            prePlanned: confirm('Pre-planned?') ? 'Yes' : 'No',
+            followed: confirm('Followed plan?') ? 'Yes' : 'No',
+            image: null,
+            notes: ''
         };
 
         trades.unshift(trade);
         saveData();
-        renderJournal();
-        updateStats();
-        renderChart();
-        populateFilter();
-        showToast('✅ Trade added successfully');
+        refreshAll();
+        showToast('Trade added');
+    }
+
+    function editTrade(id) {
+        currentEditId = id;
+        const trade = trades.find(t => t.id === id);
+        const modal = document.getElementById('editModal');
+        const content = document.getElementById('modalContent');
+        
+        content.innerHTML = `
+            <p>Exit Price: <input type="number" id="editExit" value="${trade.exit || ''}" step="0.00001"></p>
+            <p>Notes: <input type="text" id="editNotes" value="${trade.notes || ''}"></p>
+            <p>Upload Image: <input type="file" id="editImage" accept="image/*"></p>
+            \( {trade.image ? `<img src=" \){trade.image}" style="max-width:200px">` : ''}
+        `;
+        modal.style.display = 'flex';
+    }
+
+    function saveEdit() {
+        const trade = trades.find(t => t.id === currentEditId);
+        if (!trade) return;
+
+        const newExit = document.getElementById('editExit').value;
+        if (newExit) {
+            trade.exit = parseFloat(newExit);
+            const exitPips = trade.direction === 'long' 
+                ? getPipDistance(trade.entry, trade.exit, trade.pair)
+                : getPipDistance(trade.exit, trade.entry, trade.pair);
+            trade.rr = trade.pipDist > 0 ? exitPips / trade.pipDist : 0;
+            trade.pl = trade.lotSize * exitPips * (PIP_CONFIG[trade.pair]?.pipValue || 10);
+        }
+
+        trade.notes = document.getElementById('editNotes').value;
+
+        const fileInput = document.getElementById('editImage');
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                trade.image = e.target.result;
+                finalizeEdit();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            finalizeEdit();
+        }
+    }
+
+    function finalizeEdit() {
+        saveData();
+        closeModal();
+        refreshAll();
+        showToast('Trade updated');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
     }
 
     function deleteTrade(id) {
         if (confirm('Delete this trade?')) {
             trades = trades.filter(t => t.id !== id);
             saveData();
-            renderJournal();
-            updateStats();
-            renderChart();
-            populateFilter();
+            refreshAll();
         }
+    }
+
+    function refreshAll() {
+        renderJournal();
+        updateStats();
+        renderChart();
+        populateFilter();
     }
 
     function renderJournal() {
@@ -458,77 +473,56 @@
             return matchSearch && matchPair;
         });
 
-        document.getElementById('journalCount').textContent = `(${filtered.length} trades)`;
+        document.getElementById('journalCount').textContent = `(${filtered.length})`;
 
         let html = '';
         filtered.forEach(t => {
-            const plClass = t.pl >= 0 ? 'color:#0f0' : 'color:#f66';
+            const plStyle = t.pl >= 0 ? 'color:#0f0' : 'color:#f66';
             const imgHtml = t.image ? `<img src="\( {t.image}" class="trade-img" onclick="window.open(' \){t.image}')">` : '—';
-            
             html += `
                 <tr>
                     <td>${new Date(t.date).toLocaleDateString()}</td>
                     <td>${t.pair}</td>
-                    <td>${t.direction === 'long' ? '📈' : '📉'}</td>
+                    <td>${t.direction.toUpperCase()}</td>
                     <td>${t.entry}</td>
                     <td>${t.pipDist.toFixed(1)}</td>
                     <td>${t.tp}</td>
-                    <td>${t.exit ? t.exit : '—'}</td>
+                    <td>${t.exit || '—'}</td>
                     <td>\[ {t.riskAmount.toFixed(0)}</td>
-                    <td style="${plClass}"> \]{t.pl.toFixed(2)}</td>
+                    <td style="${plStyle}"> \]{t.pl.toFixed(2)}</td>
                     <td>${t.rr.toFixed(2)}</td>
                     <td>${t.prePlanned}</td>
                     <td>${t.followed}</td>
                     <td>${t.notes}</td>
                     <td>${imgHtml}</td>
-                    <td><button onclick="deleteTrade(${t.id})" style="background:none;border:none;color:var(--red);cursor:pointer;">×</button></td>
+                    <td>
+                        <button onclick="editTrade(${t.id})" style="background:#4a9eff;color:white;border:none;padding:4px 8px;border-radius:4px;margin-right:4px;">Edit</button>
+                        <button onclick="deleteTrade(${t.id})" style="background:#ff6b6b;color:white;border:none;padding:4px 8px;border-radius:4px;">×</button>
+                    </td>
                 </tr>`;
         });
-
-        tbody.innerHTML = html || `<tr><td colspan="15" style="text-align:center;padding:40px;color:var(--text-dim);">No trades found</td></tr>`;
+        tbody.innerHTML = html || `<tr><td colspan="15" style="text-align:center;padding:60px;color:var(--text-dim);">No trades yet</td></tr>`;
     }
 
     function updateStats() {
         const container = document.getElementById('statsGrid');
-        if (trades.length === 0) {
+        if (!trades.length) {
             container.innerHTML = '<div class="stat-card"><div class="stat-value">0</div><div>No trades</div></div>';
             return;
         }
-
-        let totalPL = 0, wins = 0, losses = 0, totalRR = 0, rrCount = 0;
+        let totalPL = 0, wins = 0, totalRR = 0, rrCount = 0;
         trades.forEach(t => {
             totalPL += t.pl || 0;
             if (t.pl > 0) wins++;
-            else if (t.pl < 0) losses++;
-            if (t.rr) {
-                totalRR += t.rr;
-                rrCount++;
-            }
+            if (t.rr) { totalRR += t.rr; rrCount++; }
         });
-
-        const winRate = trades.length > 0 ? (wins / trades.length * 100).toFixed(1) : 0;
-        const avgRR = rrCount > 0 ? (totalRR / rrCount).toFixed(2) : 0;
-        const expectancy = (winRate/100 * avgRR) - ((100-winRate)/100);
+        const winRate = (wins / trades.length * 100).toFixed(1);
+        const avgRR = rrCount ? (totalRR / rrCount).toFixed(2) : 0;
 
         container.innerHTML = `
-            <div class="stat-card">
-                <div class="stat-value" style="color:var(--green)">${winRate}%</div>
-                <div>Win Rate</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">${avgRR}</div>
-                <div>Avg R:R</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" style="${totalPL >= 0 ? 'color:var(--green)' : 'color:var(--red)'}">
-                    $${totalPL.toFixed(0)}
-                </div>
-                <div>Total P&amp;L</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">${expectancy.toFixed(2)}</div>
-                <div>Expectancy</div>
-            </div>
+            <div class="stat-card"><div class="stat-value" style="color:var(--green)">${winRate}%</div><div>Win Rate</div></div>
+            <div class="stat-card"><div class="stat-value">${avgRR}</div><div>Avg R:R</div></div>
+            <div class="stat-card"><div class="stat-value" style="${totalPL>=0?'color:var(--green)':'color:var(--red)'}">$${totalPL.toFixed(0)}</div><div>Total P&amp;L</div></div>
         `;
     }
 
@@ -536,57 +530,63 @@
         const ctx = document.getElementById('plChart');
         if (plChartInstance) plChartInstance.destroy();
 
-        // Simple monthly grouping
-        const monthlyPL = {};
+        const monthly = {};
         trades.forEach(t => {
-            const month = new Date(t.date).toISOString().slice(0,7);
-            monthlyPL[month] = (monthlyPL[month] || 0) + (t.pl || 0);
+            const m = new Date(t.date).toISOString().slice(0,7);
+            monthly[m] = (monthly[m] || 0) + (t.pl || 0);
         });
-
-        const labels = Object.keys(monthlyPL).sort();
-        const data = labels.map(m => monthlyPL[m]);
 
         plChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Monthly P&L',
-                    data: data,
-                    borderColor: '#00d4aa',
-                    backgroundColor: 'rgba(0, 212, 170, 0.2)',
-                    tension: 0.3,
-                    fill: true
-                }]
+                labels: Object.keys(monthly).sort(),
+                datasets: [{ label: 'P&L', data: Object.values(monthly), borderColor: '#00d4aa', tension: 0.3 }]
             },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { grid: { color: 'rgba(255,255,255,0.1)' } }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } } }
         });
     }
 
     function populateFilter() {
         const select = document.getElementById('filterPair');
-        const pairs = new Set(trades.map(t => t.pair));
         select.innerHTML = '<option value="">All Pairs</option>';
-        pairs.forEach(p => {
+        new Set(trades.map(t => t.pair)).forEach(p => {
             const opt = document.createElement('option');
-            opt.value = p;
-            opt.textContent = p;
+            opt.value = p; opt.textContent = p;
             select.appendChild(opt);
         });
+    }
+
+    function exportJournal() {
+        const dataStr = JSON.stringify(trades, null, 2);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'trading-journal.json'; a.click();
+        showToast('Journal exported');
+    }
+
+    function importJournal(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                trades = JSON.parse(ev.target.result);
+                saveData();
+                refreshAll();
+                showToast('Journal imported successfully');
+            } catch(err) {
+                showToast('Invalid JSON file');
+            }
+        };
+        reader.readAsText(file);
     }
 
     function showToast(msg) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2200);
+        setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     // Event Listeners
@@ -595,41 +595,28 @@
     });
 
     document.getElementById('addTradeBtn').addEventListener('click', addTrade);
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        if (confirm('Reset form?')) location.reload();
-    });
+    document.getElementById('resetBtn').addEventListener('click', () => location.reload());
 
-    // Live calculation
-    const inputIds = ['balanceInput', 'riskPctInput', 'entryInput', 'slInput', 'tpInput', 'pairInput'];
-    inputIds.forEach(id => {
-        document.getElementById(id).addEventListener('input', compute);
-    });
+    const liveInputs = ['balanceInput','riskProfile','entryInput','slInput','tpInput','pairInput','lotPreset'];
+    liveInputs.forEach(id => document.getElementById(id).addEventListener('input', compute));
 
-    // Journal filters
     document.getElementById('searchInput').addEventListener('input', renderJournal);
     document.getElementById('filterPair').addEventListener('change', renderJournal);
 
-    // Theme toggle
     document.getElementById('themeToggle').addEventListener('click', () => {
-        const current = document.body.getAttribute('data-theme');
-        const newTheme = current === 'light' ? 'dark' : 'light';
-        document.body.setAttribute('data-theme', newTheme);
-        document.getElementById('themeToggle').textContent = newTheme === 'light' ? '☀️' : '🌙';
+        const isLight = document.body.getAttribute('data-theme') === 'light';
+        document.body.setAttribute('data-theme', isLight ? 'dark' : 'light');
+        document.getElementById('themeToggle').textContent = isLight ? '🌙' : '☀️';
     });
 
-    // Keyboard shortcut
     document.addEventListener('keydown', e => {
-        if (e.ctrlKey && e.key === 'Enter') {
-            e.preventDefault();
-            addTrade();
-        }
+        if (e.ctrlKey && e.key === 'Enter') addTrade();
     });
 
     // Initialize
     loadData();
     setDirection('long');
     compute();
-    console.log('%cTradeRisk Pro initialized successfully', 'color:#00d4aa;font-weight:bold');
 </script>
 </body>
 </html>
