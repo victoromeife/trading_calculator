@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>Victor Omeife TradeJournal - v1.0</title>
+    <title>TradeJournal Pro - Victor Omeife</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         /* ===== CSS VARIABLES ===== */
         :root {
@@ -45,7 +44,6 @@
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
-        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
@@ -96,12 +94,18 @@
         }
 
         .logo {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
         .logo span {
             color: var(--accent-green);
+        }
+        .logo small {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            display: block;
         }
 
         .header-controls {
@@ -215,13 +219,13 @@
             flex-wrap: nowrap;
         }
         .tabs button {
-            padding: 10px 20px;
+            padding: 10px 16px;
             border: none;
             border-radius: var(--radius-sm);
             background: transparent;
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all var(--transition);
             white-space: nowrap;
@@ -766,6 +770,41 @@
             text-decoration: line-through;
         }
 
+        /* ===== AFFIRMATIONS ===== */
+        .affirmation-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin: 8px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-left: 3px solid var(--accent-gold);
+        }
+        .affirmation-box strong {
+            color: var(--accent-green);
+        }
+
+        /* ===== EMERGENCY RULES ===== */
+        .emergency-box {
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin: 8px 0;
+        }
+        .emergency-box h4 {
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+        }
+        .emergency-box li {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-left: 16px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body {
@@ -782,7 +821,7 @@
                 gap: 6px;
             }
             .logo {
-                font-size: 1.1rem;
+                font-size: 1rem;
                 text-align: center;
             }
             .auth-section {
@@ -792,8 +831,8 @@
                 padding: 12px;
             }
             .tabs button {
-                padding: 8px 14px;
-                font-size: 0.7rem;
+                padding: 8px 12px;
+                font-size: 0.65rem;
             }
             .modal-content {
                 padding: 14px;
@@ -837,13 +876,16 @@
 
         <!-- ===== HEADER ===== -->
         <header class="header">
-            <div class="logo">Victor Omeife<span>Trade</span> Journal - V1.0</div>
+            <div class="logo">
+                Trade<span>Journal</span> Pro
+                <small>Victor Omeife - V2.0</small>
+            </div>
             <div class="header-controls">
                 <div class="sync-indicator">
                     <span class="sync-dot offline" id="syncDot"></span>
                     <span id="syncLabel">Offline</span>
                 </div>
-                <span class="balance-display">Balance: <strong id="displayBalance">10,000</strong></span>
+                <span class="balance-display">Balance: <strong id="displayBalance">100</strong></span>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9790;</button>
                 <div class="auth-section">
                     <span class="user-email" id="userEmail">Not signed in</span>
@@ -894,17 +936,20 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Account Balance</label>
-                            <input type="number" id="balanceInput" value="10000" step="100" />
+                            <label>Account Balance ($)</label>
+                            <input type="number" id="balanceInput" value="100" step="1" min="1" />
+                            <small style="font-size:0.6rem;color:var(--text-muted);">Enter your actual account balance</small>
                         </div>
                         <div class="form-group">
                             <label>Risk %</label>
                             <select id="riskProfile">
                                 <option value="0.5">0.5%</option>
-                                <option value="1">1%</option>
-                                <option value="1.5" selected>1.5%</option>
+                                <option value="1" selected>1%</option>
+                                <option value="1.5">1.5%</option>
                                 <option value="2">2%</option>
                                 <option value="3">3%</option>
+                                <option value="5">5%</option>
+                                <option value="10">10%</option>
                             </select>
                         </div>
                     </div>
@@ -928,8 +973,8 @@
                         <div class="form-group">
                             <label>Session</label>
                             <select id="sessionInput">
+                                <option value="New York" selected>New York</option>
                                 <option value="London">London</option>
-                                <option value="New York">New York</option>
                                 <option value="Asia">Asia</option>
                                 <option value="Sydney">Sydney</option>
                                 <option value="Overlap">Overlap</option>
@@ -952,15 +997,24 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Timeframe</label>
+                            <select id="timeframeInput">
+                                <option value="15m" selected>15 min</option>
+                                <option value="1h">1 hour</option>
+                                <option value="4h">4 hour</option>
+                                <option value="1d">Daily</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>Pre-Planned</label>
                             <select id="prePlanned">
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-group">
                             <label>Followed Plan</label>
                             <select id="followedPlan">
@@ -969,20 +1023,11 @@
                                 <option value="Partial">Partial</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Confidence Level</label>
-                            <select id="confidenceInput">
-                                <option value="Low">Low</option>
-                                <option value="Medium" selected>Medium</option>
-                                <option value="High">High</option>
-                                <option value="Very High">Very High</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div class="form-group">
                         <label>Notes</label>
-                        <textarea id="tradeNotes" placeholder="Market context, rationale, confluence factors..." rows="2"></textarea>
+                        <textarea id="tradeNotes" placeholder="HTF confirmation? Zone? Momentum candle? Why this trade?" rows="3"></textarea>
                     </div>
 
                     <div id="guardrailContainer"></div>
@@ -1004,15 +1049,15 @@
                             </div>
                             <div class="result-item">
                                 <span class="label">Lot Size</span>
-                                <span class="value gold" id="lotSize">0.20</span>
+                                <span class="value gold" id="lotSize">0.02</span>
                             </div>
                             <div class="result-item">
                                 <span class="label">Risk Amount</span>
-                                <span class="value red" id="riskAmount">$100</span>
+                                <span class="value red" id="riskAmount">$1.00</span>
                             </div>
                             <div class="result-item">
                                 <span class="label">Reward</span>
-                                <span class="value green" id="rewardAmount">$200</span>
+                                <span class="value green" id="rewardAmount">$2.00</span>
                             </div>
                             <div class="result-item">
                                 <span class="label">Risk:Reward</span>
@@ -1020,7 +1065,7 @@
                             </div>
                             <div class="result-item">
                                 <span class="label">Position Size</span>
-                                <span class="value blue" id="positionSize">0.20 lots</span>
+                                <span class="value blue" id="positionSize">0.02 lots</span>
                             </div>
                         </div>
                     </div>
@@ -1029,28 +1074,36 @@
                     <div class="card">
                         <div class="card-title">Pre-Trade Checklist</div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkTrend" />
-                            <label for="checkTrend">Trend confirmation</label>
+                            <input type="checkbox" id="checkHTF" />
+                            <label for="checkHTF">HTF (60min) agrees with direction</label>
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkSupport" />
-                            <label for="checkSupport">Support/Resistance identified</label>
+                            <input type="checkbox" id="checkZone" />
+                            <label for="checkZone">Supply/Demand zone identified</label>
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkConfluence" />
-                            <label for="checkConfluence">Confluence of signals</label>
+                            <input type="checkbox" id="checkMomentum" />
+                            <label for="checkMomentum">Momentum candle + previous zone drawn</label>
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkRisk" />
-                            <label for="checkRisk">Risk per trade is acceptable</label>
+                            <input type="checkbox" id="checkRR" />
+                            <label for="checkRR">RR is 1:2 or better</label>
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkPlan" />
-                            <label for="checkPlan">Trade plan written</label>
+                            <input type="checkbox" id="checkLot" />
+                            <label for="checkLot">Lot size calculated with calculator</label>
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" id="checkMindset" />
-                            <label for="checkMindset">Mindset is clear, no revenge trading</label>
+                            <input type="checkbox" id="checkSL" />
+                            <label for="checkSL">SL placed correctly (above/below zone)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="checkNews" />
+                            <label for="checkNews">No major news in next 30 minutes</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="checkFriday" />
+                            <label for="checkFriday">Not Friday after 6pm WAT</label>
                         </div>
                     </div>
                 </div>
@@ -1066,11 +1119,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Account Balance</label>
-                            <input type="number" id="calcBalance" value="10000" step="100" />
+                            <input type="number" id="calcBalance" value="100" step="1" min="1" />
                         </div>
                         <div class="form-group">
                             <label>Risk %</label>
-                            <input type="number" id="calcRisk" value="1.5" step="0.1" min="0.1" max="10" />
+                            <input type="number" id="calcRisk" value="1" step="0.1" min="0.1" max="20" />
                         </div>
                     </div>
                     <div class="form-row">
@@ -1104,9 +1157,12 @@
                     </div>
                     <div id="calcResults">
                         <div class="result-item"><span class="label">Pip Distance</span><span class="value" id="calcPips">50.0</span></div>
-                        <div class="result-item"><span class="label">Risk Amount</span><span class="value red" id="calcRiskAmt">$150</span></div>
-                        <div class="result-item"><span class="label">Lot Size</span><span class="value gold" id="calcLot">0.30</span></div>
-                        <div class="result-item"><span class="label">Position Size</span><span class="value blue" id="calcPosSize">0.30 lots</span></div>
+                        <div class="result-item"><span class="label">Risk Amount</span><span class="value red" id="calcRiskAmt">$1.00</span></div>
+                        <div class="result-item"><span class="label">Lot Size</span><span class="value gold" id="calcLot">0.02</span></div>
+                        <div class="result-item"><span class="label">Position Size</span><span class="value blue" id="calcPosSize">0.02 lots</span></div>
+                    </div>
+                    <div style="margin-top:10px;font-size:0.7rem;color:var(--text-muted);">
+                        Formula: Lot Size = Risk$ ÷ (SL pips × pip value)
                     </div>
                 </div>
 
@@ -1150,6 +1206,9 @@
                         <div class="result-item"><span class="label">TP Pips</span><span class="value green" id="rrTpPips">100.0</span></div>
                         <div class="result-item"><span class="label">Risk:Reward</span><span class="value gold" id="rrRatioCalc">1:2.00</span></div>
                     </div>
+                    <div style="margin-top:10px;font-size:0.7rem;color:var(--text-muted);">
+                        Minimum RR accepted: 1:2 (per your trading plan)
+                    </div>
                 </div>
 
                 <!-- Pip Value Calculator -->
@@ -1171,16 +1230,16 @@
                         </div>
                         <div class="form-group">
                             <label>Lot Size</label>
-                            <input type="number" id="pipLot" value="0.10" step="0.01" min="0.01" />
+                            <input type="number" id="pipLot" value="0.01" step="0.001" min="0.001" />
                         </div>
                     </div>
                     <div class="btn-row">
                         <button class="btn-primary" id="calcPipBtn">Calculate</button>
                     </div>
                     <div id="pipResults">
-                        <div class="result-item"><span class="label">Pip Value</span><span class="value gold" id="pipValueDisplay">$1.00</span></div>
-                        <div class="result-item"><span class="label">Value per 10 pips</span><span class="value blue" id="pipTen">$10.00</span></div>
-                        <div class="result-item"><span class="label">Value per 100 pips</span><span class="value green" id="pipHundred">$100.00</span></div>
+                        <div class="result-item"><span class="label">Pip Value</span><span class="value gold" id="pipValueDisplay">$0.10</span></div>
+                        <div class="result-item"><span class="label">Value per 10 pips</span><span class="value blue" id="pipTen">$1.00</span></div>
+                        <div class="result-item"><span class="label">Value per 100 pips</span><span class="value green" id="pipHundred">$10.00</span></div>
                     </div>
                 </div>
 
@@ -1190,7 +1249,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Account Balance</label>
-                            <input type="number" id="targetBalance" value="10000" step="100" />
+                            <input type="number" id="targetBalance" value="100" step="1" min="1" />
                         </div>
                         <div class="form-group">
                             <label>Target %</label>
@@ -1200,7 +1259,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Risk per Trade</label>
-                            <input type="number" id="targetRisk" value="1.5" step="0.1" min="0.1" max="10" />
+                            <input type="number" id="targetRisk" value="1" step="0.1" min="0.1" max="10" />
                         </div>
                         <div class="form-group">
                             <label>R:R Ratio</label>
@@ -1211,9 +1270,9 @@
                         <button class="btn-primary" id="calcTargetBtn">Calculate</button>
                     </div>
                     <div id="targetResults">
-                        <div class="result-item"><span class="label">Profit Target</span><span class="value green" id="targetAmount">$200</span></div>
-                        <div class="result-item"><span class="label">Risk per Trade</span><span class="value red" id="targetRiskAmt">$150</span></div>
-                        <div class="result-item"><span class="label">Trades Needed</span><span class="value gold" id="targetTrades">1.33</span></div>
+                        <div class="result-item"><span class="label">Profit Target</span><span class="value green" id="targetAmount">$2.00</span></div>
+                        <div class="result-item"><span class="label">Risk per Trade</span><span class="value red" id="targetRiskAmt">$1.00</span></div>
+                        <div class="result-item"><span class="label">Trades Needed</span><span class="value gold" id="targetTrades">2.00</span></div>
                     </div>
                 </div>
             </div>
@@ -1273,10 +1332,7 @@
 
         <!-- ===== TAB: ANALYTICS ===== -->
         <div class="tab-content" id="tab-analytics">
-            <!-- Stats Grid -->
             <div class="grid-4" id="statsGrid"></div>
-
-            <!-- Charts -->
             <div class="grid-2">
                 <div class="card chart-wrapper">
                     <div class="card-title">Monthly Performance</div>
@@ -1287,7 +1343,6 @@
                     <canvas id="strategyChart"></canvas>
                 </div>
             </div>
-
             <div class="grid-2">
                 <div class="card chart-wrapper">
                     <div class="card-title">Performance by Session</div>
@@ -1298,8 +1353,6 @@
                     <canvas id="equityChart"></canvas>
                 </div>
             </div>
-
-            <!-- Detailed Stats -->
             <div class="card">
                 <div class="card-title">Performance Metrics</div>
                 <div class="grid-4" id="metricGrid"></div>
@@ -1311,9 +1364,12 @@
             <div class="grid-2">
                 <div class="card">
                     <div class="card-title">Trade Psychology Log</div>
+                    <div class="affirmation-box">
+                        "I approach the market as a business owner and not a gambler. I deserve to make money."
+                    </div>
                     <div class="form-group">
                         <label>Trade Reference</label>
-                        <input type="text" id="psychTradeRef" placeholder="e.g., EURUSD - 2024-12-01" />
+                        <input type="text" id="psychTradeRef" placeholder="e.g., EURUSD - 2024-12-15" />
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -1372,7 +1428,6 @@
                             <div class="result-item"><span class="label">Lessons Recorded</span><span class="value blue" id="lessonsCount">0</span></div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Recent Psychology Entries</div>
                         <div id="psychEntries"></div>
@@ -1386,10 +1441,19 @@
             <div class="grid-2">
                 <div class="card">
                     <div class="card-title">My Trading Plan</div>
+
+                    <div class="affirmation-box">
+                        <strong>Affirmations:</strong><br>
+                        "I am a professional trader."<br>
+                        "I approach the market as a business owner and not a gambler."<br>
+                        "I deserve to make money."<br>
+                        "There is no one else to blame for me losing money than myself."
+                    </div>
+
                     <div class="form-group">
                         <label>Trading Style</label>
                         <select id="planStyle">
-                            <option value="Day Trading">Day Trading</option>
+                            <option value="Day Trading" selected>Day Trading</option>
                             <option value="Swing Trading">Swing Trading</option>
                             <option value="Scalping">Scalping</option>
                             <option value="Position Trading">Position Trading</option>
@@ -1397,31 +1461,42 @@
                     </div>
                     <div class="form-group">
                         <label>Max Risk Per Trade (%)</label>
-                        <input type="number" id="planMaxRisk" value="1.5" step="0.1" min="0.1" max="10" />
+                        <input type="number" id="planMaxRisk" value="1" step="0.1" min="0.1" max="10" />
                     </div>
                     <div class="form-group">
                         <label>Min R:R Ratio</label>
-                        <input type="number" id="planMinRR" value="1.5" step="0.1" min="0.1" max="10" />
+                        <input type="number" id="planMinRR" value="2" step="0.1" min="0.1" max="10" />
                     </div>
                     <div class="form-group">
-                        <label>Max Daily Loss (%)</label>
-                        <input type="number" id="planMaxLoss" value="3" step="0.1" min="0.1" max="20" />
+                        <label>Weekly Drawdown Limit (%)</label>
+                        <input type="number" id="planMaxLoss" value="6" step="0.1" min="0.1" max="20" />
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Drawdown Limit (%)</label>
+                        <input type="number" id="planMonthlyLoss" value="12" step="0.1" min="0.1" max="30" />
                     </div>
                     <div class="form-group">
                         <label>Preferred Sessions</label>
-                        <input type="text" id="planSessions" value="London, New York" />
+                        <input type="text" id="planSessions" value="New York" />
                     </div>
                     <div class="form-group">
                         <label>Favorite Pairs</label>
-                        <input type="text" id="planPairs" value="EURUSD, GBPUSD, USDJPY" />
+                        <input type="text" id="planPairs" value="EURUSD, USDJPY, GBPJPY, AUDUSD, EURJPY, GBPUSD, BTCUSD, XAUUSD" />
+                    </div>
+                    <div class="form-group">
+                        <label>Max Open Trades</label>
+                        <input type="number" id="planMaxTrades" value="2" min="1" max="10" />
                     </div>
                     <div class="form-group">
                         <label>My Trading Rules</label>
                         <textarea id="planRules" rows="4">1. Always use stop loss
-                    2. Minimum 1:1.5 R:R
-                    3. Don't trade during news
-                    4. Wait for confirmation
-                    5. Keep position size consistent</textarea>
+                    2. Minimum 1:2 R:R
+                    3. Don't trade during high-impact news
+                    4. Wait for HTF confirmation
+                    5. Keep position size consistent
+                    6. Maximum 2 open trades at once
+                    7. No trades between 12pm-2pm
+                    8. Close all positions before weekend</textarea>
                     </div>
                     <div class="btn-row">
                         <button class="btn-primary" id="savePlanBtn">Save Trading Plan</button>
@@ -1435,13 +1510,43 @@
                             <div class="result-item"><span class="label">Plan Status</span><span class="value" id="planStatus">Not set up</span></div>
                             <div class="result-item"><span class="label">Risk Rule Status</span><span class="value" id="riskRuleStatus">—</span></div>
                             <div class="result-item"><span class="label">RR Rule Status</span><span class="value" id="rrRuleStatus">—</span></div>
+                            <div class="result-item"><span class="label">Max Open Trades</span><span class="value" id="maxTradesStatus">—</span></div>
                         </div>
                     </div>
+
+                    <div class="card">
+                        <div class="card-title">Emergency Rules</div>
+                        <div class="emergency-box">
+                            <h4>If Power Failure / Internet Loss:</h4>
+                            <ul>
+                                <li>Call Exness support to close all positions by phone</li>
+                                <li>Emergency number saved in phone contacts</li>
+                            </ul>
+                            <h4 style="margin-top:8px;">If Emotional:</h4>
+                            <ul>
+                                <li>Write down how you feel in one sentence</li>
+                                <li>If it mentions anger, stress, anxiety, or excitement — do NOT trade</li>
+                                <li>Wait until next day after completing morning routine</li>
+                            </ul>
+                            <h4 style="margin-top:8px;">If Hosting a Party / Intoxicated:</h4>
+                            <ul>
+                                <li>Close all pending orders the night before</li>
+                                <li>Do not open MT5 until the following morning</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <div class="card-title">Weekly Review</div>
                         <div class="form-group">
-                            <label>This Week's Performance</label>
-                            <textarea id="weeklyReview" rows="4" placeholder="What went well? What needs improvement? Goals for next week..."></textarea>
+                            <label>Questions to Answer:</label>
+                            <ul style="font-size:0.75rem;color:var(--text-secondary);margin-left:16px;margin-bottom:8px;">
+                                <li>1. How many trades followed the plan?</li>
+                                <li>2. What was my actual win rate?</li>
+                                <li>3. What mistake did I repeat?</li>
+                                <li>4. What will I do differently this week?</li>
+                            </ul>
+                            <textarea id="weeklyReview" rows="4" placeholder="Weekly review answers..."></textarea>
                         </div>
                         <div class="btn-row">
                             <button class="btn-primary" id="saveReviewBtn">Save Review</button>
@@ -1513,13 +1618,11 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const auth = firebase.auth();
-            const storage = firebase.storage();
 
             db.enablePersistence({ synchronizeTabs: true })
                 .catch(function(err) { console.warn('Persistence error:', err); });
 
             // ===== APP STATE =====
-            // Updated PIP_CONFIG for YOUR pairs only
             const PIP_CONFIG = {
                 'EURUSD': { pipSize: 0.0001, pipValue: 10 },
                 'GBPUSD': { pipSize: 0.0001, pipValue: 10 },
@@ -1530,9 +1633,6 @@
                 'XAUUSD': { pipSize: 0.01, pipValue: 1.0 },
                 'BTCUSD': { pipSize: 1, pipValue: 0.01 }
             };
-
-            // Your pairs list for reference
-            const YOUR_PAIRS = ['EURUSD', 'USDJPY', 'EURJPY', 'AUDUSD', 'GBPUSD', 'GBPJPY', 'XAUUSD', 'BTCUSD'];
 
             let trades = [];
             let psychologyEntries = [];
@@ -1546,7 +1646,6 @@
             let sessionChartInstance = null;
             let equityChartInstance = null;
 
-            // ===== DOM REFS =====
             const $ = (id) => document.getElementById(id);
 
             // ===== AUTH =====
@@ -1603,7 +1702,6 @@
                 updateSyncStatus('syncing');
 
                 try {
-                    // Load trades
                     const tradesSnapshot = await db.collection('trades')
                         .where('userId', '==', currentUser.uid)
                         .orderBy('date', 'desc')
@@ -1615,7 +1713,6 @@
                         trades.push({ id: doc.id, data: data });
                     });
 
-                    // Load psychology entries
                     const psychSnapshot = await db.collection('psychology')
                         .where('userId', '==', currentUser.uid)
                         .orderBy('date', 'desc')
@@ -1626,7 +1723,6 @@
                         psychologyEntries.push({ id: doc.id, data: doc.data() });
                     });
 
-                    // Load trading plan
                     const planSnapshot = await db.collection('tradingPlan')
                         .where('userId', '==', currentUser.uid)
                         .limit(1)
@@ -1637,7 +1733,6 @@
                         tradingPlan = { id: doc.id, data: doc.data() };
                     });
 
-                    // Load weekly reviews
                     const reviewSnapshot = await db.collection('weeklyReviews')
                         .where('userId', '==', currentUser.uid)
                         .orderBy('date', 'desc')
@@ -1683,6 +1778,7 @@
                         status: tradeData.status || 'open',
                         session: tradeData.session || '',
                         strategy: tradeData.strategy || '',
+                        timeframe: tradeData.timeframe || '',
                         confidence: tradeData.confidence || '',
                         checklist: tradeData.checklist || [],
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1827,7 +1923,7 @@
             }
 
             function compute() {
-                const balance = parseFloat($('balanceInput').value) || 10000;
+                const balance = parseFloat($('balanceInput').value) || 100;
                 const riskPct = parseFloat($('riskProfile').value) || 1;
                 const entry = parseFloat($('entryInput').value) || 0;
                 const sl = parseFloat($('slInput').value) || 0;
@@ -1838,28 +1934,30 @@
                 const pipDist = getPipDistance(entry, sl, pair);
                 const pipValue = PIP_CONFIG[pair] ? PIP_CONFIG[pair].pipValue : 10;
                 let lotSize = pipDist > 0 ? riskAmount / (pipDist * pipValue) : 0;
-                lotSize = Math.round(lotSize * 100) / 100;
+                lotSize = Math.round(lotSize * 1000) / 1000;
 
                 const rr = pipDist > 0 ? getPipDistance(entry, tp, pair) / pipDist : 0;
                 const reward = riskAmount * rr;
 
                 let guardHTML = '';
                 if (riskPct > 2) guardHTML +=
-                '<div class="guardrail warning">Risk exceeds 2% - consider reducing</div>';
-                if (rr < 1.5 && rr > 0) guardHTML +=
-                    '<div class="guardrail block">R:R below 1:1.5 - consider improving</div>';
+                    '<div class="guardrail warning">Risk exceeds 2% - consider reducing</div>';
+                if (rr < 2 && rr > 0) guardHTML +=
+                    '<div class="guardrail block">R:R below 1:2 - your plan requires 1:2 minimum</div>';
                 if (rr >= 2) guardHTML +=
-                '<div class="guardrail success">R:R of 1:' + rr.toFixed(2) + ' - good risk/reward</div>';
+                    '<div class="guardrail success">R:R of 1:' + rr.toFixed(2) + ' - meets your plan requirements</div>';
                 if (rr >= 3) guardHTML +=
                     '<div class="guardrail success">R:R of 1:' + rr.toFixed(2) + ' - excellent risk/reward</div>';
+                if (lotSize < 0.001) guardHTML +=
+                    '<div class="guardrail warning">Lot size very small - check if your broker allows this size</div>';
                 $('guardrailContainer').innerHTML = guardHTML;
 
                 $('pipDistance').textContent = pipDist.toFixed(1);
-                $('lotSize').textContent = lotSize.toFixed(2);
-                $('riskAmount').textContent = '$' + riskAmount.toFixed(0);
+                $('lotSize').textContent = lotSize.toFixed(3);
+                $('riskAmount').textContent = '$' + riskAmount.toFixed(2);
                 $('rrRatio').textContent = '1:' + rr.toFixed(2);
-                $('rewardAmount').textContent = '$' + reward.toFixed(0);
-                $('positionSize').textContent = lotSize.toFixed(2) + ' lots';
+                $('rewardAmount').textContent = '$' + reward.toFixed(2);
+                $('positionSize').textContent = lotSize.toFixed(3) + ' lots';
                 $('displayBalance').textContent = balance.toFixed(0);
 
                 return {
@@ -1891,12 +1989,14 @@
 
             function getChecklist() {
                 return [
-                    { id: 'checkTrend', checked: $('checkTrend').checked },
-                    { id: 'checkSupport', checked: $('checkSupport').checked },
-                    { id: 'checkConfluence', checked: $('checkConfluence').checked },
-                    { id: 'checkRisk', checked: $('checkRisk').checked },
-                    { id: 'checkPlan', checked: $('checkPlan').checked },
-                    { id: 'checkMindset', checked: $('checkMindset').checked }
+                    { id: 'checkHTF', checked: $('checkHTF').checked },
+                    { id: 'checkZone', checked: $('checkZone').checked },
+                    { id: 'checkMomentum', checked: $('checkMomentum').checked },
+                    { id: 'checkRR', checked: $('checkRR').checked },
+                    { id: 'checkLot', checked: $('checkLot').checked },
+                    { id: 'checkSL', checked: $('checkSL').checked },
+                    { id: 'checkNews', checked: $('checkNews').checked },
+                    { id: 'checkFriday', checked: $('checkFriday').checked }
                 ];
             }
 
@@ -1908,7 +2008,8 @@
                 }
 
                 const data = compute();
-                if (data.rr < 1.5 && !confirm('R:R is below 1.5. Are you sure?')) return;
+                if (data.rr < 2 && !confirm('R:R is below 1:2. Your plan requires 1:2 minimum. Are you sure you want to proceed?'))
+                return;
 
                 const checklist = getChecklist();
                 const checklistComplete = checklist.filter(function(c) { return c.checked; }).length;
@@ -1932,6 +2033,7 @@
                     status: 'open',
                     session: $('sessionInput').value,
                     strategy: $('strategyInput').value,
+                    timeframe: $('timeframeInput').value,
                     confidence: $('confidenceInput').value,
                     checklist: checklist,
                     checklistComplete: checklistComplete
@@ -1942,6 +2044,7 @@
                 document.querySelectorAll('#tab-trade .checklist-item input').forEach(function(cb) {
                     cb.checked = false;
                 });
+                showToast('Trade opened successfully');
             }
 
             function editTrade(id) {
@@ -2058,7 +2161,7 @@
 
             // ===== CALCULATORS =====
             function calcPositionSize() {
-                const balance = parseFloat($('calcBalance').value) || 10000;
+                const balance = parseFloat($('calcBalance').value) || 100;
                 const riskPct = parseFloat($('calcRisk').value) || 1;
                 const entry = parseFloat($('calcEntry').value) || 0;
                 const sl = parseFloat($('calcSl').value) || 0;
@@ -2068,12 +2171,12 @@
                 const pipDist = getPipDistance(entry, sl, pair);
                 const pipValue = PIP_CONFIG[pair] ? PIP_CONFIG[pair].pipValue : 10;
                 let lotSize = pipDist > 0 ? riskAmount / (pipDist * pipValue) : 0;
-                lotSize = Math.round(lotSize * 100) / 100;
+                lotSize = Math.round(lotSize * 1000) / 1000;
 
                 $('calcPips').textContent = pipDist.toFixed(1);
-                $('calcRiskAmt').textContent = '$' + riskAmount.toFixed(0);
-                $('calcLot').textContent = lotSize.toFixed(2);
-                $('calcPosSize').textContent = lotSize.toFixed(2) + ' lots';
+                $('calcRiskAmt').textContent = '$' + riskAmount.toFixed(2);
+                $('calcLot').textContent = lotSize.toFixed(3);
+                $('calcPosSize').textContent = lotSize.toFixed(3) + ' lots';
             }
 
             function calcRR() {
@@ -2093,7 +2196,7 @@
 
             function calcPipValue() {
                 const pair = $('pipPair').value;
-                const lotSize = parseFloat($('pipLot').value) || 0.1;
+                const lotSize = parseFloat($('pipLot').value) || 0.01;
                 const pipValue = getPipValue(pair, lotSize);
 
                 $('pipValueDisplay').textContent = '$' + pipValue.toFixed(2);
@@ -2102,17 +2205,17 @@
             }
 
             function calcTarget() {
-                const balance = parseFloat($('targetBalance').value) || 10000;
+                const balance = parseFloat($('targetBalance').value) || 100;
                 const targetPct = parseFloat($('targetPct').value) || 2;
-                const riskPct = parseFloat($('targetRisk').value) || 1.5;
+                const riskPct = parseFloat($('targetRisk').value) || 1;
                 const rr = parseFloat($('targetRr').value) || 2;
 
                 const targetAmount = balance * (targetPct / 100);
                 const riskPerTrade = balance * (riskPct / 100);
                 const tradesNeeded = targetAmount / riskPerTrade;
 
-                $('targetAmount').textContent = '$' + targetAmount.toFixed(0);
-                $('targetRiskAmt').textContent = '$' + riskPerTrade.toFixed(0);
+                $('targetAmount').textContent = '$' + targetAmount.toFixed(2);
+                $('targetRiskAmt').textContent = '$' + riskPerTrade.toFixed(2);
                 $('targetTrades').textContent = tradesNeeded.toFixed(2);
             }
 
@@ -2215,11 +2318,13 @@
             function savePlan() {
                 const plan = {
                     style: $('planStyle').value,
-                    maxRisk: parseFloat($('planMaxRisk').value) || 1.5,
-                    minRR: parseFloat($('planMinRR').value) || 1.5,
-                    maxLoss: parseFloat($('planMaxLoss').value) || 3,
+                    maxRisk: parseFloat($('planMaxRisk').value) || 1,
+                    minRR: parseFloat($('planMinRR').value) || 2,
+                    maxLoss: parseFloat($('planMaxLoss').value) || 6,
+                    monthlyLoss: parseFloat($('planMonthlyLoss').value) || 12,
                     sessions: $('planSessions').value,
                     pairs: $('planPairs').value,
+                    maxTrades: parseInt($('planMaxTrades').value) || 2,
                     rules: $('planRules').value
                 };
                 saveTradingPlan(plan);
@@ -2231,6 +2336,7 @@
                     $('planStatus').className = 'value';
                     $('riskRuleStatus').textContent = '—';
                     $('rrRuleStatus').textContent = '—';
+                    $('maxTradesStatus').textContent = '—';
                     return;
                 }
 
@@ -2242,6 +2348,8 @@
                 let riskColor = 'gold';
                 let rrAdherence = 'Checking...';
                 let rrColor = 'gold';
+                let maxTradesAdherence = 'Checking...';
+                let maxTradesColor = 'gold';
 
                 if (trades.length > 0) {
                     const closedTrades = trades.filter(function(t) { return t.data.status === 'closed'; });
@@ -2249,7 +2357,7 @@
                         let riskViolations = 0;
                         closedTrades.forEach(function(t) {
                             const riskPct = (t.data.riskAmount / (trades.find(function(t2) { return t2.id === t.id; })
-                                .data.balance || 10000)) * 100;
+                                .data.balance || 100)) * 100;
                             if (riskPct > p.maxRisk) riskViolations++;
                         });
                         const riskRate = closedTrades.length > 0 ?
@@ -2267,6 +2375,16 @@
                             'N/A';
                         rrAdherence = rrRate;
                         rrColor = rrViolations === 0 ? 'green' : 'gold';
+
+                        // Max trades check
+                        const tradesThisWeek = trades.filter(function(t) {
+                            const now = new Date();
+                            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            return new Date(t.data.date) >= weekAgo;
+                        });
+                        const maxTradesRate = tradesThisWeek.length <= p.maxTrades ? 'Within limit' : 'Exceeded limit';
+                        maxTradesAdherence = maxTradesRate;
+                        maxTradesColor = tradesThisWeek.length <= p.maxTrades ? 'green' : 'red';
                     }
                 }
 
@@ -2274,6 +2392,8 @@
                 $('riskRuleStatus').className = 'value ' + riskColor;
                 $('rrRuleStatus').textContent = rrAdherence;
                 $('rrRuleStatus').className = 'value ' + rrColor;
+                $('maxTradesStatus').textContent = maxTradesAdherence;
+                $('maxTradesStatus').className = 'value ' + maxTradesColor;
             }
 
             function renderReviews() {
@@ -2350,8 +2470,8 @@
                     html += '<td>' + d.sl + '</td>';
                     html += '<td>' + d.tp + '</td>';
                     html += '<td>' + (d.exit || '—') + '</td>';
-                    html += '<td>' + d.lotSize.toFixed(2) + '</td>';
-                    html += '<td>$' + d.riskAmount.toFixed(0) + '</td>';
+                    html += '<td>' + d.lotSize.toFixed(3) + '</td>';
+                    html += '<td>$' + d.riskAmount.toFixed(2) + '</td>';
                     html += '<td style="' + plStyle + '">$' + d.pl.toFixed(2) + '</td>';
                     html += '<td>' + (d.rr ? d.rr.toFixed(2) : '—') + '</td>';
                     html += '<td><span class="status-badge ' + statusClass + '">' + d.status + '</span></td>';
@@ -2376,7 +2496,6 @@
                     return;
                 }
 
-                const closedTrades = trades.filter(function(t) { return t.data.status === 'closed'; });
                 let totalPL = 0,
                     wins = 0,
                     totalRR = 0,
@@ -2399,7 +2518,7 @@
                     '<div class="stat-card"><div class="stat-value">' + avgRR +
                     '</div><div class="stat-label">Avg R:R</div></div>' +
                     '<div class="stat-card"><div class="stat-value" style="' + (totalPL >= 0 ? 'color:var(--accent-green)' :
-                        'color:var(--accent-red)') + '">$' + totalPL.toFixed(0) +
+                        'color:var(--accent-red)') + '">$' + totalPL.toFixed(2) +
                     '</div><div class="stat-label">Total P&L</div></div>';
             }
 
@@ -2407,10 +2526,10 @@
                 const container = $('metricGrid');
                 if (trades.length === 0) {
                     container.innerHTML =
-                        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Sharpe Ratio</div></div>' +
                         '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Profit Factor</div></div>' +
                         '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Win</div></div>' +
-                        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Loss</div></div>';
+                        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Loss</div></div>' +
+                        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Best Trade</div></div>';
                     return;
                 }
 
@@ -2419,17 +2538,19 @@
                     totalLosses = 0;
                 let winCount = 0,
                     lossCount = 0;
-                let plValues = [];
+                let bestTrade = 0,
+                    worstTrade = 0;
 
                 closedTrades.forEach(function(t) {
                     const pl = t.data.pl || 0;
-                    plValues.push(pl);
                     if (pl > 0) {
                         totalWins += pl;
                         winCount++;
+                        if (pl > bestTrade) bestTrade = pl;
                     } else if (pl < 0) {
                         totalLosses += Math.abs(pl);
                         lossCount++;
+                        if (pl < worstTrade) worstTrade = pl;
                     }
                 });
 
@@ -2437,24 +2558,15 @@
                 const avgWin = winCount > 0 ? totalWins / winCount : 0;
                 const avgLoss = lossCount > 0 ? totalLosses / lossCount : 0;
 
-                let sharpe = '—';
-                if (plValues.length > 1) {
-                    const mean = plValues.reduce(function(a, b) { return a + b; }, 0) / plValues.length;
-                    const variance = plValues.reduce(function(a, b) { return a + Math.pow(b - mean, 2); }, 0) / plValues
-                    .length;
-                    const stdDev = Math.sqrt(variance);
-                    sharpe = stdDev > 0 ? (mean / stdDev).toFixed(2) : '—';
-                }
-
                 container.innerHTML =
-                    '<div class="stat-card"><div class="stat-value">' + sharpe +
-                    '</div><div class="stat-label">Sharpe Ratio</div></div>' +
                     '<div class="stat-card"><div class="stat-value">' + profitFactor.toFixed(2) +
                     '</div><div class="stat-label">Profit Factor</div></div>' +
                     '<div class="stat-card"><div class="stat-value" style="color:var(--accent-green)">$' + avgWin.toFixed(
-                        0) + '</div><div class="stat-label">Avg Win</div></div>' +
+                        2) + '</div><div class="stat-label">Avg Win</div></div>' +
                     '<div class="stat-card"><div class="stat-value" style="color:var(--accent-red)">$' + avgLoss.toFixed(
-                        0) + '</div><div class="stat-label">Avg Loss</div></div>';
+                        2) + '</div><div class="stat-label">Avg Loss</div></div>' +
+                    '<div class="stat-card"><div class="stat-value" style="color:var(--accent-gold)">$' + bestTrade.toFixed(
+                        2) + '</div><div class="stat-label">Best Trade</div></div>';
             }
 
             function renderCharts() {
@@ -2631,7 +2743,12 @@
                     return new Date(a.data.date) - new Date(b.data.date);
                 });
 
-                let equity = 10000;
+                // Start with initial balance from first trade or default 100
+                let initialBalance = 100;
+                if (sorted.length > 0 && sorted[0].data.balance) {
+                    initialBalance = sorted[0].data.balance;
+                }
+                let equity = initialBalance;
                 const equityData = [{ x: 'Start', y: equity }];
 
                 sorted.forEach(function(t) {
@@ -2796,8 +2913,8 @@
                         d.sl + ',' +
                         d.tp + ',' +
                         (d.exit || '') + ',' +
-                        d.lotSize.toFixed(2) + ',' +
-                        d.riskAmount.toFixed(0) + ',' +
+                        d.lotSize.toFixed(3) + ',' +
+                        d.riskAmount.toFixed(2) + ',' +
                         d.pl.toFixed(2) + ',' +
                         (d.rr ? d.rr.toFixed(2) : '') + ',' +
                         d.status + ',' +
@@ -2938,6 +3055,9 @@
             initAuth();
             initTabs();
             setDirection('long');
+
+            // Set default balance to $100 for demo
+            $('balanceInput').value = 100;
             compute();
 
             setTimeout(function() {
@@ -2946,6 +3066,11 @@
                 calcPipValue();
                 calcTarget();
             }, 500);
+
+            // Show welcome message with tips
+            setTimeout(function() {
+                showToast('Welcome Victor! Your trading plan is loaded. Ready to trade?');
+            }, 1000);
         </script>
     </body>
     </html>
