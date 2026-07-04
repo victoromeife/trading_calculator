@@ -83,6 +83,7 @@
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.8);} }
         .balance-display { font-size:0.85rem; color:var(--text-secondary); }
         .balance-display strong { color:var(--text-primary); }
+        .broker-display { font-size:0.7rem; color:var(--text-muted); background:var(--bg-input); padding:2px 10px; border-radius:9999px; border:1px solid var(--border-color); }
         .theme-toggle { background:none; border:none; color:var(--text-secondary); font-size:1.2rem; cursor:pointer; padding:4px 8px; border-radius:var(--radius-sm); transition:background var(--transition); }
         .theme-toggle:hover { background:var(--bg-hover); }
         .auth-section { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -289,11 +290,11 @@
 
     <!-- ===== HEADER ===== -->
     <header class="header">
-        <div class="logo">Trade<span>Journal</span> Pro <small>Victor Omeife - V3.0</small></div>
+        <div class="logo">Trade<span>Journal</span> Pro <small>Victor Omeife - V3.1</small></div>
         <div class="header-controls">
             <div class="sync-indicator"><span class="sync-dot offline" id="syncDot"></span><span id="syncLabel">Offline</span></div>
             <span class="balance-display">Balance: <strong id="displayBalance">0.00</strong></span>
-            <span class="balance-display" style="font-size:0.7rem;color:var(--text-muted);" id="accountTypeDisplay">Standard</span>
+            <span class="broker-display" id="headerBroker">Exness</span>
             <button class="theme-toggle" id="themeToggle">&#9790;</button>
             <div class="auth-section">
                 <span class="user-email" id="userEmail">Not signed in</span>
@@ -437,8 +438,8 @@
                         <div class="result-item"><span class="label">Risk:Reward</span><span class="value green" id="rrRatio">—</span></div>
                         <div class="result-item"><span class="label">Position Size</span><span class="value blue" id="positionSize">—</span></div>
                         <div class="result-item" style="border-bottom:none;padding-top:12px;border-top:1px solid var(--border-color);">
-                            <span class="label" style="font-weight:600;">Account Type</span>
-                            <span class="value" id="accountTypeResult">Standard</span>
+                            <span class="label" style="font-weight:600;">Broker</span>
+                            <span class="value" id="accountTypeResult">Exness</span>
                         </div>
                     </div>
                 </div>
@@ -480,6 +481,13 @@
             <!-- Position Size -->
             <div class="card">
                 <div class="card-title">Position Size Calculator</div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <label>Broker</label>
+                    <select id="calcBroker">
+                        <option value="exness">Exness</option>
+                        <option value="hfm">HFM</option>
+                    </select>
+                </div>
                 <div class="form-group" style="margin-bottom:8px;">
                     <label>Account Type</label>
                     <select id="calcAccountType">
@@ -530,6 +538,13 @@
             <div class="card">
                 <div class="card-title">Pip Value Calculator</div>
                 <div class="form-group" style="margin-bottom:8px;">
+                    <label>Broker</label>
+                    <select id="pipBroker">
+                        <option value="exness">Exness</option>
+                        <option value="hfm">HFM</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
                     <label>Account Type</label>
                     <select id="pipAccountType">
                         <option value="standard">Standard</option>
@@ -578,6 +593,7 @@
                 <select id="filterPair"><option value="">All Pairs</option></select>
                 <select id="filterStatus"><option value="all">All Status</option><option value="open">Open</option><option value="closed">Closed</option></select>
                 <select id="filterStrategy"><option value="">All Strategies</option></select>
+                <select id="filterBroker"><option value="">All Brokers</option></select>
                 <button id="reportBtn">Reports</button>
                 <button id="exportBtn">Export JSON</button>
                 <button id="importBtn">Import JSON</button>
@@ -585,7 +601,7 @@
             </div>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Date</th><th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>Exit</th><th>Lot</th><th>Risk</th><th>P&L</th><th>RR</th><th>Status</th><th>Strategy</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>Exit</th><th>Lot</th><th>Risk</th><th>P&L</th><th>RR</th><th>Status</th><th>Broker</th><th>Actions</th></tr></thead>
                     <tbody id="journalBody"></tbody>
                 </table>
             </div>
@@ -683,7 +699,7 @@
                 <div class="card">
                     <div class="card-title">Emergency Rules</div>
                     <div class="emergency-box">
-                        <h4>Power/Internet Failure:</h4><ul><li>Call Exness support to close all positions by phone (number saved in contacts)</li></ul>
+                        <h4>Power/Internet Failure:</h4><ul><li>Call broker support to close all positions by phone (number saved in contacts)</li></ul>
                         <h4 style="margin-top:8px;">If Emotional:</h4><ul><li>Write down how you feel in one sentence</li><li>If anger, stress, anxiety, or excitement — do NOT trade</li><li>Wait until next day after morning routine</li></ul>
                         <h4 style="margin-top:8px;">If Intoxicated:</h4><ul><li>Close all pending orders the night before</li><li>Do not open MT5 until the following morning</li></ul>
                     </div>
@@ -711,16 +727,25 @@
     <div class="tab-content" id="tab-settings">
         <div class="grid-2">
             <div class="card">
-                <div class="card-title">Account & Balance</div>
+                <div class="card-title">Broker & Account</div>
                 <div class="form-group">
+                    <label>Select Broker</label>
+                    <select id="settingsBroker">
+                        <option value="exness">Exness</option>
+                        <option value="hfm">HFM</option>
+                    </select>
+                    <small style="font-size:0.65rem;color:var(--text-muted);">
+                        Switching broker updates pip values automatically.
+                    </small>
+                </div>
+                <div class="form-group" style="margin-top:8px;">
                     <label>Account Type</label>
                     <select id="settingsAccountType">
                         <option value="standard">Standard</option>
                         <option value="cent">Cent</option>
                     </select>
                     <small style="font-size:0.65rem;color:var(--text-muted);">
-                        Cent accounts display balance in cents (e.g., $10 = 1000 cents).<br>
-                        Pip values are 100x smaller, allowing proper risk management on small balances.
+                        Cent accounts display balances in cents. Pip values are 100x smaller.
                     </small>
                 </div>
                 <div class="form-group" style="margin-top:12px;">
@@ -750,7 +775,7 @@
                     <br>
                     <strong style="color:var(--text-primary);">Daily Loss Limit:</strong> 3% (trading stops for the day)<br>
                     <strong style="color:var(--text-primary);">Weekly Loss Limit:</strong> 6% (trading stops until Monday)<br>
-                    <strong style="color:var(--text-primary);">Min Lot Size:</strong> 0.01 (Exness minimum)
+                    <strong style="color:var(--text-primary);">Min Lot Size:</strong> 0.01 (broker minimum)
                 </div>
             </div>
             <div class="card">
@@ -792,6 +817,33 @@
         const auth = firebase.auth();
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
+        // ---- BROKER-SPECIFIC PIP CONFIG ----
+        // Base pip values for 1 standard lot (100,000 units)
+        const BROKER_PIP_CONFIG = {
+            exness: {
+                'EURUSD': { pipSize: 0.0001, pipValue: 10 },
+                'GBPUSD': { pipSize: 0.0001, pipValue: 10 },
+                'AUDUSD': { pipSize: 0.0001, pipValue: 10 },
+                'USDJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'GBPJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'EURJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'XAUUSD': { pipSize: 0.01, pipValue: 1.0 },
+                'BTCUSD': { pipSize: 1, pipValue: 0.01 }
+            },
+            hfm: {
+                'EURUSD': { pipSize: 0.0001, pipValue: 10 },
+                'GBPUSD': { pipSize: 0.0001, pipValue: 10 },
+                'AUDUSD': { pipSize: 0.0001, pipValue: 10 },
+                'USDJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'GBPJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'EURJPY': { pipSize: 0.01, pipValue: 6.15 },
+                'XAUUSD': { pipSize: 0.01, pipValue: 1.0 },
+                'BTCUSD': { pipSize: 1, pipValue: 0.01 }
+            }
+        };
+        // Note: HFM Cent pip value is 0.1 USD per 1 lot (1 lot = 1000 units)[reference:10]
+        // The multiplier is applied in getPipValueWithType()
+
         // ---- HARDCODED CONSTANTS (ENFORCED) ----
         const RISK_CAPS = [
             { threshold: 5, maxRisk: 2 },
@@ -800,20 +852,8 @@
             { threshold: Infinity, maxRisk: 1 }
         ];
         const MIN_LOT = 0.01;
-        const DAILY_LOSS_LIMIT = 3; // %
-        const WEEKLY_LOSS_LIMIT = 6; // %
-
-        // ---- PIP CONFIG ----
-        const PIP_CFG = {
-            'EURUSD': { pipSize: 0.0001, pipValue: 10 },
-            'GBPUSD': { pipSize: 0.0001, pipValue: 10 },
-            'AUDUSD': { pipSize: 0.0001, pipValue: 10 },
-            'USDJPY': { pipSize: 0.01, pipValue: 6.15 },
-            'GBPJPY': { pipSize: 0.01, pipValue: 6.15 },
-            'EURJPY': { pipSize: 0.01, pipValue: 6.15 },
-            'XAUUSD': { pipSize: 0.01, pipValue: 1.0 },
-            'BTCUSD': { pipSize: 1, pipValue: 0.01 }
-        };
+        const DAILY_LOSS_LIMIT = 3;
+        const WEEKLY_LOSS_LIMIT = 6;
 
         // ---- STATE ----
         let trades = [],
@@ -825,7 +865,8 @@
             currentEditId = null,
             currentUser = null;
         let balance = 0,
-            accountType = 'standard'; // 'standard' or 'cent'
+            accountType = 'cent',
+            broker = 'exness';
         let plChart, strategyChart, sessionChart, equityChart;
         let dailyLoss = 0,
             weeklyLoss = 0,
@@ -908,7 +949,8 @@
 
                 if (settings) {
                     balance = settings.data.balance || 0;
-                    accountType = settings.data.accountType || 'standard';
+                    accountType = settings.data.accountType || 'cent';
+                    broker = settings.data.broker || 'exness';
                     balanceHistory = settings.data.history || [];
                     dailyLoss = settings.data.dailyLoss || 0;
                     weeklyLoss = settings.data.weeklyLoss || 0;
@@ -916,7 +958,8 @@
                     weeklyResetTime = settings.data.weeklyResetTime ? new Date(settings.data.weeklyResetTime) : new Date();
                 } else {
                     balance = 0;
-                    accountType = 'standard';
+                    accountType = 'cent';
+                    broker = 'exness';
                     balanceHistory = [];
                     dailyLoss = 0;
                     weeklyLoss = 0;
@@ -925,7 +968,8 @@
                     await db.collection('userSettings').add({
                         userId: currentUser.uid,
                         balance: 0,
-                        accountType: 'standard',
+                        accountType: 'cent',
+                        broker: 'exness',
                         history: [],
                         dailyLoss: 0,
                         weeklyLoss: 0,
@@ -935,7 +979,6 @@
                     });
                 }
 
-                // Check daily/weekly resets
                 checkResets();
                 updateLimitStatus();
                 refreshAll();
@@ -948,7 +991,6 @@
         // ---- CHECK RESETS ----
         function checkResets() {
             const now = new Date();
-            // Daily reset (midnight local)
             if (dailyResetTime) {
                 const dr = new Date(dailyResetTime);
                 if (dr.getDate() !== now.getDate() || dr.getMonth() !== now.getMonth() || dr.getFullYear() !== now
@@ -959,7 +1001,6 @@
                     saveBalanceAndHistory();
                 }
             }
-            // Weekly reset (Monday)
             if (weeklyResetTime) {
                 const wr = new Date(weeklyResetTime);
                 const nowDay = now.getDay(),
@@ -980,15 +1021,12 @@
             const maxWeeklyLoss = (tradingPlan && tradingPlan.data && tradingPlan.data.maxLoss) ?
                 tradingPlan.data.maxLoss : WEEKLY_LOSS_LIMIT;
 
-            // Convert loss to monetary value based on balance at start of period
-            // For simplicity, use current balance
             const dailyLimitAmount = balance * (maxDailyLoss / 100);
             const weeklyLimitAmount = balance * (maxWeeklyLoss / 100);
 
             isDailyLimitHit = dailyLoss >= dailyLimitAmount && dailyLimitAmount > 0;
             isWeeklyLimitHit = weeklyLoss >= weeklyLimitAmount && weeklyLimitAmount > 0;
 
-            // Update UI warning
             const container = $('limitWarningContainer');
             let html = '';
             if (isDailyLimitHit) {
@@ -1018,6 +1056,7 @@
                         userId: currentUser.uid,
                         balance,
                         accountType,
+                        broker,
                         history: balanceHistory,
                         dailyLoss,
                         weeklyLoss,
@@ -1030,6 +1069,7 @@
                     await doc.ref.update({
                         balance,
                         accountType,
+                        broker,
                         history: balanceHistory,
                         dailyLoss,
                         weeklyLoss,
@@ -1049,16 +1089,21 @@
             return 1;
         }
 
-        // ---- GET PIP VALUE WITH ACCOUNT TYPE ----
-        function getPipValueWithType(pair, lotSize, type) {
-            const baseValue = PIP_CFG[pair] ? PIP_CFG[pair].pipValue : 10;
-            const multiplier = type === 'cent' ? 0.01 : 1;
-            return baseValue * lotSize * multiplier;
+        // ---- GET PIP VALUE WITH BROKER & ACCOUNT TYPE ----
+        function getPipValueWithType(pair, lotSize, brkr, accType) {
+            const baseConfig = BROKER_PIP_CONFIG[brkr] || BROKER_PIP_CONFIG.exness;
+            const config = baseConfig[pair] || { pipValue: 10 };
+            let multiplier = 1;
+            if (accType === 'cent') {
+                multiplier = 0.01; // Cent accounts: pip value is 1/100 of standard
+            }
+            return config.pipValue * lotSize * multiplier;
         }
 
         function getPipDistance(a, b, pair) {
-            const c = PIP_CFG[pair] || { pipSize: 0.0001 };
-            return Math.abs(a - b) / c.pipSize;
+            const baseConfig = BROKER_PIP_CONFIG[broker] || BROKER_PIP_CONFIG.exness;
+            const config = baseConfig[pair] || { pipSize: 0.0001 };
+            return Math.abs(a - b) / config.pipSize;
         }
 
         // ---- COMPUTE ----
@@ -1069,7 +1114,8 @@
             const sl = parseFloat($('slInput').value) || 0;
             const tp = parseFloat($('tpInput').value) || 0;
             const pair = $('pairInput').value;
-            const type = accountType;
+            const brkr = broker;
+            const accType = accountType;
 
             const maxRisk = getMaxRiskForBalance(bal);
             let effectiveRisk = Math.min(riskPct, maxRisk);
@@ -1082,7 +1128,7 @@
 
             const riskAmount = bal * (effectiveRisk / 100);
             const pipDist = getPipDistance(entry, sl, pair);
-            const pipValue = getPipValueWithType(pair, 1, type);
+            const pipValue = getPipValueWithType(pair, 1, brkr, accType);
             let lotSize = pipDist > 0 ? riskAmount / (pipDist * pipValue) : 0;
             lotSize = Math.round(lotSize * 1000) / 1000;
 
@@ -1096,7 +1142,6 @@
             const rr = pipDist > 0 ? getPipDistance(entry, tp, pair) / pipDist : 0;
             const reward = riskAmount * rr;
 
-            // Guardrails
             let guardHTML = '';
             if (effectiveRisk > 2) guardHTML +=
             '<div class="guardrail warning">Risk ' + effectiveRisk + '% - high risk</div>';
@@ -1108,7 +1153,7 @@
             '<div class="guardrail success">R:R 1:' + rr.toFixed(2) + ' - excellent!</div>';
             if (lotSize < MIN_LOT && lotSize > 0) guardHTML +=
                 '<div class="guardrail warning">Lot size adjusted to minimum ' + MIN_LOT +
-                ' (Exness minimum). Consider using a Cent account or increasing balance.</div>';
+                ' (broker minimum). Consider using a Cent account or increasing balance.</div>';
             if (isDailyLimitHit) guardHTML +=
                 '<div class="guardrail block">DAILY LOSS LIMIT HIT - No trades allowed today</div>';
             if (isWeeklyLimitHit) guardHTML +=
@@ -1125,7 +1170,7 @@
             $('positionSize').textContent = displayLot.toFixed(3) + ' lots';
             $('displayBalance').textContent = bal.toFixed(2);
             $('balanceInput').value = bal.toFixed(2);
-            $('accountTypeResult').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            $('accountTypeResult').textContent = brkr.charAt(0).toUpperCase() + brkr.slice(1);
 
             return {
                 balance: bal,
@@ -1140,7 +1185,8 @@
                 rr,
                 reward: riskAmount * rr,
                 direction,
-                accountType: type,
+                broker: brkr,
+                accountType: accType,
                 isBlocked: isDailyLimitHit || isWeeklyLimitHit
             };
         }
@@ -1167,12 +1213,11 @@
             if (data.rr < 2 && !confirm('R:R below 1:2. Your plan requires 1:2 minimum. Continue?')) return;
             if (data.lotSize < MIN_LOT) {
                 if (!confirm('Lot size (' + data.lotSize.toFixed(3) +
-                        ') is below Exness minimum (0.01). This trade cannot be placed. Consider using a Cent account or increasing your balance.'
+                        ') is below broker minimum (0.01). This trade cannot be placed. Consider using a Cent account or increasing your balance.'
                         ))
                     return;
             }
 
-            // Check if max open trades hit
             const openTrades = trades.filter(t => t.data.status === 'open');
             const maxTrades = (tradingPlan && tradingPlan.data && tradingPlan.data.maxTrades) ? tradingPlan.data.maxTrades :
                 2;
@@ -1209,6 +1254,7 @@
                 strategy: $('strategyInput').value,
                 timeframe: $('timeframeInput').value,
                 balanceAtOpen: data.balance,
+                broker: data.broker,
                 accountType: data.accountType,
                 checklist: checklist,
                 checklistComplete: checklist.filter(c => c.checked).length,
@@ -1223,8 +1269,7 @@
                 trade.id = docRef.id;
                 trades.unshift({ id: docRef.id, data: trade });
                 refreshAll();
-                showToast('Trade opened');
-                // Reset form
+                showToast('Trade opened with ' + data.broker.charAt(0).toUpperCase() + data.broker.slice(1));
                 $('entryConfirmation').value = '';
                 document.querySelectorAll('#tab-trade .checklist-item input').forEach(cb => cb.checked = false);
             }).catch(err => { console.error(err);
@@ -1269,7 +1314,7 @@
             const d = trade.data;
             const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit, d.entry,
                 d.pair);
-            const pipValue = getPipValueWithType(d.pair, 1, d.accountType || accountType);
+            const pipValue = getPipValueWithType(d.pair, 1, d.broker || broker, d.accountType || accountType);
             const pl = d.lotSize * exitPips * pipValue * (d.direction === 'long' ? 1 : -1);
             const rr = d.pipDist > 0 ? exitPips / d.pipDist : 0;
             const lesson = $('editLesson') ? $('editLesson').value : '';
@@ -1298,18 +1343,15 @@
                     trades[idx].data.slBreakeven = breakeven;
                 }
 
-                // Update balance
                 const oldBalance = balance;
                 balance = Math.round((balance + pl) * 100) / 100;
                 balanceHistory.push({ date: new Date().toISOString(), type: 'trade', amount: pl, balance: balance,
                     tradeId: currentEditId });
 
-                // Update daily/weekly loss tracking (only if negative)
                 if (pl < 0) {
                     dailyLoss = Math.round((dailyLoss + Math.abs(pl)) * 100) / 100;
                     weeklyLoss = Math.round((weeklyLoss + Math.abs(pl)) * 100) / 100;
                 }
-                // Check resets and limits
                 checkResets();
                 updateLimitStatus();
                 await saveBalanceAndHistory();
@@ -1335,7 +1377,7 @@
                     const d = trade.data;
                     const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit,
                         d.entry, d.pair);
-                    const pipValue = getPipValueWithType(d.pair, 1, d.accountType || accountType);
+                    const pipValue = getPipValueWithType(d.pair, 1, d.broker || broker, d.accountType || accountType);
                     const pl = d.lotSize * exitPips * pipValue * (d.direction === 'long' ? 1 : -1);
                     const rr = d.pipDist > 0 ? exitPips / d.pipDist : 0;
                     updates.exit = exit;
@@ -1405,6 +1447,12 @@
             updateSettingsUI();
             updateLimitStatus();
             compute();
+            updateBrokerDisplay();
+        }
+
+        function updateBrokerDisplay() {
+            const display = broker.charAt(0).toUpperCase() + broker.slice(1);
+            $('headerBroker').textContent = display;
         }
 
         function renderJournal() {
@@ -1413,6 +1461,8 @@
             const fPair = $('filterPair').value,
                 fStatus = $('filterStatus').value,
                 fStrategy = $('filterStrategy').value;
+            const fBroker = $('filterBroker') ? $('filterBroker').value : '';
+
             let filtered = trades.filter(t => {
                 const d = t.data;
                 const matchSearch = !search || d.pair.toLowerCase().includes(search) || (d.notes || '').toLowerCase()
@@ -1420,7 +1470,8 @@
                 const matchPair = !fPair || d.pair === fPair;
                 const matchStatus = fStatus === 'all' || d.status === fStatus;
                 const matchStrategy = !fStrategy || d.strategy === fStrategy;
-                return matchSearch && matchPair && matchStatus && matchStrategy;
+                const matchBroker = !fBroker || d.broker === fBroker;
+                return matchSearch && matchPair && matchStatus && matchStrategy && matchBroker;
             });
             $('journalCount').textContent = '(' + filtered.length + ')';
             if (filtered.length === 0) {
@@ -1433,6 +1484,7 @@
                 const d = t.data;
                 const plStyle = d.pl >= 0 ? 'color:var(--accent-green)' : 'color:var(--accent-red)';
                 const statusClass = d.status === 'open' ? 'open' : 'closed';
+                const brokerDisplay = d.broker ? d.broker.charAt(0).toUpperCase() + d.broker.slice(1) : '—';
                 html += `<tr>
                             <td>${new Date(d.date).toLocaleDateString()}</td>
                             <td>${d.pair}</td>
@@ -1446,7 +1498,7 @@
                             <td style="${plStyle}">$${(d.pl || 0).toFixed(2)}</td>
                             <td>${d.rr ? d.rr.toFixed(2) : '—'}</td>
                             <td><span class="status-badge ${statusClass}">${d.status}</span></td>
-                            <td>${d.strategy || '—'}</td>
+                            <td>${brokerDisplay}</td>
                             <td>
                                 <button class="action-btn edit" onclick="editTrade('${t.id}')">Edit</button>
                                 <button class="action-btn delete" onclick="deleteTrade('${t.id}')">Del</button>
@@ -1510,7 +1562,6 @@
                     `;
         }
 
-        // ---- DISCIPLINE GRID ----
         function updateDisciplineGrid() {
             const c = $('disciplineGrid');
             if (psychEntries.length === 0) {
@@ -1546,7 +1597,6 @@
 
         // ---- CHARTS ----
         function renderCharts() {
-            // PL Chart
             const ctx1 = document.getElementById('plChart').getContext('2d');
             if (plChart) plChart.destroy();
             const monthly = {};
@@ -1565,7 +1615,6 @@
                         x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', maxTicksLimit: 12 } } } }
             });
 
-            // Strategy chart
             const ctx2 = document.getElementById('strategyChart').getContext('2d');
             if (strategyChart) strategyChart.destroy();
             const stratData = {};
@@ -1588,7 +1637,6 @@
                                 max: 100 } }, x: { grid: { display: false }, ticks: { color: 'var(--text-muted)' } } } }
             });
 
-            // Session chart
             const ctx3 = document.getElementById('sessionChart').getContext('2d');
             if (sessionChart) sessionChart.destroy();
             const sessData = {};
@@ -1611,7 +1659,6 @@
                             labels: { color: 'var(--text-secondary)', font: { size: 10 } } } } }
             });
 
-            // Equity curve
             const ctx4 = document.getElementById('equityChart').getContext('2d');
             if (equityChart) equityChart.destroy();
             const closedSorted = trades.filter(t => t.data.status === 'closed').sort((a, b) => new Date(a.data.date) -
@@ -1652,6 +1699,17 @@
                 opt.value = s;
                 opt.textContent = s;
                 stratSelect.appendChild(opt); });
+
+            const brokerSelect = $('filterBroker');
+            if (brokerSelect) {
+                brokerSelect.innerHTML = '<option value="">All Brokers</option>';
+                const brokers = {};
+                trades.forEach(t => { if (t.data.broker) brokers[t.data.broker] = true; });
+                Object.keys(brokers).sort().forEach(b => { const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.textContent = b.charAt(0).toUpperCase() + b.slice(1);
+                    brokerSelect.appendChild(opt); });
+            }
         }
 
         // ---- PSYCHOLOGY ----
@@ -1794,12 +1852,10 @@
                 rrColor = rrViolations === 0 ? 'green' : 'gold';
             }
 
-            // Max trades
             const openTrades = trades.filter(t => t.data.status === 'open');
             const maxTradesStatus = openTrades.length <= p.maxTrades ? 'Within limit' : 'Exceeded limit';
             const maxTradesColor = openTrades.length <= p.maxTrades ? 'green' : 'red';
 
-            // Daily loss status
             const dailyLimitAmt = balance * (p.dailyLoss / 100);
             const weeklyLimitAmt = balance * (p.maxLoss / 100);
             const dailyRemaining = Math.max(0, dailyLimitAmt - dailyLoss);
@@ -1835,7 +1891,9 @@
         function updateSettingsUI() {
             $('settingsBalance').textContent = '$' + balance.toFixed(2);
             $('settingsAccountType').value = accountType;
-            $('accountTypeDisplay').textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1);
+            $('settingsBroker').value = broker;
+            $('accountTypeResult').textContent = broker.charAt(0).toUpperCase() + broker.slice(1);
+            updateBrokerDisplay();
 
             const container = $('balanceHistoryContainer');
             if (balanceHistory.length === 0) {
@@ -1917,14 +1975,14 @@
             const filtered = trades.filter(t => { const d = new Date(t.data.date); return d >= from && d < to; });
             if (filtered.length === 0) { showToast('No trades in this range'); return; }
             let csv =
-                'Date,Pair,Direction,Entry,SL,TP,Exit,Lot Size,Risk,P&L,RR,Status,Strategy,Session,AccountType,Notes\n';
+                'Date,Pair,Direction,Entry,SL,TP,Exit,Lot Size,Risk,P&L,RR,Status,Broker,Strategy,Session,AccountType,Notes\n';
             filtered.forEach(t => {
                 const d = t.data;
                 csv += new Date(d.date).toLocaleDateString() + ',' + d.pair + ',' + d.direction + ',' + d.entry + ',' +
                     d.sl + ',' + d.tp + ',' + (d.exit || '') + ',' + (d.lotSize || 0).toFixed(3) + ',' + (d
                     .riskAmount || 0).toFixed(2) + ',' + (d.pl || 0).toFixed(2) + ',' + (d.rr ? d.rr.toFixed(2) :
-                    '') + ',' + d.status + ',' + (d.strategy || '') + ',' + (d.session || '') + ',' + (d
-                    .accountType || 'standard') + ',"' + ((d.notes || '').replace(/"/g, '""')) + '"\n';
+                    '') + ',' + d.status + ',' + (d.broker || '') + ',' + (d.strategy || '') + ',' + (d.session ||
+                    '') + ',' + (d.accountType || '') + ',"' + ((d.notes || '').replace(/"/g, '""')) + '"\n';
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -1988,6 +2046,9 @@
         $('filterPair').addEventListener('change', renderJournal);
         $('filterStatus').addEventListener('change', renderJournal);
         $('filterStrategy').addEventListener('change', renderJournal);
+        if ($('filterBroker')) {
+            $('filterBroker').addEventListener('change', renderJournal);
+        }
 
         $('themeToggle').addEventListener('click', function() {
             const isLight = document.body.getAttribute('data-theme') === 'light';
@@ -2010,15 +2071,18 @@
             const entry = parseFloat($('calcEntry').value) || 0;
             const sl = parseFloat($('calcSl').value) || 0;
             const pair = $('calcPair').value;
-            const type = $('calcAccountType').value;
+            const brkr = $('calcBroker').value;
+            const accType = $('calcAccountType').value;
             const riskAmt = bal * (risk / 100);
-            const pipDist = getPipDistance(entry, sl, pair);
-            const pipVal = getPipValueWithType(pair, 1, type);
+            const baseConfig = BROKER_PIP_CONFIG[brkr] || BROKER_PIP_CONFIG.exness;
+            const config = baseConfig[pair] || { pipSize: 0.0001 };
+            const pipDist = Math.abs(entry - sl) / config.pipSize;
+            const pipVal = getPipValueWithType(pair, 1, brkr, accType);
             let lot = pipDist > 0 ? riskAmt / (pipDist * pipVal) : 0;
             lot = Math.round(lot * 1000) / 1000;
             if (lot < MIN_LOT && lot > 0) lot = MIN_LOT;
             $('calcPips').textContent = pipDist.toFixed(1);
-            $('calcRiskAmt').textContent = '$' + riskAmt.toFixed(2) + (type === 'cent' ? ' (cents)' : '');
+            $('calcRiskAmt').textContent = '$' + riskAmt.toFixed(2) + (accType === 'cent' ? ' (cents)' : '');
             $('calcLot').textContent = lot.toFixed(3);
             $('calcPosSize').textContent = lot.toFixed(3) + ' lots';
         });
@@ -2028,8 +2092,10 @@
                 sl = parseFloat($('rrSl').value) || 0,
                 tp = parseFloat($('rrTp').value) || 0,
                 pair = $('rrPair').value;
-            const slPips = getPipDistance(entry, sl, pair);
-            const tpPips = getPipDistance(entry, tp, pair);
+            const baseConfig = BROKER_PIP_CONFIG[broker] || BROKER_PIP_CONFIG.exness;
+            const config = baseConfig[pair] || { pipSize: 0.0001 };
+            const slPips = Math.abs(entry - sl) / config.pipSize;
+            const tpPips = Math.abs(entry - tp) / config.pipSize;
             const rr = slPips > 0 ? tpPips / slPips : 0;
             $('rrSlPips').textContent = slPips.toFixed(1);
             $('rrTpPips').textContent = tpPips.toFixed(1);
@@ -2039,9 +2105,10 @@
         $('calcPipBtn').addEventListener('click', function() {
             const pair = $('pipPair').value,
                 lot = parseFloat($('pipLot').value) || 0.01;
-            const type = $('pipAccountType').value;
-            const pv = getPipValueWithType(pair, lot, type);
-            $('pipValueDisplay').textContent = '$' + pv.toFixed(2) + (type === 'cent' ? ' (cents)' : '');
+            const brkr = $('pipBroker').value;
+            const accType = $('pipAccountType').value;
+            const pv = getPipValueWithType(pair, lot, brkr, accType);
+            $('pipValueDisplay').textContent = '$' + pv.toFixed(2) + (accType === 'cent' ? ' (cents)' : '');
             $('pipTen').textContent = '$' + (pv * 10).toFixed(2);
             $('pipHundred').textContent = '$' + (pv * 100).toFixed(2);
         });
@@ -2086,6 +2153,13 @@
             showToast('Account type set to ' + accountType);
         });
 
+        $('settingsBroker').addEventListener('change', function() {
+            broker = this.value;
+            saveBalanceAndHistory();
+            refreshAll();
+            showToast('Broker switched to ' + broker.charAt(0).toUpperCase() + broker.slice(1));
+        });
+
         $('depositBtn').addEventListener('click', deposit);
         $('withdrawBtn').addEventListener('click', withdraw);
 
@@ -2107,14 +2181,18 @@
             compute();
             $('calcBalance').value = balance || 100;
             $('targetBalance').value = balance || 100;
+            $('calcBroker').value = broker;
+            $('pipBroker').value = broker;
+            $('settingsBroker').value = broker;
             $('calcAccountType').value = accountType;
             $('pipAccountType').value = accountType;
             $('settingsAccountType').value = accountType;
             $('calcPositionBtn').click();
             $('calcTargetBtn').click();
+            updateBrokerDisplay();
         }, 500);
 
-        setTimeout(() => showToast('Welcome Victor! Your full trading journal is ready. Stay disciplined!'), 1000);
+        setTimeout(() => showToast('Welcome Victor! Stay disciplined!'), 1000);
     </script>
 </body>
 </html>
