@@ -320,10 +320,7 @@
             <!-- LEFT: Trade Entry -->
             <div class="card">
                 <div class="card-title">Open Trade</div>
-
-                <!-- Daily/Weekly Limit Warning -->
                 <div id="limitWarningContainer"></div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>Direction</label>
@@ -346,7 +343,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>Account Balance</label>
@@ -364,7 +360,6 @@
                         <small style="font-size:0.6rem;color:var(--text-muted);" id="riskCapDisplay">Max: 1%</small>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group"><label>Entry Price</label><input type="number" id="entryInput" value="1.0850" step="0.00001" /></div>
                     <div class="form-group"><label>Stop Loss</label><input type="number" id="slInput" value="1.0800" step="0.00001" /></div>
@@ -382,7 +377,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>Strategy</label>
@@ -407,19 +401,15 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group"><label>Pre-Planned</label><select id="prePlanned"><option value="Yes">Yes</option><option value="No">No</option></select></div>
                     <div class="form-group"><label>Followed Plan</label><select id="followedPlan"><option value="Yes">Yes</option><option value="No">No</option><option value="Partial">Partial</option></select></div>
                 </div>
-
                 <div class="form-group">
                     <label>Entry Confirmation (Why are you entering?)</label>
                     <textarea id="entryConfirmation" placeholder="HTF agrees? Zone identified? Momentum candle? What specifically confirms this trade?" rows="3"></textarea>
                 </div>
-
                 <div id="guardrailContainer"></div>
-
                 <div class="btn-row">
                     <button class="btn-primary" id="openTradeBtn">Open Trade</button>
                     <button class="btn-secondary" id="resetBtn">Reset</button>
@@ -443,8 +433,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Pre-Trade Checklist -->
                 <div class="card">
                     <div class="card-title">Pre-Trade Checklist</div>
                     <div class="checklist-item"><input type="checkbox" id="checkHTF" /><label for="checkHTF">HTF (60min) agrees with direction</label></div>
@@ -457,8 +445,6 @@
                     <div class="checklist-item"><input type="checkbox" id="checkFriday" /><label for="checkFriday">Not Friday after 6pm WAT</label></div>
                     <div class="checklist-item"><input type="checkbox" id="checkEmotion" /><label for="checkEmotion">Mindset clear (no anger, stress, anxiety, excitement)</label></div>
                 </div>
-
-                <!-- Profit Taking Rules -->
                 <div class="card">
                     <div class="card-title">Profit Taking Rules</div>
                     <div style="font-size:0.8rem;color:var(--text-secondary);padding:4px 0;">
@@ -478,35 +464,13 @@
     <!-- ===== TAB: CALCULATORS ===== -->
     <div class="tab-content" id="tab-calculator">
         <div class="grid-2">
-            <!-- Position Size -->
             <div class="card">
                 <div class="card-title">Position Size Calculator</div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <label>Broker</label>
-                    <select id="calcBroker">
-                        <option value="exness">Exness</option>
-                        <option value="hfm">HFM</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <label>Account Type</label>
-                    <select id="calcAccountType">
-                        <option value="standard">Standard</option>
-                        <option value="cent">Cent</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Balance</label><input type="number" id="calcBalance" value="100" step="1" min="1" /></div>
-                    <div class="form-group"><label>Risk %</label><input type="number" id="calcRisk" value="1" step="0.1" min="0.1" max="2" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Entry Price</label><input type="number" id="calcEntry" value="1.0850" step="0.00001" /></div>
-                    <div class="form-group"><label>Stop Loss</label><input type="number" id="calcSl" value="1.0800" step="0.00001" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Pair</label><select id="calcPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div>
-                    <div class="form-group"><label>&nbsp;</label><button class="btn-primary" id="calcPositionBtn">Calculate</button></div>
-                </div>
+                <div class="form-group" style="margin-bottom:8px;"><label>Broker</label><select id="calcBroker"><option value="exness">Exness</option><option value="hfm">HFM</option></select></div>
+                <div class="form-group" style="margin-bottom:8px;"><label>Account Type</label><select id="calcAccountType"><option value="standard">Standard</option><option value="cent">Cent</option></select></div>
+                <div class="form-row"><div class="form-group"><label>Balance</label><input type="number" id="calcBalance" value="100" step="1" min="1" /></div><div class="form-group"><label>Risk %</label><input type="number" id="calcRisk" value="1" step="0.1" min="0.1" max="2" /></div></div>
+                <div class="form-row"><div class="form-group"><label>Entry Price</label><input type="number" id="calcEntry" value="1.0850" step="0.00001" /></div><div class="form-group"><label>Stop Loss</label><input type="number" id="calcSl" value="1.0800" step="0.00001" /></div></div>
+                <div class="form-row"><div class="form-group"><label>Pair</label><select id="calcPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div><div class="form-group"><label>&nbsp;</label><button class="btn-primary" id="calcPositionBtn">Calculate</button></div></div>
                 <div id="calcResults">
                     <div class="result-item"><span class="label">Pip Distance</span><span class="value" id="calcPips">—</span></div>
                     <div class="result-item"><span class="label">Risk Amount</span><span class="value red" id="calcRiskAmt">—</span></div>
@@ -514,18 +478,10 @@
                     <div class="result-item"><span class="label">Position Size</span><span class="value blue" id="calcPosSize">—</span></div>
                 </div>
             </div>
-
-            <!-- R:R Calculator -->
             <div class="card">
                 <div class="card-title">Risk:Reward Calculator</div>
-                <div class="form-row">
-                    <div class="form-group"><label>Entry Price</label><input type="number" id="rrEntry" value="1.0850" step="0.00001" /></div>
-                    <div class="form-group"><label>Stop Loss</label><input type="number" id="rrSl" value="1.0800" step="0.00001" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Take Profit</label><input type="number" id="rrTp" value="1.0950" step="0.00001" /></div>
-                    <div class="form-group"><label>Pair</label><select id="rrPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div>
-                </div>
+                <div class="form-row"><div class="form-group"><label>Entry Price</label><input type="number" id="rrEntry" value="1.0850" step="0.00001" /></div><div class="form-group"><label>Stop Loss</label><input type="number" id="rrSl" value="1.0800" step="0.00001" /></div></div>
+                <div class="form-row"><div class="form-group"><label>Take Profit</label><input type="number" id="rrTp" value="1.0950" step="0.00001" /></div><div class="form-group"><label>Pair</label><select id="rrPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div></div>
                 <div class="btn-row"><button class="btn-primary" id="calcRrBtn">Calculate R:R</button></div>
                 <div id="rrResults">
                     <div class="result-item"><span class="label">SL Pips</span><span class="value red" id="rrSlPips">—</span></div>
@@ -533,28 +489,11 @@
                     <div class="result-item"><span class="label">Risk:Reward</span><span class="value gold" id="rrRatioCalc">—</span></div>
                 </div>
             </div>
-
-            <!-- Pip Value -->
             <div class="card">
                 <div class="card-title">Pip Value Calculator</div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <label>Broker</label>
-                    <select id="pipBroker">
-                        <option value="exness">Exness</option>
-                        <option value="hfm">HFM</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <label>Account Type</label>
-                    <select id="pipAccountType">
-                        <option value="standard">Standard</option>
-                        <option value="cent">Cent</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Pair</label><select id="pipPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div>
-                    <div class="form-group"><label>Lot Size</label><input type="number" id="pipLot" value="0.01" step="0.001" min="0.001" /></div>
-                </div>
+                <div class="form-group" style="margin-bottom:8px;"><label>Broker</label><select id="pipBroker"><option value="exness">Exness</option><option value="hfm">HFM</option></select></div>
+                <div class="form-group" style="margin-bottom:8px;"><label>Account Type</label><select id="pipAccountType"><option value="standard">Standard</option><option value="cent">Cent</option></select></div>
+                <div class="form-row"><div class="form-group"><label>Pair</label><select id="pipPair"><option value="EURUSD">EURUSD</option><option value="USDJPY">USDJPY</option><option value="EURJPY">EURJPY</option><option value="AUDUSD">AUDUSD</option><option value="GBPUSD">GBPUSD</option><option value="GBPJPY">GBPJPY</option><option value="XAUUSD">XAUUSD</option><option value="BTCUSD">BTCUSD</option></select></div><div class="form-group"><label>Lot Size</label><input type="number" id="pipLot" value="0.01" step="0.001" min="0.001" /></div></div>
                 <div class="btn-row"><button class="btn-primary" id="calcPipBtn">Calculate</button></div>
                 <div id="pipResults">
                     <div class="result-item"><span class="label">Pip Value</span><span class="value gold" id="pipValueDisplay">—</span></div>
@@ -562,18 +501,10 @@
                     <div class="result-item"><span class="label">Value per 100 pips</span><span class="value green" id="pipHundred">—</span></div>
                 </div>
             </div>
-
-            <!-- Profit Target -->
             <div class="card">
                 <div class="card-title">Profit Target Calculator</div>
-                <div class="form-row">
-                    <div class="form-group"><label>Balance</label><input type="number" id="targetBalance" value="100" step="1" min="1" /></div>
-                    <div class="form-group"><label>Target %</label><input type="number" id="targetPct" value="2" step="0.1" min="0.1" max="20" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Risk per Trade</label><input type="number" id="targetRisk" value="1" step="0.1" min="0.1" max="2" /></div>
-                    <div class="form-group"><label>R:R Ratio</label><input type="number" id="targetRr" value="2" step="0.1" min="0.1" max="10" /></div>
-                </div>
+                <div class="form-row"><div class="form-group"><label>Balance</label><input type="number" id="targetBalance" value="100" step="1" min="1" /></div><div class="form-group"><label>Target %</label><input type="number" id="targetPct" value="2" step="0.1" min="0.1" max="20" /></div></div>
+                <div class="form-row"><div class="form-group"><label>Risk per Trade</label><input type="number" id="targetRisk" value="1" step="0.1" min="0.1" max="2" /></div><div class="form-group"><label>R:R Ratio</label><input type="number" id="targetRr" value="2" step="0.1" min="0.1" max="10" /></div></div>
                 <div class="btn-row"><button class="btn-primary" id="calcTargetBtn">Calculate</button></div>
                 <div id="targetResults">
                     <div class="result-item"><span class="label">Profit Target</span><span class="value green" id="targetAmount">—</span></div>
@@ -620,10 +551,7 @@
             <div class="card chart-wrapper"><div class="card-title">Equity Curve</div><canvas id="equityChart"></canvas></div>
         </div>
         <div class="card"><div class="card-title">Performance Metrics</div><div class="grid-4" id="metricGrid"></div></div>
-        <div class="card">
-            <div class="card-title">Discipline Tracker</div>
-            <div class="grid-4" id="disciplineGrid"></div>
-        </div>
+        <div class="card"><div class="card-title">Discipline Tracker</div><div class="grid-4" id="disciplineGrid"></div></div>
     </div>
 
     <!-- ===== TAB: PSYCHOLOGY ===== -->
@@ -633,31 +561,14 @@
                 <div class="card-title">Trade Psychology Log</div>
                 <div class="affirmation-box">"I approach the market as a business owner and not a gambler. I deserve to make money."</div>
                 <div class="form-group"><label>Trade Reference</label><input type="text" id="psychTradeRef" placeholder="e.g., EURUSD - 2024-12-15" /></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Emotional State Before</label><select id="psychBefore"><option value="Calm">Calm</option><option value="Confident">Confident</option><option value="Nervous">Nervous</option><option value="Fearful">Fearful</option><option value="Greedy">Greedy</option><option value="Revenge">Revenge</option></select></div>
-                    <div class="form-group"><label>Emotional State After</label><select id="psychAfter"><option value="Calm">Calm</option><option value="Confident">Confident</option><option value="Frustrated">Frustrated</option><option value="Regretful">Regretful</option><option value="Satisfied">Satisfied</option><option value="Neutral">Neutral</option></select></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Discipline Score (1-10)</label><input type="number" id="psychDiscipline" min="1" max="10" value="7" /></div>
-                    <div class="form-group"><label>Did you follow rules?</label><select id="psychRules"><option value="Yes">Yes</option><option value="No">No</option><option value="Partial">Partial</option></select></div>
-                </div>
+                <div class="form-row"><div class="form-group"><label>Emotional State Before</label><select id="psychBefore"><option value="Calm">Calm</option><option value="Confident">Confident</option><option value="Nervous">Nervous</option><option value="Fearful">Fearful</option><option value="Greedy">Greedy</option><option value="Revenge">Revenge</option></select></div><div class="form-group"><label>Emotional State After</label><select id="psychAfter"><option value="Calm">Calm</option><option value="Confident">Confident</option><option value="Frustrated">Frustrated</option><option value="Regretful">Regretful</option><option value="Satisfied">Satisfied</option><option value="Neutral">Neutral</option></select></div></div>
+                <div class="form-row"><div class="form-group"><label>Discipline Score (1-10)</label><input type="number" id="psychDiscipline" min="1" max="10" value="7" /></div><div class="form-group"><label>Did you follow rules?</label><select id="psychRules"><option value="Yes">Yes</option><option value="No">No</option><option value="Partial">Partial</option></select></div></div>
                 <div class="form-group"><label>Lesson Learned</label><textarea id="psychLesson" placeholder="What did you learn from this trade?" rows="2"></textarea></div>
                 <div class="btn-row"><button class="btn-primary" id="savePsychBtn">Save Psychology Entry</button></div>
             </div>
             <div>
-                <div class="card">
-                    <div class="card-title">Psychology Stats</div>
-                    <div id="psychStats">
-                        <div class="result-item"><span class="label">Most Common Emotion</span><span class="value" id="commonEmotion">—</span></div>
-                        <div class="result-item"><span class="label">Avg Discipline Score</span><span class="value gold" id="avgDiscipline">—</span></div>
-                        <div class="result-item"><span class="label">Rule Adherence Rate</span><span class="value green" id="ruleAdherence">—</span></div>
-                        <div class="result-item"><span class="label">Lessons Recorded</span><span class="value blue" id="lessonsCount">0</span></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Recent Psychology Entries</div>
-                    <div id="psychEntries"></div>
-                </div>
+                <div class="card"><div class="card-title">Psychology Stats</div><div id="psychStats"><div class="result-item"><span class="label">Most Common Emotion</span><span class="value" id="commonEmotion">—</span></div><div class="result-item"><span class="label">Avg Discipline Score</span><span class="value gold" id="avgDiscipline">—</span></div><div class="result-item"><span class="label">Rule Adherence Rate</span><span class="value green" id="ruleAdherence">—</span></div><div class="result-item"><span class="label">Lessons Recorded</span><span class="value blue" id="lessonsCount">0</span></div></div></div>
+                <div class="card"><div class="card-title">Recent Psychology Entries</div><div id="psychEntries"></div></div>
             </div>
         </div>
     </div>
@@ -667,13 +578,7 @@
         <div class="grid-2">
             <div class="card">
                 <div class="card-title">My Trading Plan</div>
-                <div class="affirmation-box">
-                    <strong>Affirmations:</strong><br>
-                    "I am a professional trader."<br>
-                    "I approach the market as a business owner and not a gambler."<br>
-                    "I deserve to make money."<br>
-                    "There is no one else to blame for me losing money than myself."
-                </div>
+                <div class="affirmation-box"><strong>Affirmations:</strong><br>"I am a professional trader."<br>"I approach the market as a business owner and not a gambler."<br>"I deserve to make money."<br>"There is no one else to blame for me losing money than myself."</div>
                 <div class="form-group"><label>Trading Style</label><select id="planStyle"><option value="Day Trading" selected>Day Trading</option><option value="Swing Trading">Swing Trading</option><option value="Scalping">Scalping</option><option value="Position Trading">Position Trading</option></select></div>
                 <div class="form-group"><label>Max Risk Per Trade (%)</label><input type="number" id="planMaxRisk" value="1" step="0.1" min="0.1" max="2" /></div>
                 <div class="form-group"><label>Min R:R Ratio</label><input type="number" id="planMinRR" value="2" step="0.1" min="0.1" max="10" /></div>
@@ -686,36 +591,14 @@
                 <div class="btn-row"><button class="btn-primary" id="savePlanBtn">Save Trading Plan</button></div>
             </div>
             <div>
-                <div class="card">
-                    <div class="card-title">Plan Adherence</div>
-                    <div id="planAdherence">
-                        <div class="result-item"><span class="label">Plan Status</span><span class="value" id="planStatus">Not set up</span></div>
-                        <div class="result-item"><span class="label">Risk Rule Status</span><span class="value" id="riskRuleStatus">—</span></div>
-                        <div class="result-item"><span class="label">RR Rule Status</span><span class="value" id="rrRuleStatus">—</span></div>
-                        <div class="result-item"><span class="label">Max Open Trades</span><span class="value" id="maxTradesStatus">—</span></div>
-                        <div class="result-item"><span class="label">Daily Loss Status</span><span class="value" id="dailyLossStatus">—</span></div>
-                    </div>
-                </div>
+                <div class="card"><div class="card-title">Plan Adherence</div><div id="planAdherence"><div class="result-item"><span class="label">Plan Status</span><span class="value" id="planStatus">Not set up</span></div><div class="result-item"><span class="label">Risk Rule Status</span><span class="value" id="riskRuleStatus">—</span></div><div class="result-item"><span class="label">RR Rule Status</span><span class="value" id="rrRuleStatus">—</span></div><div class="result-item"><span class="label">Max Open Trades</span><span class="value" id="maxTradesStatus">—</span></div><div class="result-item"><span class="label">Daily Loss Status</span><span class="value" id="dailyLossStatus">—</span></div></div></div>
                 <div class="card">
                     <div class="card-title">Emergency Rules</div>
-                    <div class="emergency-box">
-                        <h4>Power/Internet Failure:</h4><ul><li>Call broker support to close all positions by phone (number saved in contacts)</li></ul>
-                        <h4 style="margin-top:8px;">If Emotional:</h4><ul><li>Write down how you feel in one sentence</li><li>If anger, stress, anxiety, or excitement — do NOT trade</li><li>Wait until next day after morning routine</li></ul>
-                        <h4 style="margin-top:8px;">If Intoxicated:</h4><ul><li>Close all pending orders the night before</li><li>Do not open MT5 until the following morning</li></ul>
-                    </div>
+                    <div class="emergency-box"><h4>Power/Internet Failure:</h4><ul><li>Call broker support to close all positions by phone (number saved in contacts)</li></ul><h4 style="margin-top:8px;">If Emotional:</h4><ul><li>Write down how you feel in one sentence</li><li>If anger, stress, anxiety, or excitement — do NOT trade</li><li>Wait until next day after morning routine</li></ul><h4 style="margin-top:8px;">If Intoxicated:</h4><ul><li>Close all pending orders the night before</li><li>Do not open MT5 until the following morning</li></ul></div>
                 </div>
                 <div class="card">
                     <div class="card-title">Weekly Review</div>
-                    <div class="form-group">
-                        <label>Questions to Answer:</label>
-                        <ul style="font-size:0.75rem;color:var(--text-secondary);margin-left:16px;margin-bottom:8px;">
-                            <li>1. How many trades followed the plan?</li>
-                            <li>2. What was my actual win rate?</li>
-                            <li>3. What mistake did I repeat?</li>
-                            <li>4. What will I do differently this week?</li>
-                        </ul>
-                        <textarea id="weeklyReview" rows="4" placeholder="Weekly review answers..."></textarea>
-                    </div>
+                    <div class="form-group"><label>Questions to Answer:</label><ul style="font-size:0.75rem;color:var(--text-secondary);margin-left:16px;margin-bottom:8px;"><li>1. How many trades followed the plan?</li><li>2. What was my actual win rate?</li><li>3. What mistake did I repeat?</li><li>4. What will I do differently this week?</li></ul><textarea id="weeklyReview" rows="4" placeholder="Weekly review answers..."></textarea></div>
                     <div class="btn-row"><button class="btn-primary" id="saveReviewBtn">Save Review</button></div>
                     <div id="savedReviews" style="margin-top:12px;"></div>
                 </div>
@@ -728,44 +611,11 @@
         <div class="grid-2">
             <div class="card">
                 <div class="card-title">Broker & Account</div>
-                <div class="form-group">
-                    <label>Select Broker</label>
-                    <select id="settingsBroker">
-                        <option value="exness">Exness</option>
-                        <option value="hfm">HFM</option>
-                    </select>
-                    <small style="font-size:0.65rem;color:var(--text-muted);">
-                        Switching broker updates pip values automatically.
-                    </small>
-                </div>
-                <div class="form-group" style="margin-top:8px;">
-                    <label>Account Type</label>
-                    <select id="settingsAccountType">
-                        <option value="standard">Standard</option>
-                        <option value="cent">Cent</option>
-                    </select>
-                    <small style="font-size:0.65rem;color:var(--text-muted);">
-                        Cent accounts display balances in cents. Pip values are 100x smaller.
-                    </small>
-                </div>
-                <div class="form-group" style="margin-top:12px;">
-                    <label>Current Balance</label>
-                    <div style="font-size:1.8rem;font-weight:700;color:var(--accent-green);" id="settingsBalance">$0.00</div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Deposit Amount</label>
-                        <input type="number" id="depositAmount" value="10" step="1" min="1" />
-                    </div>
-                    <div class="form-group"><label>&nbsp;</label><button class="btn-success" id="depositBtn">Deposit</button></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Withdraw Amount</label>
-                        <input type="number" id="withdrawAmount" value="10" step="1" min="1" />
-                    </div>
-                    <div class="form-group"><label>&nbsp;</label><button class="btn-danger" id="withdrawBtn">Withdraw</button></div>
-                </div>
+                <div class="form-group"><label>Select Broker</label><select id="settingsBroker"><option value="exness">Exness</option><option value="hfm">HFM</option></select><small style="font-size:0.65rem;color:var(--text-muted);">Switching broker updates pip values automatically.</small></div>
+                <div class="form-group" style="margin-top:8px;"><label>Account Type</label><select id="settingsAccountType"><option value="standard">Standard</option><option value="cent">Cent</option></select><small style="font-size:0.65rem;color:var(--text-muted);">Cent accounts display balances in cents. Pip values are 100x smaller.</small></div>
+                <div class="form-group" style="margin-top:12px;"><label>Current Balance</label><div style="font-size:1.8rem;font-weight:700;color:var(--accent-green);" id="settingsBalance">$0.00</div></div>
+                <div class="form-row"><div class="form-group"><label>Deposit Amount</label><input type="number" id="depositAmount" value="10" step="1" min="1" /></div><div class="form-group"><label>&nbsp;</label><button class="btn-success" id="depositBtn">Deposit</button></div></div>
+                <div class="form-row"><div class="form-group"><label>Withdraw Amount</label><input type="number" id="withdrawAmount" value="10" step="1" min="1" /></div><div class="form-group"><label>&nbsp;</label><button class="btn-danger" id="withdrawBtn">Withdraw</button></div></div>
                 <div style="margin-top:12px;font-size:0.75rem;color:var(--text-muted);background:var(--bg-input);padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
                     <strong style="color:var(--text-primary);">Risk Caps (Enforced):</strong><br>
                     • Balance &lt; $5 → max risk 2%<br>
@@ -778,10 +628,7 @@
                     <strong style="color:var(--text-primary);">Min Lot Size:</strong> 0.01 (broker minimum)
                 </div>
             </div>
-            <div class="card">
-                <div class="card-title">Balance History</div>
-                <div id="balanceHistoryContainer"><div style="text-align:center;color:var(--text-muted);padding:20px;">No history yet</div></div>
-            </div>
+            <div class="card"><div class="card-title">Balance History</div><div id="balanceHistoryContainer"><div style="text-align:center;color:var(--text-muted);padding:20px;">No history yet</div></div></div>
         </div>
     </div>
 
@@ -817,8 +664,7 @@
         const auth = firebase.auth();
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
-        // ---- BROKER-SPECIFIC PIP CONFIG ----
-        // Base pip values for 1 standard lot (100,000 units)
+        // ---- BROKER PIP CONFIG ----
         const BROKER_PIP_CONFIG = {
             exness: {
                 'EURUSD': { pipSize: 0.0001, pipValue: 10 },
@@ -841,10 +687,8 @@
                 'BTCUSD': { pipSize: 1, pipValue: 0.01 }
             }
         };
-        // Note: HFM Cent pip value is 0.1 USD per 1 lot (1 lot = 1000 units)[reference:10]
-        // The multiplier is applied in getPipValueWithType()
 
-        // ---- HARDCODED CONSTANTS (ENFORCED) ----
+        // ---- HARDCODED CONSTANTS ----
         const RISK_CAPS = [
             { threshold: 5, maxRisk: 2 },
             { threshold: 50, maxRisk: 1.5 },
@@ -856,24 +700,12 @@
         const WEEKLY_LOSS_LIMIT = 6;
 
         // ---- STATE ----
-        let trades = [],
-            psychEntries = [],
-            tradingPlan = null,
-            weeklyReviews = [],
-            balanceHistory = [];
-        let direction = 'long',
-            currentEditId = null,
-            currentUser = null;
-        let balance = 0,
-            accountType = 'cent',
-            broker = 'exness';
+        let trades = [], psychEntries = [], tradingPlan = null, weeklyReviews = [], balanceHistory = [];
+        let direction = 'long', currentEditId = null, currentUser = null;
+        let balance = 0, accountType = 'cent', broker = 'exness';
         let plChart, strategyChart, sessionChart, equityChart;
-        let dailyLoss = 0,
-            weeklyLoss = 0,
-            dailyResetTime = null,
-            weeklyResetTime = null;
-        let isDailyLimitHit = false,
-            isWeeklyLimitHit = false;
+        let dailyLoss = 0, weeklyLoss = 0, dailyResetTime = null, weeklyResetTime = null;
+        let isDailyLimitHit = false, isWeeklyLimitHit = false;
 
         const $ = id => document.getElementById(id);
 
@@ -882,8 +714,7 @@
             const authBtn = $('authBtn');
             auth.onAuthStateChanged(user => {
                 currentUser = user;
-                const emailEl = $('userEmail'),
-                    btnEl = $('authBtn');
+                const emailEl = $('userEmail'), btnEl = $('authBtn');
                 if (user) {
                     emailEl.textContent = user.email;
                     btnEl.textContent = 'Sign Out';
@@ -894,11 +725,7 @@
                     emailEl.textContent = 'Not signed in';
                     btnEl.textContent = 'Sign In';
                     btnEl.className = 'btn-auth';
-                    trades = [];
-                    psychEntries = [];
-                    tradingPlan = null;
-                    weeklyReviews = [];
-                    balanceHistory = [];
+                    trades = []; psychEntries = []; tradingPlan = null; weeklyReviews = []; balanceHistory = [];
                     updateSyncStatus('offline');
                     refreshAll();
                     showToast('Sign in to sync across devices');
@@ -906,47 +733,33 @@
             });
             authBtn.addEventListener('click', () => {
                 if (currentUser) { auth.signOut(); } else {
-                    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => showToast('Sign in error: ' +
-                        err.message));
+                    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => showToast('Sign in error: ' + err.message));
                 }
             });
         }
 
         function updateSyncStatus(status) {
-            const dot = $('syncDot'),
-                label = $('syncLabel');
+            const dot = $('syncDot'), label = $('syncLabel');
             dot.className = 'sync-dot ' + status;
             label.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         }
 
-        // ---- LOAD ALL DATA ----
+        // ---- LOAD DATA ----
         async function loadAllData() {
             if (!currentUser) return;
             updateSyncStatus('syncing');
             try {
-                const ts = await db.collection('trades').where('userId', '==', currentUser.uid).orderBy('date', 'desc')
-                    .get();
-                trades = [];
-                ts.forEach(doc => trades.push({ id: doc.id, data: doc.data() }));
-
-                const ps = await db.collection('psychology').where('userId', '==', currentUser.uid).orderBy('date', 'desc')
-                    .get();
-                psychEntries = [];
-                ps.forEach(doc => psychEntries.push({ id: doc.id, data: doc.data() }));
-
-                const pl = await db.collection('tradingPlan').where('userId', '==', currentUser.uid).limit(1).get();
-                tradingPlan = null;
-                pl.forEach(doc => tradingPlan = { id: doc.id, data: doc.data() });
-
-                const rv = await db.collection('weeklyReviews').where('userId', '==', currentUser.uid).orderBy('date', 'desc')
-                    .get();
-                weeklyReviews = [];
-                rv.forEach(doc => weeklyReviews.push({ id: doc.id, data: doc.data() }));
-
-                const bh = await db.collection('userSettings').where('userId', '==', currentUser.uid).limit(1).get();
+                const ts = await db.collection('trades').where('userId','==',currentUser.uid).orderBy('date','desc').get();
+                trades = []; ts.forEach(doc => trades.push({ id: doc.id, data: doc.data() }));
+                const ps = await db.collection('psychology').where('userId','==',currentUser.uid).orderBy('date','desc').get();
+                psychEntries = []; ps.forEach(doc => psychEntries.push({ id: doc.id, data: doc.data() }));
+                const pl = await db.collection('tradingPlan').where('userId','==',currentUser.uid).limit(1).get();
+                tradingPlan = null; pl.forEach(doc => tradingPlan = { id: doc.id, data: doc.data() });
+                const rv = await db.collection('weeklyReviews').where('userId','==',currentUser.uid).orderBy('date','desc').get();
+                weeklyReviews = []; rv.forEach(doc => weeklyReviews.push({ id: doc.id, data: doc.data() }));
+                const bh = await db.collection('userSettings').where('userId','==',currentUser.uid).limit(1).get();
                 let settings = null;
                 bh.forEach(doc => settings = { id: doc.id, data: doc.data() });
-
                 if (settings) {
                     balance = settings.data.balance || 0;
                     accountType = settings.data.accountType || 'cent';
@@ -957,109 +770,70 @@
                     dailyResetTime = settings.data.dailyResetTime ? new Date(settings.data.dailyResetTime) : new Date();
                     weeklyResetTime = settings.data.weeklyResetTime ? new Date(settings.data.weeklyResetTime) : new Date();
                 } else {
-                    balance = 0;
-                    accountType = 'cent';
-                    broker = 'exness';
-                    balanceHistory = [];
-                    dailyLoss = 0;
-                    weeklyLoss = 0;
-                    dailyResetTime = new Date();
-                    weeklyResetTime = new Date();
+                    balance = 0; accountType = 'cent'; broker = 'exness'; balanceHistory = [];
+                    dailyLoss = 0; weeklyLoss = 0; dailyResetTime = new Date(); weeklyResetTime = new Date();
                     await db.collection('userSettings').add({
-                        userId: currentUser.uid,
-                        balance: 0,
-                        accountType: 'cent',
-                        broker: 'exness',
-                        history: [],
-                        dailyLoss: 0,
-                        weeklyLoss: 0,
-                        dailyResetTime: new Date().toISOString(),
-                        weeklyResetTime: new Date().toISOString(),
+                        userId: currentUser.uid, balance: 0, accountType: 'cent', broker: 'exness', history: [],
+                        dailyLoss: 0, weeklyLoss: 0,
+                        dailyResetTime: new Date().toISOString(), weeklyResetTime: new Date().toISOString(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
-
                 checkResets();
                 updateLimitStatus();
                 refreshAll();
                 updateSyncStatus('online');
-            } catch (e) { console.error(e);
-                updateSyncStatus('offline');
-                showToast('Failed to load data'); }
+            } catch (e) { console.error(e); updateSyncStatus('offline'); showToast('Failed to load data'); }
         }
 
-        // ---- CHECK RESETS ----
+        // ---- CHECKS ----
         function checkResets() {
             const now = new Date();
             if (dailyResetTime) {
                 const dr = new Date(dailyResetTime);
-                if (dr.getDate() !== now.getDate() || dr.getMonth() !== now.getMonth() || dr.getFullYear() !== now
-                    .getFullYear()) {
-                    dailyLoss = 0;
-                    dailyResetTime = now;
-                    isDailyLimitHit = false;
-                    saveBalanceAndHistory();
+                if (dr.getDate() !== now.getDate() || dr.getMonth() !== now.getMonth() || dr.getFullYear() !== now.getFullYear()) {
+                    dailyLoss = 0; dailyResetTime = now; isDailyLimitHit = false; saveBalanceAndHistory();
                 }
             }
             if (weeklyResetTime) {
                 const wr = new Date(weeklyResetTime);
-                const nowDay = now.getDay(),
-                    resetDay = wr.getDay();
+                const nowDay = now.getDay(), resetDay = wr.getDay();
                 if (nowDay < resetDay || (nowDay === 0 && resetDay !== 0) || (nowDay - resetDay >= 7)) {
-                    weeklyLoss = 0;
-                    weeklyResetTime = now;
-                    isWeeklyLimitHit = false;
-                    saveBalanceAndHistory();
+                    weeklyLoss = 0; weeklyResetTime = now; isWeeklyLimitHit = false; saveBalanceAndHistory();
                 }
             }
         }
 
-        // ---- UPDATE LIMIT STATUS ----
         function updateLimitStatus() {
-            const maxDailyLoss = (tradingPlan && tradingPlan.data && tradingPlan.data.dailyLoss) ?
-                tradingPlan.data.dailyLoss : DAILY_LOSS_LIMIT;
-            const maxWeeklyLoss = (tradingPlan && tradingPlan.data && tradingPlan.data.maxLoss) ?
-                tradingPlan.data.maxLoss : WEEKLY_LOSS_LIMIT;
-
+            const maxDailyLoss = (tradingPlan && tradingPlan.data && tradingPlan.data.dailyLoss) ? tradingPlan.data.dailyLoss : DAILY_LOSS_LIMIT;
+            const maxWeeklyLoss = (tradingPlan && tradingPlan.data && tradingPlan.data.maxLoss) ? tradingPlan.data.maxLoss : WEEKLY_LOSS_LIMIT;
             const dailyLimitAmount = balance * (maxDailyLoss / 100);
             const weeklyLimitAmount = balance * (maxWeeklyLoss / 100);
-
             isDailyLimitHit = dailyLoss >= dailyLimitAmount && dailyLimitAmount > 0;
             isWeeklyLimitHit = weeklyLoss >= weeklyLimitAmount && weeklyLimitAmount > 0;
-
             const container = $('limitWarningContainer');
             let html = '';
             if (isDailyLimitHit) {
-                html +=
-                    '<div class="limit-warning daily">DAILY LOSS LIMIT HIT (' + maxDailyLoss +
-                    '%). Trading stopped until tomorrow. Review your trades and come back fresh.</div>';
+                html += '<div class="limit-warning daily">DAILY LOSS LIMIT HIT (' + maxDailyLoss + '%). Trading stopped until tomorrow.</div>';
             } else if (isWeeklyLimitHit) {
-                html +=
-                    '<div class="limit-warning weekly">WEEKLY LOSS LIMIT HIT (' + maxWeeklyLoss +
-                    '%). Trading stopped until Monday. Take time to review and reset.</div>';
+                html += '<div class="limit-warning weekly">WEEKLY LOSS LIMIT HIT (' + maxWeeklyLoss + '%). Trading stopped until Monday.</div>';
             } else {
                 const dailyRemaining = Math.max(0, dailyLimitAmount - dailyLoss);
                 const weeklyRemaining = Math.max(0, weeklyLimitAmount - weeklyLoss);
-                html += '<div class="limit-warning ok">Daily Loss Remaining: $' + dailyRemaining.toFixed(2) +
-                    ' | Weekly Remaining: $' + weeklyRemaining.toFixed(2) + '</div>';
+                html += '<div class="limit-warning ok">Daily Loss Remaining: $' + dailyRemaining.toFixed(2) + ' | Weekly Remaining: $' + weeklyRemaining.toFixed(2) + '</div>';
             }
             container.innerHTML = html;
         }
 
-        // ---- SAVE BALANCE & HISTORY ----
+        // ---- SAVE ----
         async function saveBalanceAndHistory() {
             if (!currentUser) return;
             try {
-                const q = await db.collection('userSettings').where('userId', '==', currentUser.uid).get();
+                const q = await db.collection('userSettings').where('userId','==',currentUser.uid).get();
                 if (q.empty) {
                     await db.collection('userSettings').add({
-                        userId: currentUser.uid,
-                        balance,
-                        accountType,
-                        broker,
-                        history: balanceHistory,
-                        dailyLoss,
-                        weeklyLoss,
+                        userId: currentUser.uid, balance, accountType, broker, history: balanceHistory,
+                        dailyLoss, weeklyLoss,
                         dailyResetTime: dailyResetTime ? dailyResetTime.toISOString() : new Date().toISOString(),
                         weeklyResetTime: weeklyResetTime ? weeklyResetTime.toISOString() : new Date().toISOString(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1067,12 +841,7 @@
                 } else {
                     const doc = q.docs[0];
                     await doc.ref.update({
-                        balance,
-                        accountType,
-                        broker,
-                        history: balanceHistory,
-                        dailyLoss,
-                        weeklyLoss,
+                        balance, accountType, broker, history: balanceHistory, dailyLoss, weeklyLoss,
                         dailyResetTime: dailyResetTime ? dailyResetTime.toISOString() : new Date().toISOString(),
                         weeklyResetTime: weeklyResetTime ? weeklyResetTime.toISOString() : new Date().toISOString(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1081,22 +850,16 @@
             } catch (e) { console.error('Save balance error:', e); }
         }
 
-        // ---- GET MAX RISK ----
         function getMaxRiskForBalance(bal) {
-            for (let cap of RISK_CAPS) {
-                if (bal < cap.threshold) return cap.maxRisk;
-            }
+            for (let cap of RISK_CAPS) { if (bal < cap.threshold) return cap.maxRisk; }
             return 1;
         }
 
-        // ---- GET PIP VALUE WITH BROKER & ACCOUNT TYPE ----
         function getPipValueWithType(pair, lotSize, brkr, accType) {
             const baseConfig = BROKER_PIP_CONFIG[brkr] || BROKER_PIP_CONFIG.exness;
             const config = baseConfig[pair] || { pipValue: 10 };
             let multiplier = 1;
-            if (accType === 'cent') {
-                multiplier = 0.01; // Cent accounts: pip value is 1/100 of standard
-            }
+            if (accType === 'cent') multiplier = 0.01;
             return config.pipValue * lotSize * multiplier;
         }
 
@@ -1119,11 +882,7 @@
 
             const maxRisk = getMaxRiskForBalance(bal);
             let effectiveRisk = Math.min(riskPct, maxRisk);
-            if (riskPct > maxRisk) {
-                $('riskProfile').value = maxRisk.toString();
-                effectiveRisk = maxRisk;
-                showToast('Risk capped at ' + maxRisk + '% (your balance level)');
-            }
+            if (riskPct > maxRisk) { $('riskProfile').value = maxRisk.toString(); effectiveRisk = maxRisk; showToast('Risk capped at ' + maxRisk + '%'); }
             $('riskCapDisplay').textContent = 'Max: ' + maxRisk + '%';
 
             const riskAmount = bal * (effectiveRisk / 100);
@@ -1134,34 +893,22 @@
 
             let adjustedLot = lotSize;
             let lotWarning = '';
-            if (lotSize < MIN_LOT && lotSize > 0) {
-                adjustedLot = MIN_LOT;
-                lotWarning = ' (adjusted to min ' + MIN_LOT + ')';
-            }
+            if (lotSize < MIN_LOT && lotSize > 0) { adjustedLot = MIN_LOT; lotWarning = ' (adjusted to min ' + MIN_LOT + ')'; }
 
             const rr = pipDist > 0 ? getPipDistance(entry, tp, pair) / pipDist : 0;
             const reward = riskAmount * rr;
 
             let guardHTML = '';
-            if (effectiveRisk > 2) guardHTML +=
-            '<div class="guardrail warning">Risk ' + effectiveRisk + '% - high risk</div>';
-            if (rr < 2 && rr > 0) guardHTML +=
-                '<div class="guardrail block">R:R below 1:2 - your plan requires 1:2 minimum</div>';
-            if (rr >= 2) guardHTML +=
-            '<div class="guardrail success">R:R 1:' + rr.toFixed(2) + ' - meets your plan</div>';
-            if (rr >= 3) guardHTML +=
-            '<div class="guardrail success">R:R 1:' + rr.toFixed(2) + ' - excellent!</div>';
-            if (lotSize < MIN_LOT && lotSize > 0) guardHTML +=
-                '<div class="guardrail warning">Lot size adjusted to minimum ' + MIN_LOT +
-                ' (broker minimum). Consider using a Cent account or increasing balance.</div>';
-            if (isDailyLimitHit) guardHTML +=
-                '<div class="guardrail block">DAILY LOSS LIMIT HIT - No trades allowed today</div>';
-            if (isWeeklyLimitHit) guardHTML +=
-                '<div class="guardrail block">WEEKLY LOSS LIMIT HIT - No trades until Monday</div>';
+            if (effectiveRisk > 2) guardHTML += '<div class="guardrail warning">Risk ' + effectiveRisk + '% - high risk</div>';
+            if (rr < 2 && rr > 0) guardHTML += '<div class="guardrail block">R:R below 1:2 - your plan requires 1:2 minimum</div>';
+            if (rr >= 2) guardHTML += '<div class="guardrail success">R:R 1:' + rr.toFixed(2) + ' - meets your plan</div>';
+            if (rr >= 3) guardHTML += '<div class="guardrail success">R:R 1:' + rr.toFixed(2) + ' - excellent!</div>';
+            if (lotSize < MIN_LOT && lotSize > 0) guardHTML += '<div class="guardrail warning">Lot size adjusted to minimum ' + MIN_LOT + ' (broker minimum).</div>';
+            if (isDailyLimitHit) guardHTML += '<div class="guardrail block">DAILY LOSS LIMIT HIT - No trades allowed today</div>';
+            if (isWeeklyLimitHit) guardHTML += '<div class="guardrail block">WEEKLY LOSS LIMIT HIT - No trades until Monday</div>';
             $('guardrailContainer').innerHTML = guardHTML;
 
             const displayLot = lotSize < MIN_LOT && lotSize > 0 ? MIN_LOT : lotSize;
-
             $('pipDistance').textContent = pipDist.toFixed(1);
             $('lotSize').textContent = displayLot.toFixed(3) + lotWarning;
             $('riskAmount').textContent = '$' + riskAmount.toFixed(2);
@@ -1173,25 +920,12 @@
             $('accountTypeResult').textContent = brkr.charAt(0).toUpperCase() + brkr.slice(1);
 
             return {
-                balance: bal,
-                riskPct: effectiveRisk,
-                entry,
-                sl,
-                tp,
-                pair,
-                pipDist,
-                lotSize: displayLot,
-                riskAmount,
-                rr,
-                reward: riskAmount * rr,
-                direction,
-                broker: brkr,
-                accountType: accType,
-                isBlocked: isDailyLimitHit || isWeeklyLimitHit
+                balance: bal, riskPct: effectiveRisk, entry, sl, tp, pair, pipDist,
+                lotSize: displayLot, riskAmount, rr, reward: riskAmount * rr,
+                direction, broker: brkr, accountType: accType, isBlocked: isDailyLimitHit || isWeeklyLimitHit
             };
         }
 
-        // ---- SET DIRECTION ----
         function setDirection(dir) {
             direction = dir;
             document.querySelectorAll('#dirToggle button').forEach(b => {
@@ -1201,9 +935,12 @@
             compute();
         }
 
-        // ---- OPEN TRADE ----
+        // ---- OPEN TRADE (FIXED) ----
         function openTrade() {
-            if (!currentUser) { showToast('Please sign in first'); return; }
+            if (!currentUser) {
+                showToast('Please sign in first');
+                return;
+            }
 
             const data = compute();
             if (data.isBlocked) {
@@ -1212,26 +949,20 @@
             }
             if (data.rr < 2 && !confirm('R:R below 1:2. Your plan requires 1:2 minimum. Continue?')) return;
             if (data.lotSize < MIN_LOT) {
-                if (!confirm('Lot size (' + data.lotSize.toFixed(3) +
-                        ') is below broker minimum (0.01). This trade cannot be placed. Consider using a Cent account or increasing your balance.'
-                        ))
-                    return;
+                if (!confirm('Lot size (' + data.lotSize.toFixed(3) + ') is below broker minimum (0.01). This trade cannot be placed. Consider using a Cent account or increasing your balance.')) return;
             }
 
             const openTrades = trades.filter(t => t.data.status === 'open');
-            const maxTrades = (tradingPlan && tradingPlan.data && tradingPlan.data.maxTrades) ? tradingPlan.data.maxTrades :
-                2;
+            const maxTrades = (tradingPlan && tradingPlan.data && tradingPlan.data.maxTrades) ? tradingPlan.data.maxTrades : 2;
             if (openTrades.length >= maxTrades) {
                 showToast('Max open trades (' + maxTrades + ') reached');
                 return;
             }
 
-            const checklist = ['checkHTF', 'checkZone', 'checkMomentum', 'checkRR', 'checkLot', 'checkSL', 'checkNews',
-                    'checkFriday', 'checkEmotion'
-                ]
-                .map(id => ({ id, checked: $(id).checked }));
+            const checklist = ['checkHTF', 'checkZone', 'checkMomentum', 'checkRR', 'checkLot', 'checkSL', 'checkNews', 'checkFriday', 'checkEmotion']
+                .map(id => ({ id, checked: $(id) ? $(id).checked : false }));
 
-            const entryConfirmation = $('entryConfirmation').value.trim();
+            const entryConfirmation = $('entryConfirmation') ? $('entryConfirmation').value.trim() : '';
 
             const trade = {
                 date: new Date().toISOString(),
@@ -1246,20 +977,23 @@
                 riskAmount: data.riskAmount,
                 pl: 0,
                 rr: data.rr,
-                prePlanned: $('prePlanned').value,
-                followed: $('followedPlan').value,
-                notes: $('entryConfirmation').value,
+                prePlanned: $('prePlanned') ? $('prePlanned').value : 'Yes',
+                followed: $('followedPlan') ? $('followedPlan').value : 'Yes',
+                notes: entryConfirmation,
                 status: 'open',
-                session: $('sessionInput').value,
-                strategy: $('strategyInput').value,
-                timeframe: $('timeframeInput').value,
+                session: $('sessionInput') ? $('sessionInput').value : 'New York',
+                strategy: $('strategyInput') ? $('strategyInput').value : 'Breakout',
+                timeframe: $('timeframeInput') ? $('timeframeInput').value : '15m',
                 balanceAtOpen: data.balance,
-                broker: data.broker,
-                accountType: data.accountType,
+                broker: data.broker || broker,
+                accountType: data.accountType || accountType,
                 checklist: checklist,
                 checklistComplete: checklist.filter(c => c.checked).length,
                 entryConfirmation: entryConfirmation
             };
+
+            // Log the trade data for debugging
+            console.log('Saving trade:', trade);
 
             db.collection('trades').add({
                 userId: currentUser.uid,
@@ -1270,10 +1004,14 @@
                 trades.unshift({ id: docRef.id, data: trade });
                 refreshAll();
                 showToast('Trade opened with ' + data.broker.charAt(0).toUpperCase() + data.broker.slice(1));
-                $('entryConfirmation').value = '';
+                if ($('entryConfirmation')) $('entryConfirmation').value = '';
                 document.querySelectorAll('#tab-trade .checklist-item input').forEach(cb => cb.checked = false);
-            }).catch(err => { console.error(err);
-                showToast('Failed to save trade'); });
+            }).catch(err => {
+                console.error('FIREBASE ERROR:', err);
+                console.error('Error code:', err.code);
+                console.error('Error message:', err.message);
+                showToast('Failed to save trade: ' + err.message);
+            });
         }
 
         // ---- EDIT / CLOSE TRADE ----
@@ -1281,16 +1019,12 @@
             currentEditId = id;
             const trade = trades.find(t => t.id === id);
             if (!trade) return;
-            const modal = $('editModal'),
-                content = $('modalContent');
+            const modal = $('editModal'), content = $('modalContent');
             const isOpen = trade.data.status === 'open';
             let html = '';
-            if (isOpen) html +=
-                '<div class="form-group"><label>Close Price</label><input type="number" id="editExit" placeholder="Enter exit price" step="0.00001" /></div>';
-            else html += '<div class="form-group"><label>Exit Price</label><input type="number" id="editExit" value="' + (
-                trade.data.exit || '') + '" step="0.00001" /></div>';
-            html += '<div class="form-group"><label>Notes / Lesson</label><textarea id="editLesson" rows="3">' + (trade
-                .data.lesson || '') + '</textarea></div>';
+            if (isOpen) html += '<div class="form-group"><label>Close Price</label><input type="number" id="editExit" placeholder="Enter exit price" step="0.00001" /></div>';
+            else html += '<div class="form-group"><label>Exit Price</label><input type="number" id="editExit" value="' + (trade.data.exit || '') + '" step="0.00001" /></div>';
+            html += '<div class="form-group"><label>Notes / Lesson</label><textarea id="editLesson" rows="3">' + (trade.data.lesson || '') + '</textarea></div>';
             html += '<div class="form-row"><div class="form-group"><label>Partial Profit Taken?</label><select id="editPartial"><option value="No">No</option><option value="50% at 1:2">50% at 1:2</option><option value="75% at 1:3">75% at 1:3</option></select></div><div class="form-group"><label>SL Moved to Breakeven?</label><select id="editBreakeven"><option value="No">No</option><option value="Yes">Yes</option></select></div></div>';
             html += '<div class="btn-row">';
             if (isOpen) html += '<button class="btn-success" id="closeTradeBtn">Close Trade</button>';
@@ -1312,8 +1046,7 @@
             if (isNaN(exit) || exit === 0) { showToast('Invalid exit price'); return; }
 
             const d = trade.data;
-            const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit, d.entry,
-                d.pair);
+            const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit, d.entry, d.pair);
             const pipValue = getPipValueWithType(d.pair, 1, d.broker || broker, d.accountType || accountType);
             const pl = d.lotSize * exitPips * pipValue * (d.direction === 'long' ? 1 : -1);
             const rr = d.pipDist > 0 ? exitPips / d.pipDist : 0;
@@ -1323,13 +1056,7 @@
 
             try {
                 await db.collection('trades').doc(currentEditId).update({
-                    exit,
-                    pl,
-                    rr,
-                    status: 'closed',
-                    lesson,
-                    partialProfit: partial,
-                    slBreakeven: breakeven,
+                    exit, pl, rr, status: 'closed', lesson, partialProfit: partial, slBreakeven: breakeven,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 const idx = trades.findIndex(t => t.id === currentEditId);
@@ -1343,15 +1070,9 @@
                     trades[idx].data.slBreakeven = breakeven;
                 }
 
-                const oldBalance = balance;
                 balance = Math.round((balance + pl) * 100) / 100;
-                balanceHistory.push({ date: new Date().toISOString(), type: 'trade', amount: pl, balance: balance,
-                    tradeId: currentEditId });
-
-                if (pl < 0) {
-                    dailyLoss = Math.round((dailyLoss + Math.abs(pl)) * 100) / 100;
-                    weeklyLoss = Math.round((weeklyLoss + Math.abs(pl)) * 100) / 100;
-                }
+                balanceHistory.push({ date: new Date().toISOString(), type: 'trade', amount: pl, balance: balance, tradeId: currentEditId });
+                if (pl < 0) { dailyLoss = Math.round((dailyLoss + Math.abs(pl)) * 100) / 100; weeklyLoss = Math.round((weeklyLoss + Math.abs(pl)) * 100) / 100; }
                 checkResets();
                 updateLimitStatus();
                 await saveBalanceAndHistory();
@@ -1359,15 +1080,13 @@
                 closeModal('editModal');
                 const result = pl >= 0 ? 'profit' : 'loss';
                 showToast('Trade closed. ' + result + ': $' + pl.toFixed(2) + ' | New balance: $' + balance.toFixed(2));
-            } catch (e) { console.error(e);
-                showToast('Error closing trade'); }
+            } catch (e) { console.error(e); showToast('Error closing trade'); }
         }
 
         async function saveEdit() {
             const trade = trades.find(t => t.id === currentEditId);
             if (!trade) return;
-            const exitInput = $('editExit'),
-                lesson = $('editLesson') ? $('editLesson').value : '';
+            const exitInput = $('editExit'), lesson = $('editLesson') ? $('editLesson').value : '';
             const partial = $('editPartial') ? $('editPartial').value : 'No';
             const breakeven = $('editBreakeven') ? $('editBreakeven').value : 'No';
             const updates = { lesson, partialProfit: partial, slBreakeven: breakeven };
@@ -1375,26 +1094,21 @@
                 const exit = parseFloat(exitInput.value);
                 if (!isNaN(exit) && exit !== 0) {
                     const d = trade.data;
-                    const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit,
-                        d.entry, d.pair);
+                    const exitPips = d.direction === 'long' ? getPipDistance(d.entry, exit, d.pair) : getPipDistance(exit, d.entry, d.pair);
                     const pipValue = getPipValueWithType(d.pair, 1, d.broker || broker, d.accountType || accountType);
                     const pl = d.lotSize * exitPips * pipValue * (d.direction === 'long' ? 1 : -1);
                     const rr = d.pipDist > 0 ? exitPips / d.pipDist : 0;
-                    updates.exit = exit;
-                    updates.pl = pl;
-                    updates.rr = rr;
+                    updates.exit = exit; updates.pl = pl; updates.rr = rr;
                 }
             }
             try {
-                await db.collection('trades').doc(currentEditId).update({ ...updates,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+                await db.collection('trades').doc(currentEditId).update({ ...updates, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
                 const idx = trades.findIndex(t => t.id === currentEditId);
                 if (idx !== -1) Object.assign(trades[idx].data, updates);
                 refreshAll();
                 closeModal('editModal');
                 showToast('Trade updated');
-            } catch (e) { console.error(e);
-                showToast('Error updating trade'); }
+            } catch (e) { console.error(e); showToast('Error updating trade'); }
         }
 
         function closeModal(id) { document.getElementById(id || 'editModal').classList.remove('active'); }
@@ -1435,19 +1149,9 @@
 
         // ---- RENDER FUNCTIONS ----
         function refreshAll() {
-            renderJournal();
-            updateStats();
-            renderCharts();
-            populateFilters();
-            updatePsychStats();
-            renderPsychEntries();
-            updatePlanDisplay();
-            renderReviews();
-            updateMetricGrid();
-            updateSettingsUI();
-            updateLimitStatus();
-            compute();
-            updateBrokerDisplay();
+            renderJournal(); updateStats(); renderCharts(); populateFilters();
+            updatePsychStats(); renderPsychEntries(); updatePlanDisplay(); renderReviews();
+            updateMetricGrid(); updateSettingsUI(); updateLimitStatus(); compute(); updateBrokerDisplay();
         }
 
         function updateBrokerDisplay() {
@@ -1458,15 +1162,11 @@
         function renderJournal() {
             const tbody = $('journalBody');
             const search = $('searchInput').value.toLowerCase();
-            const fPair = $('filterPair').value,
-                fStatus = $('filterStatus').value,
-                fStrategy = $('filterStrategy').value;
+            const fPair = $('filterPair').value, fStatus = $('filterStatus').value, fStrategy = $('filterStrategy').value;
             const fBroker = $('filterBroker') ? $('filterBroker').value : '';
-
             let filtered = trades.filter(t => {
                 const d = t.data;
-                const matchSearch = !search || d.pair.toLowerCase().includes(search) || (d.notes || '').toLowerCase()
-                    .includes(search) || (d.strategy || '').toLowerCase().includes(search);
+                const matchSearch = !search || d.pair.toLowerCase().includes(search) || (d.notes||'').toLowerCase().includes(search) || (d.strategy||'').toLowerCase().includes(search);
                 const matchPair = !fPair || d.pair === fPair;
                 const matchStatus = fStatus === 'all' || d.status === fStatus;
                 const matchStrategy = !fStrategy || d.strategy === fStrategy;
@@ -1475,8 +1175,7 @@
             });
             $('journalCount').textContent = '(' + filtered.length + ')';
             if (filtered.length === 0) {
-                tbody.innerHTML =
-                    '<tr><td colspan="14" style="text-align:center;padding:40px;color:var(--text-muted);">No trades found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:40px;color:var(--text-muted);">No trades found</td></tr>';
                 return;
             }
             let html = '';
@@ -1511,17 +1210,11 @@
         function updateStats() {
             const c = $('statsGrid');
             if (trades.length === 0) {
-                c.innerHTML =
-                    '<div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Trades</div></div><div class="stat-card"><div class="stat-value">0%</div><div class="stat-label">Win Rate</div></div><div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Avg R:R</div></div><div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Total P&L</div></div>';
+                c.innerHTML = '<div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Trades</div></div><div class="stat-card"><div class="stat-value">0%</div><div class="stat-label">Win Rate</div></div><div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Avg R:R</div></div><div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Total P&L</div></div>';
                 return;
             }
-            let totalPL = 0,
-                wins = 0,
-                totalRR = 0,
-                rrCount = 0;
-            trades.forEach(t => { const d = t.data;
-                totalPL += d.pl || 0; if (d.pl > 0) wins++; if (d.rr && d.rr > 0) { totalRR += d.rr;
-                    rrCount++; } });
+            let totalPL = 0, wins = 0, totalRR = 0, rrCount = 0;
+            trades.forEach(t => { const d = t.data; totalPL += d.pl || 0; if (d.pl > 0) wins++; if (d.rr && d.rr > 0) { totalRR += d.rr; rrCount++; } });
             const winRate = trades.length ? (wins / trades.length * 100).toFixed(1) : 0;
             const avgRR = rrCount ? (totalRR / rrCount).toFixed(2) : 0;
             c.innerHTML = `
@@ -1535,21 +1228,15 @@
         function updateMetricGrid() {
             const c = $('metricGrid');
             if (trades.length === 0) {
-                c.innerHTML =
-                    '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Profit Factor</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Win</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Loss</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Best Trade</div></div>';
+                c.innerHTML = '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Profit Factor</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Win</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Loss</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Best Trade</div></div>';
                 return;
             }
             const closed = trades.filter(t => t.data.status === 'closed');
-            let totalWins = 0,
-                totalLosses = 0,
-                winCount = 0,
-                lossCount = 0,
-                bestTrade = 0;
+            let totalWins = 0, totalLosses = 0, winCount = 0, lossCount = 0, bestTrade = 0;
             closed.forEach(t => {
                 const pl = t.data.pl || 0;
-                if (pl > 0) { totalWins += pl;
-                    winCount++; if (pl > bestTrade) bestTrade = pl; } else if (pl < 0) { totalLosses += Math.abs(pl);
-                    lossCount++; }
+                if (pl > 0) { totalWins += pl; winCount++; if (pl > bestTrade) bestTrade = pl; }
+                else if (pl < 0) { totalLosses += Math.abs(pl); lossCount++; }
             });
             const profitFactor = totalLosses > 0 ? totalWins / totalLosses : (totalWins > 0 ? 999 : 0);
             const avgWin = winCount > 0 ? totalWins / winCount : 0;
@@ -1565,17 +1252,13 @@
         function updateDisciplineGrid() {
             const c = $('disciplineGrid');
             if (psychEntries.length === 0) {
-                c.innerHTML =
-                    '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Discipline</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Rule Adherence</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Lessons Learned</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Common Emotion</div></div>';
+                c.innerHTML = '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Avg Discipline</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Rule Adherence</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Lessons Learned</div></div><div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Common Emotion</div></div>';
                 return;
             }
-            let totalD = 0,
-                dCount = 0,
-                rulesYes = 0;
+            let totalD = 0, dCount = 0, rulesYes = 0;
             const emotions = {};
             psychEntries.forEach(e => {
-                if (e.data.discipline) { totalD += e.data.discipline;
-                    dCount++; }
+                if (e.data.discipline) { totalD += e.data.discipline; dCount++; }
                 if (e.data.rules === 'Yes') rulesYes++;
                 const em = e.data.before || 'Unknown';
                 emotions[em] = (emotions[em] || 0) + 1;
@@ -1583,10 +1266,8 @@
             const avgD = dCount ? (totalD / dCount).toFixed(1) : '—';
             const adherence = psychEntries.length ? Math.round((rulesYes / psychEntries.length) * 100) + '%' : '—';
             const lessons = psychEntries.filter(e => e.data.lesson && e.data.lesson.length > 0).length;
-            let maxEm = '—',
-                maxC = 0;
-            Object.keys(emotions).forEach(k => { if (emotions[k] > maxC) { maxC = emotions[k];
-                    maxEm = k; } });
+            let maxEm = '—', maxC = 0;
+            Object.keys(emotions).forEach(k => { if (emotions[k] > maxC) { maxC = emotions[k]; maxEm = k; } });
             c.innerHTML = `
                         <div class="stat-card"><div class="stat-value">${avgD}/10</div><div class="stat-label">Avg Discipline</div></div>
                         <div class="stat-card"><div class="stat-value">${adherence}</div><div class="stat-label">Rule Adherence</div></div>
@@ -1600,19 +1281,12 @@
             const ctx1 = document.getElementById('plChart').getContext('2d');
             if (plChart) plChart.destroy();
             const monthly = {};
-            trades.forEach(t => { const m = new Date(t.data.date).toISOString().slice(0, 7);
-                monthly[m] = (monthly[m] || 0) + (t.data.pl || 0); });
-            const labels = Object.keys(monthly).sort(),
-                data = labels.map(l => monthly[l]);
+            trades.forEach(t => { const m = new Date(t.data.date).toISOString().slice(0,7); monthly[m] = (monthly[m]||0) + (t.data.pl||0); });
+            const labels = Object.keys(monthly).sort(), data = labels.map(l => monthly[l]);
             plChart = new Chart(ctx1, {
                 type: 'bar',
-                data: { labels,
-                    datasets: [{ label: 'Monthly P&L', data, backgroundColor: data.map(v => v >= 0 ?
-                                'rgba(0,212,170,0.6)' : 'rgba(255,107,107,0.6)'), borderColor: data.map(v => v >=
-                                0 ? '#00d4aa' : '#ff6b6b'), borderWidth: 1 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } },
-                    scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)' } },
-                        x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', maxTicksLimit: 12 } } } }
+                data: { labels, datasets: [{ label: 'Monthly P&L', data, backgroundColor: data.map(v => v>=0?'rgba(0,212,170,0.6)':'rgba(255,107,107,0.6)'), borderColor: data.map(v => v>=0?'#00d4aa':'#ff6b6b'), borderWidth: 1 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)' } }, x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', maxTicksLimit: 12 } } } }
             });
 
             const ctx2 = document.getElementById('strategyChart').getContext('2d');
@@ -1621,20 +1295,13 @@
             trades.filter(t => t.data.status === 'closed').forEach(t => {
                 const s = t.data.strategy || 'Unknown';
                 if (!stratData[s]) stratData[s] = { wins: 0, losses: 0 };
-                if (t.data.pl > 0) stratData[s].wins++;
-                else stratData[s].losses++;
+                if (t.data.pl > 0) stratData[s].wins++; else stratData[s].losses++;
             });
-            const slabels = Object.keys(stratData),
-                swinRates = slabels.map(s => { const tot = stratData[s].wins + stratData[s].losses; return tot > 0 ? (
-                        stratData[s].wins / tot * 100) : 0; });
+            const slabels = Object.keys(stratData), swinRates = slabels.map(s => { const tot = stratData[s].wins + stratData[s].losses; return tot > 0 ? (stratData[s].wins/tot*100) : 0; });
             strategyChart = new Chart(ctx2, {
                 type: 'bar',
-                data: { labels: slabels,
-                    datasets: [{ label: 'Win Rate %', data: swinRates, backgroundColor: 'rgba(74,158,255,0.6)',
-                            borderColor: '#4a9eff', borderWidth: 1 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } },
-                    scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)',
-                                max: 100 } }, x: { grid: { display: false }, ticks: { color: 'var(--text-muted)' } } } }
+                data: { labels: slabels, datasets: [{ label: 'Win Rate %', data: swinRates, backgroundColor: 'rgba(74,158,255,0.6)', borderColor: '#4a9eff', borderWidth: 1 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)', max: 100 } }, x: { grid: { display: false }, ticks: { color: 'var(--text-muted)' } } } }
             });
 
             const ctx3 = document.getElementById('sessionChart').getContext('2d');
@@ -1643,40 +1310,29 @@
             trades.filter(t => t.data.status === 'closed').forEach(t => {
                 const s = t.data.session || 'Unknown';
                 if (!sessData[s]) sessData[s] = { wins: 0, losses: 0 };
-                if (t.data.pl > 0) sessData[s].wins++;
-                else sessData[s].losses++;
+                if (t.data.pl > 0) sessData[s].wins++; else sessData[s].losses++;
             });
-            const slabels2 = Object.keys(sessData),
-                swinRates2 = slabels2.map(s => { const tot = sessData[s].wins + sessData[s].losses; return tot > 0 ? (
-                        sessData[s].wins / tot * 100) : 0; });
-            const colors = ['#00d4aa', '#4a9eff', '#f0b429', '#a855f7', '#ff6b6b'];
+            const slabels2 = Object.keys(sessData), swinRates2 = slabels2.map(s => { const tot = sessData[s].wins + sessData[s].losses; return tot > 0 ? (sessData[s].wins/tot*100) : 0; });
+            const colors = ['#00d4aa','#4a9eff','#f0b429','#a855f7','#ff6b6b'];
             sessionChart = new Chart(ctx3, {
                 type: 'doughnut',
-                data: { labels: slabels2,
-                    datasets: [{ data: swinRates2, backgroundColor: colors.slice(0, slabels2.length),
-                            borderColor: 'var(--bg-card)', borderWidth: 2 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom',
-                            labels: { color: 'var(--text-secondary)', font: { size: 10 } } } } }
+                data: { labels: slabels2, datasets: [{ data: swinRates2, backgroundColor: colors.slice(0, slabels2.length), borderColor: 'var(--bg-card)', borderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { color: 'var(--text-secondary)', font: { size: 10 } } } } }
             });
 
             const ctx4 = document.getElementById('equityChart').getContext('2d');
             if (equityChart) equityChart.destroy();
-            const closedSorted = trades.filter(t => t.data.status === 'closed').sort((a, b) => new Date(a.data.date) -
-                new Date(b.data.date));
+            const closedSorted = trades.filter(t => t.data.status === 'closed').sort((a,b) => new Date(a.data.date) - new Date(b.data.date));
             let eq = balance;
             const eqData = [{ x: 'Start', y: balance }];
             closedSorted.forEach(t => {
                 eq += t.data.pl || 0;
-                eqData.push({ x: new Date(t.data.date).toLocaleDateString(), y: Math.round(eq * 100) / 100 });
+                eqData.push({ x: new Date(t.data.date).toLocaleDateString(), y: Math.round(eq*100)/100 });
             });
             equityChart = new Chart(ctx4, {
                 type: 'line',
-                data: { labels: eqData.map(d => d.x),
-                    datasets: [{ label: 'Equity Curve', data: eqData.map(d => d.y), borderColor: '#4a9eff',
-                            backgroundColor: 'rgba(74,158,255,0.1)', fill: true, tension: 0.3, pointRadius: 2 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } },
-                    scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)' } },
-                        x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', maxTicksLimit: 10 } } } }
+                data: { labels: eqData.map(d => d.x), datasets: [{ label: 'Equity Curve', data: eqData.map(d => d.y), borderColor: '#4a9eff', backgroundColor: 'rgba(74,158,255,0.1)', fill: true, tension: 0.3, pointRadius: 2 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'var(--border-color)', drawBorder: false }, ticks: { color: 'var(--text-muted)' } }, x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', maxTicksLimit: 10 } } } }
             });
         }
 
@@ -1684,31 +1340,19 @@
         function populateFilters() {
             const pairSelect = $('filterPair');
             pairSelect.innerHTML = '<option value="">All Pairs</option>';
-            const pairs = {};
-            trades.forEach(t => pairs[t.data.pair] = true);
-            Object.keys(pairs).sort().forEach(p => { const opt = document.createElement('option');
-                opt.value = p;
-                opt.textContent = p;
-                pairSelect.appendChild(opt); });
+            const pairs = {}; trades.forEach(t => pairs[t.data.pair] = true);
+            Object.keys(pairs).sort().forEach(p => { const opt = document.createElement('option'); opt.value = p; opt.textContent = p; pairSelect.appendChild(opt); });
 
             const stratSelect = $('filterStrategy');
             stratSelect.innerHTML = '<option value="">All Strategies</option>';
-            const strats = {};
-            trades.forEach(t => { if (t.data.strategy) strats[t.data.strategy] = true; });
-            Object.keys(strats).sort().forEach(s => { const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                stratSelect.appendChild(opt); });
+            const strats = {}; trades.forEach(t => { if (t.data.strategy) strats[t.data.strategy] = true; });
+            Object.keys(strats).sort().forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.textContent = s; stratSelect.appendChild(opt); });
 
             const brokerSelect = $('filterBroker');
             if (brokerSelect) {
                 brokerSelect.innerHTML = '<option value="">All Brokers</option>';
-                const brokers = {};
-                trades.forEach(t => { if (t.data.broker) brokers[t.data.broker] = true; });
-                Object.keys(brokers).sort().forEach(b => { const opt = document.createElement('option');
-                    opt.value = b;
-                    opt.textContent = b.charAt(0).toUpperCase() + b.slice(1);
-                    brokerSelect.appendChild(opt); });
+                const brokers = {}; trades.forEach(t => { if (t.data.broker) brokers[t.data.broker] = true; });
+                Object.keys(brokers).sort().forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b.charAt(0).toUpperCase() + b.slice(1); brokerSelect.appendChild(opt); });
             }
         }
 
@@ -1723,41 +1367,27 @@
                 rules: $('psychRules').value,
                 lesson: $('psychLesson').value || ''
             };
-            db.collection('psychology').add({ userId: currentUser.uid, ...entry, date: new Date().toISOString(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                .then(docRef => { psychEntries.unshift({ id: docRef.id, data: entry });
-                    updatePsychStats();
-                    renderPsychEntries();
-                    updateDisciplineGrid();
-                    showToast('Psychology entry saved'); })
+            db.collection('psychology').add({ userId: currentUser.uid, ...entry, date: new Date().toISOString(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                .then(docRef => { psychEntries.unshift({ id: docRef.id, data: entry }); updatePsychStats(); renderPsychEntries(); updateDisciplineGrid(); showToast('Psychology entry saved'); })
                 .catch(err => showToast('Error saving psychology'));
-            $('psychTradeRef').value = '';
-            $('psychLesson').value = '';
+            $('psychTradeRef').value = ''; $('psychLesson').value = '';
         }
 
         function updatePsychStats() {
             if (psychEntries.length === 0) {
-                $('commonEmotion').textContent = '—';
-                $('avgDiscipline').textContent = '—';
-                $('ruleAdherence').textContent = '—';
-                $('lessonsCount').textContent = '0';
+                $('commonEmotion').textContent = '—'; $('avgDiscipline').textContent = '—'; $('ruleAdherence').textContent = '—'; $('lessonsCount').textContent = '0';
                 return;
             }
             const emotions = {};
-            psychEntries.forEach(e => { const em = e.data.before || 'Unknown';
-                emotions[em] = (emotions[em] || 0) + 1; });
-            let maxEmotion = '—',
-                maxCount = 0;
-            Object.keys(emotions).forEach(k => { if (emotions[k] > maxCount) { maxCount = emotions[k];
-                    maxEmotion = k; } });
-            let totalDiscipline = 0,
-                dc = 0;
-            psychEntries.forEach(e => { if (e.data.discipline) { totalDiscipline += e.data.discipline;
-                    dc++; } });
-            const avgDiscipline = dc > 0 ? (totalDiscipline / dc).toFixed(1) : '—';
+            psychEntries.forEach(e => { const em = e.data.before || 'Unknown'; emotions[em] = (emotions[em]||0)+1; });
+            let maxEmotion = '—', maxCount = 0;
+            Object.keys(emotions).forEach(k => { if (emotions[k] > maxCount) { maxCount = emotions[k]; maxEmotion = k; } });
+            let totalDiscipline = 0, dc = 0;
+            psychEntries.forEach(e => { if (e.data.discipline) { totalDiscipline += e.data.discipline; dc++; } });
+            const avgDiscipline = dc > 0 ? (totalDiscipline/dc).toFixed(1) : '—';
             let rulesYes = 0;
             psychEntries.forEach(e => { if (e.data.rules === 'Yes') rulesYes++; });
-            const adherence = psychEntries.length > 0 ? Math.round((rulesYes / psychEntries.length) * 100) + '%' : '—';
+            const adherence = psychEntries.length > 0 ? Math.round((rulesYes/psychEntries.length)*100)+'%' : '—';
             const lessons = psychEntries.filter(e => e.data.lesson && e.data.lesson.length > 0).length;
             $('commonEmotion').textContent = maxEmotion;
             $('avgDiscipline').textContent = avgDiscipline;
@@ -1768,10 +1398,9 @@
 
         function renderPsychEntries() {
             const container = $('psychEntries');
-            if (psychEntries.length === 0) { container.innerHTML =
-                    '<div style="color:var(--text-muted);text-align:center;padding:20px;">No entries yet</div>'; return; }
+            if (psychEntries.length === 0) { container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:20px;">No entries yet</div>'; return; }
             let html = '';
-            psychEntries.slice(0, 5).forEach(e => {
+            psychEntries.slice(0,5).forEach(e => {
                 const d = e.data;
                 html += `<div style="border-bottom:1px solid var(--border-color);padding:8px 0;">
                             <div style="display:flex;justify-content:space-between;font-size:0.8rem;">
@@ -1799,86 +1428,63 @@
                 rules: $('planRules').value
             };
             if (tradingPlan && tradingPlan.id) {
-                db.collection('tradingPlan').doc(tradingPlan.id).update({ ...plan,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                    .then(() => { tradingPlan.data = plan;
-                        updatePlanDisplay();
-                        showToast('Trading plan updated'); });
+                db.collection('tradingPlan').doc(tradingPlan.id).update({ ...plan, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                    .then(() => { tradingPlan.data = plan; updatePlanDisplay(); showToast('Trading plan updated'); });
             } else {
-                db.collection('tradingPlan').add({ userId: currentUser.uid, ...plan,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                    .then(docRef => { tradingPlan = { id: docRef.id, data: plan };
-                        updatePlanDisplay();
-                        showToast('Trading plan saved'); });
+                db.collection('tradingPlan').add({ userId: currentUser.uid, ...plan, createdAt: firebase.firestore.FieldValue.serverTimestamp(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                    .then(docRef => { tradingPlan = { id: docRef.id, data: plan }; updatePlanDisplay(); showToast('Trading plan saved'); });
             }
         }
 
         function updatePlanDisplay() {
             if (!tradingPlan) {
-                $('planStatus').textContent = 'Not set up';
-                $('planStatus').className = 'value';
-                $('riskRuleStatus').textContent = '—';
-                $('rrRuleStatus').textContent = '—';
-                $('maxTradesStatus').textContent = '—';
-                $('dailyLossStatus').textContent = '—';
+                $('planStatus').textContent = 'Not set up'; $('planStatus').className = 'value';
+                $('riskRuleStatus').textContent = '—'; $('rrRuleStatus').textContent = '—';
+                $('maxTradesStatus').textContent = '—'; $('dailyLossStatus').textContent = '—';
                 return;
             }
             const p = tradingPlan.data;
-            $('planStatus').textContent = 'Active';
-            $('planStatus').className = 'value green';
+            $('planStatus').textContent = 'Active'; $('planStatus').className = 'value green';
 
             const closed = trades.filter(t => t.data.status === 'closed');
-            let riskAdherence = 'N/A',
-                riskColor = 'gold',
-                rrAdherence = 'N/A',
-                rrColor = 'gold',
-                dailyStatus = 'OK',
-                dailyColor = 'green';
+            let riskAdherence = 'N/A', riskColor = 'gold', rrAdherence = 'N/A', rrColor = 'gold';
+            let dailyStatus = 'OK', dailyColor = 'green';
 
             if (closed.length > 0) {
-                let riskViolations = 0,
-                    rrViolations = 0;
+                let riskViolations = 0, rrViolations = 0;
                 closed.forEach(t => {
                     const d = t.data;
-                    if (d.riskAmount > (d.balanceAtOpen || balance) * (p.maxRisk / 100)) riskViolations++;
+                    if (d.riskAmount > (d.balanceAtOpen || balance) * (p.maxRisk/100)) riskViolations++;
                     if (d.rr && d.rr < p.minRR) rrViolations++;
                 });
-                const riskRate = Math.round(((closed.length - riskViolations) / closed.length) * 100) + '%';
-                riskAdherence = riskRate;
-                riskColor = riskViolations === 0 ? 'green' : 'gold';
-                const rrRate = Math.round(((closed.length - rrViolations) / closed.length) * 100) + '%';
-                rrAdherence = rrRate;
-                rrColor = rrViolations === 0 ? 'green' : 'gold';
+                const riskRate = Math.round(((closed.length - riskViolations)/closed.length)*100) + '%';
+                riskAdherence = riskRate; riskColor = riskViolations === 0 ? 'green' : 'gold';
+                const rrRate = Math.round(((closed.length - rrViolations)/closed.length)*100) + '%';
+                rrAdherence = rrRate; rrColor = rrViolations === 0 ? 'green' : 'gold';
             }
 
             const openTrades = trades.filter(t => t.data.status === 'open');
             const maxTradesStatus = openTrades.length <= p.maxTrades ? 'Within limit' : 'Exceeded limit';
             const maxTradesColor = openTrades.length <= p.maxTrades ? 'green' : 'red';
 
-            const dailyLimitAmt = balance * (p.dailyLoss / 100);
-            const weeklyLimitAmt = balance * (p.maxLoss / 100);
+            const dailyLimitAmt = balance * (p.dailyLoss/100);
+            const weeklyLimitAmt = balance * (p.maxLoss/100);
             const dailyRemaining = Math.max(0, dailyLimitAmt - dailyLoss);
             const weeklyRemaining = Math.max(0, weeklyLimitAmt - weeklyLoss);
             dailyStatus = 'Remaining: $' + dailyRemaining.toFixed(2) + ' | Weekly: $' + weeklyRemaining.toFixed(2);
             dailyColor = dailyLoss < dailyLimitAmt ? 'green' : 'red';
 
-            $('riskRuleStatus').textContent = riskAdherence;
-            $('riskRuleStatus').className = 'value ' + riskColor;
-            $('rrRuleStatus').textContent = rrAdherence;
-            $('rrRuleStatus').className = 'value ' + rrColor;
-            $('maxTradesStatus').textContent = maxTradesStatus;
-            $('maxTradesStatus').className = 'value ' + maxTradesColor;
-            $('dailyLossStatus').textContent = dailyStatus;
-            $('dailyLossStatus').className = 'value ' + dailyColor;
+            $('riskRuleStatus').textContent = riskAdherence; $('riskRuleStatus').className = 'value ' + riskColor;
+            $('rrRuleStatus').textContent = rrAdherence; $('rrRuleStatus').className = 'value ' + rrColor;
+            $('maxTradesStatus').textContent = maxTradesStatus; $('maxTradesStatus').className = 'value ' + maxTradesColor;
+            $('dailyLossStatus').textContent = dailyStatus; $('dailyLossStatus').className = 'value ' + dailyColor;
         }
 
         function renderReviews() {
             const container = $('savedReviews');
-            if (weeklyReviews.length === 0) { container.innerHTML =
-                    '<div style="color:var(--text-muted);text-align:center;padding:12px;">No reviews saved</div>'; return; }
+            if (weeklyReviews.length === 0) { container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:12px;">No reviews saved</div>'; return; }
             let html = '';
-            weeklyReviews.slice(0, 3).forEach(r => {
+            weeklyReviews.slice(0,3).forEach(r => {
                 html += `<div style="border-bottom:1px solid var(--border-color);padding:8px 0;">
                             <div style="font-size:0.7rem;color:var(--text-muted);">${new Date(r.data.date).toLocaleDateString()}</div>
                             <div style="font-size:0.8rem;color:var(--text-secondary);">${r.data.content.substring(0,100)}${r.data.content.length>100?'...':''}</div>
@@ -1917,12 +1523,10 @@
         // ---- EXPORT / IMPORT ----
         function exportJournal() {
             const data = trades.map(t => t.data);
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(data,null,2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'trading-journal-' + new Date().toISOString().slice(0, 10) + '.json';
-            a.click();
+            a.href = url; a.download = 'trading-journal-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
             showToast('Journal exported');
         }
 
@@ -1935,15 +1539,12 @@
                     const imported = JSON.parse(ev.target.result);
                     if (!Array.isArray(imported)) throw new Error('Invalid format');
                     imported.forEach(t => {
-                        if (!t.id) t.id = Date.now() + Math.random().toString(36).substr(2, 9);
-                        db.collection('trades').add({ userId: currentUser.uid, ...t,
-                                updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                            .then(docRef => { t.id = docRef.id;
-                                trades.unshift({ id: docRef.id, data: t });
-                                refreshAll(); });
+                        if (!t.id) t.id = Date.now() + Math.random().toString(36).substr(2,9);
+                        db.collection('trades').add({ userId: currentUser.uid, ...t, updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                            .then(docRef => { t.id = docRef.id; trades.unshift({ id: docRef.id, data: t }); refreshAll(); });
                     });
                     showToast('Journal imported');
-                } catch (err) { showToast('Invalid JSON file'); }
+                } catch(err) { showToast('Invalid JSON file'); }
             };
             reader.readAsText(file);
             e.target.value = '';
@@ -1957,39 +1558,24 @@
 
         function exportReport() {
             const range = $('reportRange').value;
-            let from, to,
-                now = new Date();
-            if (range === 'daily') { from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1); } else if (range === 'weekly') {
-                const day = now.getDay();
-                from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
-                to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 7); } else if (range ===
-                'monthly') { from = new Date(now.getFullYear(), now.getMonth(), 1);
-                to = new Date(now.getFullYear(), now.getMonth() + 1, 1); } else if (range === 'yearly') { from = new Date(
-                    now.getFullYear(), 0, 1);
-                to = new Date(now.getFullYear() + 1, 0, 1); } else if (range === 'custom') { from = new Date($(
-                    'reportFrom').value);
-                to = new Date($('reportTo').value);
-                to.setDate(to.getDate() + 1); } else { from = new Date(0);
-                to = new Date(8640000000000000); }
+            let from, to, now = new Date();
+            if (range === 'daily') { from = new Date(now.getFullYear(),now.getMonth(),now.getDate()); to = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1); }
+            else if (range === 'weekly') { const day = now.getDay(); from = new Date(now.getFullYear(),now.getMonth(),now.getDate()-day); to = new Date(now.getFullYear(),now.getMonth(),now.getDate()-day+7); }
+            else if (range === 'monthly') { from = new Date(now.getFullYear(),now.getMonth(),1); to = new Date(now.getFullYear(),now.getMonth()+1,1); }
+            else if (range === 'yearly') { from = new Date(now.getFullYear(),0,1); to = new Date(now.getFullYear()+1,0,1); }
+            else if (range === 'custom') { from = new Date($('reportFrom').value); to = new Date($('reportTo').value); to.setDate(to.getDate()+1); }
+            else { from = new Date(0); to = new Date(8640000000000000); }
             const filtered = trades.filter(t => { const d = new Date(t.data.date); return d >= from && d < to; });
             if (filtered.length === 0) { showToast('No trades in this range'); return; }
-            let csv =
-                'Date,Pair,Direction,Entry,SL,TP,Exit,Lot Size,Risk,P&L,RR,Status,Broker,Strategy,Session,AccountType,Notes\n';
+            let csv = 'Date,Pair,Direction,Entry,SL,TP,Exit,Lot Size,Risk,P&L,RR,Status,Broker,Strategy,Session,AccountType,Notes\n';
             filtered.forEach(t => {
                 const d = t.data;
-                csv += new Date(d.date).toLocaleDateString() + ',' + d.pair + ',' + d.direction + ',' + d.entry + ',' +
-                    d.sl + ',' + d.tp + ',' + (d.exit || '') + ',' + (d.lotSize || 0).toFixed(3) + ',' + (d
-                    .riskAmount || 0).toFixed(2) + ',' + (d.pl || 0).toFixed(2) + ',' + (d.rr ? d.rr.toFixed(2) :
-                    '') + ',' + d.status + ',' + (d.broker || '') + ',' + (d.strategy || '') + ',' + (d.session ||
-                    '') + ',' + (d.accountType || '') + ',"' + ((d.notes || '').replace(/"/g, '""')) + '"\n';
+                csv += new Date(d.date).toLocaleDateString()+','+d.pair+','+d.direction+','+d.entry+','+d.sl+','+d.tp+','+(d.exit||'')+','+(d.lotSize||0).toFixed(3)+','+(d.riskAmount||0).toFixed(2)+','+(d.pl||0).toFixed(2)+','+(d.rr?d.rr.toFixed(2):'')+','+d.status+','+(d.broker||'')+','+(d.strategy||'')+','+(d.session||'')+','+(d.accountType||'')+',"'+((d.notes||'').replace(/"/g,'""'))+'"\n';
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'trades-' + range + '-' + new Date().toISOString().slice(0, 10) + '.csv';
-            a.click();
+            a.href = url; a.download = 'trades-'+range+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
             showToast('Report downloaded');
             closeModal('reportModal');
         }
@@ -2012,33 +1598,23 @@
                     this.classList.add('active');
                     const tabId = this.dataset.tab;
                     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                    const target = document.getElementById('tab-' + tabId);
+                    const target = document.getElementById('tab-'+tabId);
                     if (target) target.classList.add('active');
-                    if (tabId === 'analytics') { renderCharts();
-                        updateStats();
-                        updateMetricGrid();
-                        updateDisciplineGrid(); }
-                    if (tabId === 'psychology') { updatePsychStats();
-                        renderPsychEntries(); }
-                    if (tabId === 'plan') { updatePlanDisplay();
-                        renderReviews(); }
+                    if (tabId === 'analytics') { renderCharts(); updateStats(); updateMetricGrid(); updateDisciplineGrid(); }
+                    if (tabId === 'psychology') { updatePsychStats(); renderPsychEntries(); }
+                    if (tabId === 'plan') { updatePlanDisplay(); renderReviews(); }
                     if (tabId === 'settings') { updateSettingsUI(); }
                 });
             });
         }
 
         // ---- EVENT LISTENERS ----
-        document.querySelectorAll('#dirToggle button').forEach(b => b.addEventListener('click', function() { if (this
-                    .dataset.dir) setDirection(this.dataset.dir); }));
+        document.querySelectorAll('#dirToggle button').forEach(b => b.addEventListener('click', function() { if (this.dataset.dir) setDirection(this.dataset.dir); }));
         $('openTradeBtn').addEventListener('click', openTrade);
         $('resetBtn').addEventListener('click', function() {
-            $('entryInput').value = '';
-            $('slInput').value = '';
-            $('tpInput').value = '';
-            $('entryConfirmation').value = '';
-            compute();
+            $('entryInput').value = ''; $('slInput').value = ''; $('tpInput').value = ''; $('entryConfirmation').value = ''; compute();
         });
-        ['balanceInput', 'riskProfile', 'entryInput', 'slInput', 'tpInput', 'pairInput'].forEach(id => {
+        ['balanceInput','riskProfile','entryInput','slInput','tpInput','pairInput'].forEach(id => {
             $(id).addEventListener('input', compute);
             $(id).addEventListener('change', compute);
         });
@@ -2046,9 +1622,7 @@
         $('filterPair').addEventListener('change', renderJournal);
         $('filterStatus').addEventListener('change', renderJournal);
         $('filterStrategy').addEventListener('change', renderJournal);
-        if ($('filterBroker')) {
-            $('filterBroker').addEventListener('change', renderJournal);
-        }
+        if ($('filterBroker')) { $('filterBroker').addEventListener('change', renderJournal); }
 
         $('themeToggle').addEventListener('click', function() {
             const isLight = document.body.getAttribute('data-theme') === 'light';
@@ -2088,10 +1662,7 @@
         });
 
         $('calcRrBtn').addEventListener('click', function() {
-            const entry = parseFloat($('rrEntry').value) || 0,
-                sl = parseFloat($('rrSl').value) || 0,
-                tp = parseFloat($('rrTp').value) || 0,
-                pair = $('rrPair').value;
+            const entry = parseFloat($('rrEntry').value)||0, sl = parseFloat($('rrSl').value)||0, tp = parseFloat($('rrTp').value)||0, pair = $('rrPair').value;
             const baseConfig = BROKER_PIP_CONFIG[broker] || BROKER_PIP_CONFIG.exness;
             const config = baseConfig[pair] || { pipSize: 0.0001 };
             const slPips = Math.abs(entry - sl) / config.pipSize;
@@ -2103,8 +1674,7 @@
         });
 
         $('calcPipBtn').addEventListener('click', function() {
-            const pair = $('pipPair').value,
-                lot = parseFloat($('pipLot').value) || 0.01;
+            const pair = $('pipPair').value, lot = parseFloat($('pipLot').value) || 0.01;
             const brkr = $('pipBroker').value;
             const accType = $('pipAccountType').value;
             const pv = getPipValueWithType(pair, lot, brkr, accType);
@@ -2114,12 +1684,10 @@
         });
 
         $('calcTargetBtn').addEventListener('click', function() {
-            const bal = parseFloat($('targetBalance').value) || 100,
-                targetPct = parseFloat($('targetPct').value) || 2;
-            const riskPct = parseFloat($('targetRisk').value) || 1,
-                rr = parseFloat($('targetRr').value) || 2;
-            const targetAmt = bal * (targetPct / 100);
-            const riskPerTrade = bal * (riskPct / 100);
+            const bal = parseFloat($('targetBalance').value)||100, targetPct = parseFloat($('targetPct').value)||2;
+            const riskPct = parseFloat($('targetRisk').value)||1, rr = parseFloat($('targetRr').value)||2;
+            const targetAmt = bal * (targetPct/100);
+            const riskPerTrade = bal * (riskPct/100);
             const tradesNeeded = targetAmt / riskPerTrade;
             $('targetAmount').textContent = '$' + targetAmt.toFixed(2);
             $('targetRiskAmt').textContent = '$' + riskPerTrade.toFixed(2);
@@ -2134,40 +1702,25 @@
         $('saveReviewBtn').addEventListener('click', function() {
             const review = $('weeklyReview').value;
             if (review.trim()) {
-                db.collection('weeklyReviews').add({ userId: currentUser.uid, content: review,
-                        date: new Date().toISOString(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                    .then(docRef => { weeklyReviews.unshift({ id: docRef.id, data: { content: review,
-                                date: new Date().toISOString() } });
-                        renderReviews();
-                        $('weeklyReview').value = '';
-                        showToast('Review saved'); });
+                db.collection('weeklyReviews').add({ userId: currentUser.uid, content: review, date: new Date().toISOString(), updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                    .then(docRef => { weeklyReviews.unshift({ id: docRef.id, data: { content: review, date: new Date().toISOString() } }); renderReviews(); $('weeklyReview').value = ''; showToast('Review saved'); });
             } else { showToast('Please enter a review'); }
         });
 
         // ---- SETTINGS ----
         $('settingsAccountType').addEventListener('change', function() {
-            accountType = this.value;
-            saveBalanceAndHistory();
-            refreshAll();
-            showToast('Account type set to ' + accountType);
+            accountType = this.value; saveBalanceAndHistory(); refreshAll(); showToast('Account type set to ' + accountType);
         });
-
         $('settingsBroker').addEventListener('change', function() {
-            broker = this.value;
-            saveBalanceAndHistory();
-            refreshAll();
-            showToast('Broker switched to ' + broker.charAt(0).toUpperCase() + broker.slice(1));
+            broker = this.value; saveBalanceAndHistory(); refreshAll(); showToast('Broker switched to ' + broker.charAt(0).toUpperCase() + broker.slice(1));
         });
-
         $('depositBtn').addEventListener('click', deposit);
         $('withdrawBtn').addEventListener('click', withdraw);
 
-        // ---- KEYBOARD SHORTCUTS ----
+        // ---- KEYBOARD ----
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.key === 'Enter') openTrade();
-            if (e.key === 'Escape') { closeModal('editModal');
-                closeModal('reportModal'); }
+            if (e.key === 'Escape') { closeModal('editModal'); closeModal('reportModal'); }
         });
         document.querySelectorAll('.modal-overlay').forEach(el => {
             el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
@@ -2191,8 +1744,7 @@
             $('calcTargetBtn').click();
             updateBrokerDisplay();
         }, 500);
-
-        setTimeout(() => showToast('Welcome Victor! Stay disciplined!'), 1000);
+        setTimeout(() => showToast('Welcome Victor! Journal is ready. Stay disciplined!'), 1000);
     </script>
 </body>
 </html>
