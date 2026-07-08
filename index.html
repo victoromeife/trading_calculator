@@ -164,6 +164,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14
 .r-val.gold{color:var(--gold);}
 .r-val.blue{color:var(--blue);}
 
+/* ── TAGS ── */
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.tag-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:11px;font-weight:600;cursor:pointer;transition:all var(--trans);}
+.tag-btn.selected{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
+
 /* ── GUARDRAIL ── */
 .rail{padding:9px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;margin:6px 0;display:flex;align-items:center;gap:8px;}
 .rail.ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,229,180,.2);}
@@ -354,8 +359,54 @@ tr:hover td{background:rgba(255,255,255,.02);}
 <!-- CONTENT -->
 <div class="content">
 
+<!-- PAGE: DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <!-- Progress to 100 trades -->
+  <div class="card accent-green">
+    <div class="card-head">
+      <div class="card-title">100 Trade Challenge</div>
+      <span class="card-badge green" id="dashTradeCount">0 / 100</span>
+    </div>
+    <div style="background:var(--bg3);border-radius:20px;height:8px;overflow:hidden;margin-bottom:8px;">
+      <div id="progressBar" style="height:100%;background:var(--green);border-radius:20px;width:0%;transition:width .6s ease;"></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);" id="dashProgressLabel">Start trading to track your progress toward 100 demo trades</div>
+  </div>
+
+  <!-- Key stats -->
+  <div class="stat-grid four" id="dashStats" style="margin-bottom:14px;"></div>
+
+  <!-- This week -->
+  <div class="card accent-blue">
+    <div class="card-head"><div class="card-title">This Week</div><span class="card-badge blue" id="dashWeekBadge">0 trades</span></div>
+    <div id="dashWeekStats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--green);" id="dashWeekPL">$0</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-top:2px;">P&L</div></div>
+      <div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;" id="dashWeekWR">0%</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-top:2px;">Win Rate</div></div>
+      <div style="text-align:center;"><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold);" id="dashWeekRR">—</div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;margin-top:2px;">Avg R:R</div></div>
+    </div>
+  </div>
+
+  <!-- Open trades -->
+  <div class="card">
+    <div class="card-head"><div class="card-title">Open Trades</div><span class="card-badge gold" id="dashOpenCount">0</span></div>
+    <div id="dashOpenTrades"><div style="color:var(--text3);font-size:12px;padding:12px 0;">No open trades right now</div></div>
+  </div>
+
+  <!-- Recent trades -->
+  <div class="card">
+    <div class="card-head"><div class="card-title">Recent Trades</div></div>
+    <div id="dashRecentTrades"><div style="color:var(--text3);font-size:12px;padding:12px 0;">No trades yet — open your first trade</div></div>
+  </div>
+
+  <!-- Daily limits -->
+  <div class="card accent-red">
+    <div class="card-head"><div class="card-title">Risk Status Today</div></div>
+    <div id="dashRiskStatus"></div>
+  </div>
+</div>
+
 <!-- PAGE: NEW TRADE -->
-<div class="page active" id="page-trade">
+<div class="page" id="page-trade">
   <div id="limitBanner"></div>
   <div class="two-col">
     <!-- LEFT: Form -->
@@ -386,19 +437,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
         <div class="form-row">
           <div class="fg">
+            <label>Lot Size <span style="color:var(--green);font-size:9px;">PRIMARY INPUT</span></label>
+            <input type="number" id="lotSizeInput" placeholder="e.g. 0.75" step="0.001" min="0.01"/>
+            <span class="hint">Enter lot size → risk calculates automatically</span>
+          </div>
+          <div class="fg">
             <label>Balance</label>
             <input type="number" id="balanceInput" readonly/>
             <span class="hint">Managed in Settings</span>
-          </div>
-          <div class="fg">
-            <label>Risk %</label>
-            <select id="riskProfile">
-              <option value="0.5">0.5%</option>
-              <option value="1" selected>1%</option>
-              <option value="1.5">1.5%</option>
-              <option value="2">2%</option>
-            </select>
-            <span class="hint" id="riskCapHint">Max: 2% per your plan</span>
           </div>
         </div>
         <div class="form-row">
@@ -417,18 +463,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
             </select>
           </div>
         </div>
-        <!-- MANUAL LOT OVERRIDE -->
-        <div class="form-row">
-          <div class="fg">
-            <label>Manual Lot Size <span style="color:var(--gold);font-size:9px;">OPTIONAL OVERRIDE</span></label>
-            <input type="number" id="manualLot" placeholder="Leave blank = auto-calculate" step="0.001" min="0.01"/>
-            <span class="hint">Override the calculated lot if needed</span>
-          </div>
-          <div class="fg" style="justify-content:flex-end;">
-            <label>&nbsp;</label>
-            <button class="btn ghost sm" id="clearManualLot">Clear Override</button>
-          </div>
-        </div>
+
         <div class="form-row">
           <div class="fg">
             <label>Strategy</label>
@@ -461,6 +496,20 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div class="fg form-row one">
           <label>Why are you entering? <span style="color:var(--text3);font-size:9px;">(HTF agrees? Zone? Confirmation candle?)</span></label>
           <textarea id="entryConfirmation" rows="3" placeholder="e.g. HTF bullish, price pulled back to 15M demand zone, bullish engulfing formed at 160.30..."></textarea>
+        </div>
+        <div class="fg form-row one">
+          <label>Tags <span style="color:var(--text3);font-size:9px;">tap to select</span></label>
+          <div class="tag-row" id="tagRow">
+            <button type="button" class="tag-btn" data-tag="Perfect Setup">Perfect Setup</button>
+            <button type="button" class="tag-btn" data-tag="FOMO">FOMO</button>
+            <button type="button" class="tag-btn" data-tag="Revenge Trade">Revenge Trade</button>
+            <button type="button" class="tag-btn" data-tag="Waited Patiently">Waited Patiently</button>
+            <button type="button" class="tag-btn" data-tag="Early Entry">Early Entry</button>
+            <button type="button" class="tag-btn" data-tag="Late Entry">Late Entry</button>
+            <button type="button" class="tag-btn" data-tag="News Trade">News Trade</button>
+            <button type="button" class="tag-btn" data-tag="Breakeven">Breakeven</button>
+          </div>
+          <input type="hidden" id="tradeTags" value=""/>
         </div>
         <div id="guardrailBox"></div>
         <div class="btn-row">
@@ -732,7 +781,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-btn active" data-page="trade">
+    <button class="nav-btn active" data-page="dashboard">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" data-page="trade">
       <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       New Trade
     </button>
@@ -964,7 +1017,6 @@ async function saveBal(){
 // ── COMPUTE ──
 function compute(){
   const bal=balance;
-  const riskPct=parseFloat($('riskProfile').value)||1;
   const entry=parseFloat($('entryInput').value)||0;
   const sl=parseFloat($('slInput').value)||0;
   const tp=parseFloat($('tpInput').value)||0;
@@ -972,27 +1024,24 @@ function compute(){
   const brkr=broker;
   const acc=accountType;
 
-  const riskAmt=bal*(riskPct/100);
+  // Lot size is PRIMARY — user enters it directly
+  const lotInput=parseFloat($('lotSizeInput').value)||0;
+  const lot=lotInput>=MIN_LOT?lotInput:0;
+
   const pDist=entry&&sl?pipDist(entry,sl,pair,brkr):0;
-  const pv=pipVal(pair,1,brkr,acc);
-  let lot=pDist>0?riskAmt/(pDist*pv):0;
-  lot=Math.round(lot*1000)/1000;
-
-  // Manual override
-  const manualEl=$('manualLot');
-  const manualV=manualEl&&manualEl.value?parseFloat(manualEl.value):null;
-  let isManual=false;
-  if(manualV&&!isNaN(manualV)&&manualV>=MIN_LOT){lot=manualV;isManual=true;}
-  if(lot>0&&lot<MIN_LOT)lot=MIN_LOT;
-
   const tpDist=entry&&tp?pipDist(entry,tp,pair,brkr):0;
-  const rr=pDist>0?tpDist/pDist:0;
-  const reward=riskAmt*rr;
+  const pv=pipVal(pair,1,brkr,acc);
+
+  // Risk and reward calculated FROM lot size
+  const riskAmt=lot>0&&pDist>0?lot*pDist*pv:0;
+  const riskPct=bal>0&&riskAmt>0?(riskAmt/bal*100):0;
+  const rr=pDist>0&&tpDist>0?tpDist/pDist:0;
+  const reward=lot>0&&tpDist>0?lot*tpDist*pv:0;
 
   $('rPips').textContent=pDist>0?fmt(pDist,1):'—';
-  $('rLot').textContent=lot>0?fmt(lot,3)+(isManual?' ★':''):'—';
-  $('rLot').style.color=isManual?'var(--gold)':'';
-  $('rRisk').textContent=riskAmt>0?'$'+fmt(riskAmt):'—';
+  $('rLot').textContent=lot>0?fmt(lot,3):'—';
+  $('rLot').style.color='';
+  $('rRisk').textContent=riskAmt>0?'$'+fmt(riskAmt)+' ('+fmt(riskPct,1)+'%)':'—';
   $('rRR').textContent=rr>0?'1:'+fmt(rr,2):'—';
   $('rRR').className='r-val '+(rr>=2?'green':rr>0?'red':'');
   $('rReward').textContent=reward>0?'$'+fmt(reward):'—';
@@ -1001,28 +1050,28 @@ function compute(){
   $('balPill').textContent='$'+fmt(bal);
   $('tkBalance').textContent='$'+fmt(bal);
   $('brokerBadge').textContent=brkr.charAt(0).toUpperCase()+brkr.slice(1);
-  $('manualLotBadge').style.display=isManual?'':'none';
+  if($('manualLotBadge'))$('manualLotBadge').style.display='none';
 
   // Guardrails
   let html='';
-  if(rr>=3)html+='<div class="rail ok">✓ R:R 1:'+fmt(rr,2)+' — excellent setup</div>';
+  if(!lot)html+='<div class="rail info">ℹ Enter your lot size above — use the Calculators tab to find it</div>';
+  if(riskPct>2&&lot>0)html+='<div class="rail warn">⚠ Risk is '+fmt(riskPct,1)+'% — above your 2% rule</div>';
+  else if(riskPct>0&&riskPct<=2)html+='<div class="rail ok">✓ Risk: '+fmt(riskPct,1)+'% of balance ($'+fmt(riskAmt)+')</div>';
+  if(rr>=3)html+='<div class="rail ok">✓ R:R 1:'+fmt(rr,2)+' — excellent</div>';
   else if(rr>=2)html+='<div class="rail ok">✓ R:R 1:'+fmt(rr,2)+' — meets your 1:2 rule</div>';
   else if(rr>0)html+='<div class="rail block">✗ R:R 1:'+fmt(rr,2)+' — below your 1:2 minimum</div>';
-  if(isManual)html+='<div class="rail warn">★ Manual lot override active ('+fmt(lot,3)+')</div>';
-  if(lot>0&&lot===MIN_LOT&&!isManual)html+='<div class="rail info">ℹ Lot adjusted to broker minimum (0.01)</div>';
   if(isDailyHit)html+='<div class="rail block">🚫 Daily loss limit hit — no trading today</div>';
   if(isWeeklyHit)html+='<div class="rail block">🚫 Weekly loss limit hit — no trading until Monday</div>';
   $('guardrailBox').innerHTML=html;
 
   // Checklist counter
-  const total=9;
-  let checked=0;
+  const total=9;let checked=0;
   for(let i=1;i<=total;i++){const el=$('c'+i);if(el&&el.checked)checked++;}
   $('checkCount').textContent=checked+'/'+total;
   $('checkCount').style.background=checked===total?'var(--green-dim)':checked>=6?'var(--gold-dim)':'var(--bg3)';
   $('checkCount').style.color=checked===total?'var(--green)':checked>=6?'var(--gold)':'var(--text2)';
 
-  return{bal,riskPct,entry,sl,tp,pair,pDist,lot,riskAmt,rr,reward,direction,brkr,acc,blocked:isDailyHit||isWeeklyHit};
+  return{bal,entry,sl,tp,pair,pDist,lot,riskAmt,riskPct,rr,reward,direction,brkr,acc,blocked:isDailyHit||isWeeklyHit};
 }
 
 function setDir(dir){
@@ -1050,13 +1099,13 @@ function openTrade(){
 
   const trade={
     date:new Date().toISOString(),pair:d.pair,direction:d.direction,entry:d.entry,sl:d.sl,tp:d.tp,
-    exit:null,pipDist:d.pDist,lotSize:d.lot,riskAmount:d.riskAmt,pl:0,rr:d.rr,
+    exit:null,pipDist:d.pDist,lotSize:d.lot,riskAmount:d.riskAmt,riskPct:d.riskPct,pl:0,rr:d.rr,
     prePlanned:$('prePlanned').value,followed:$('followedPlan').value,
     notes:$('entryConfirmation').value,status:'open',session:$('sessionInput').value,
     strategy:$('strategyInput').value,timeframe:$('timeframeInput').value,
     balanceAtOpen:d.bal,broker:d.brkr,accountType:d.acc,
     checklist,checklistComplete:checklist.filter(c=>c.checked).length,
-    manualLot:$('manualLot').value?parseFloat($('manualLot').value):null
+    tags:$('tradeTags').value
   };
 
   db.collection('trades').add({userId:currentUser.uid,...trade,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
@@ -1464,10 +1513,91 @@ function exportCSV(range){
   a.click();showToast('CSV downloaded');closeModal('reportModal');
 }
 
+// ── DASHBOARD ──
+function renderDashboard(){
+  const closed=trades.filter(t=>t.data.status==='closed');
+  const open=trades.filter(t=>t.data.status==='open');
+  const total=trades.length;
+
+  // Progress bar
+  const pct=Math.min(100,Math.round(total/100*100));
+  $('dashTradeCount').textContent=total+' / 100';
+  $('progressBar').style.width=pct+'%';
+  $('dashProgressLabel').textContent=total>=100?'🎉 100 trade challenge complete! Time to go live.'
+    :(100-total)+' trades remaining to complete your demo challenge';
+
+  // Key stats
+  const totalPL=closed.reduce((s,t)=>s+(t.data.pl||0),0);
+  const wins=closed.filter(t=>t.data.pl>0).length;
+  const wr=closed.length?((wins/closed.length)*100).toFixed(1):0;
+  const rrArr=closed.filter(t=>t.data.rr>0).map(t=>t.data.rr);
+  const avgRR=rrArr.length?(rrArr.reduce((a,b)=>a+b)/rrArr.length).toFixed(2):0;
+  $('dashStats').innerHTML=[
+    {v:closed.length,l:'Completed',c:''},
+    {v:wr+'%',l:'Win Rate',c:parseFloat(wr)>=50?'green':'red'},
+    {v:(totalPL>=0?'+':'')+fmt(totalPL),l:'Total P&L',c:totalPL>=0?'green':'red'},
+    {v:'1:'+avgRR,l:'Avg R:R',c:parseFloat(avgRR)>=2?'green':'gold'}
+  ].map(s=>`<div class="stat-box"><div class="stat-val ${s.c}">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+
+  // This week
+  const weekStart=new Date();weekStart.setDate(weekStart.getDate()-weekStart.getDay());weekStart.setHours(0,0,0,0);
+  const weekTrades=closed.filter(t=>new Date(t.data.date)>=weekStart);
+  const weekPL=weekTrades.reduce((s,t)=>s+(t.data.pl||0),0);
+  const weekWins=weekTrades.filter(t=>t.data.pl>0).length;
+  const weekWR=weekTrades.length?Math.round(weekWins/weekTrades.length*100):0;
+  const weekRRArr=weekTrades.filter(t=>t.data.rr>0).map(t=>t.data.rr);
+  const weekRR=weekRRArr.length?(weekRRArr.reduce((a,b)=>a+b)/weekRRArr.length).toFixed(2):'—';
+  $('dashWeekBadge').textContent=weekTrades.length+' trades';
+  $('dashWeekPL').textContent=(weekPL>=0?'+':'')+fmt(weekPL);
+  $('dashWeekPL').style.color=weekPL>=0?'var(--green)':'var(--red)';
+  $('dashWeekWR').textContent=weekTrades.length?weekWR+'%':'—';
+  $('dashWeekRR').textContent=weekRR==='—'?'—':'1:'+weekRR;
+
+  // Open trades
+  $('dashOpenCount').textContent=open.length;
+  $('dashOpenTrades').innerHTML=open.length?open.map(t=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:700;font-size:13px;">${t.data.pair} <span style="font-size:10px;color:${t.data.direction==='long'?'var(--green)':'var(--red)'};">${t.data.direction.toUpperCase()}</span></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">Entry: ${t.data.entry} · Lots: ${fmt(t.data.lotSize,3)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--gold);">TP: ${t.data.tp}</div>
+        <div style="font-size:10px;color:var(--text3);">SL: ${t.data.sl}</div>
+      </div>
+    </div>`).join('')
+    :'<div style="color:var(--text3);font-size:12px;padding:12px 0;">No open trades right now</div>';
+
+  // Recent trades
+  $('dashRecentTrades').innerHTML=closed.slice(0,5).map(t=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:700;font-size:12px;">${t.data.pair} <span class="badge ${t.data.direction}">${t.data.direction.toUpperCase()}</span></div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">${new Date(t.data.date).toLocaleDateString()} · ${t.data.strategy||'—'}</div>
+        ${t.data.tags?`<div style="font-size:9px;color:var(--blue);margin-top:2px;">${t.data.tags}</div>`:''}
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${(t.data.pl||0)>=0?'var(--green)':'var(--red)'};">${fmtPL(t.data.pl)}</div>
+        <div style="font-size:10px;color:var(--text3);">${t.data.rr?'1:'+fmt(t.data.rr,2):'—'} R:R</div>
+      </div>
+    </div>`).join('') || '<div style="color:var(--text3);font-size:12px;padding:12px 0;">No completed trades yet</div>';
+
+  // Risk status
+  const dLimit=balance*(DAILY_LIMIT_PCT/100);
+  const wLimit=balance*(WEEKLY_LIMIT_PCT/100);
+  const dRem=Math.max(0,dLimit-dailyLoss);
+  const wRem=Math.max(0,wLimit-weeklyLoss);
+  $('dashRiskStatus').innerHTML=`
+    <div class="result-row"><span class="r-label">Daily Loss Used</span><span class="r-val ${dailyLoss>0?'red':'green'}">$${fmt(dailyLoss)} / $${fmt(dLimit)}</span></div>
+    <div class="result-row"><span class="r-label">Daily Remaining</span><span class="r-val green">$${fmt(dRem)}</span></div>
+    <div class="result-row" style="border:none;"><span class="r-label">Weekly Remaining</span><span class="r-val green">$${fmt(wRem)}</span></div>`;
+}
+
 // ── REFRESH ALL ──
 function refreshAll(){
   compute();renderJournal();populateFilters();updateStats();updateTicker();
   updatePsychStats();renderPsych();updatePlanDisplay();renderReviews();updateSettingsUI();updateLimits();
+  renderDashboard();
   if($('page-analytics').classList.contains('active'))renderCharts();
 }
 
@@ -1493,6 +1623,7 @@ function initNav(){
       document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));
       closeSidebar();
       if(page==='analytics')setTimeout(renderCharts,100);
+      if(page==='dashboard')renderDashboard();
     });
   });
   // Sidebar auth buttons
@@ -1521,65 +1652,22 @@ function initEvents(){
   // Direction
   document.querySelectorAll('#dirToggle .dir-btn').forEach(b=>b.addEventListener('click',function(){setDir(this.dataset.dir);}));
   // Trade form compute
-  ['pairInput','riskProfile','entryInput','slInput','tpInput','manualLot'].forEach(id=>{
+  ['pairInput','entryInput','slInput','tpInput','lotSizeInput'].forEach(id=>{
     const el=$(id);if(el){el.addEventListener('input',compute);el.addEventListener('change',compute);}
+  });
+  // Tag buttons
+  document.querySelectorAll('.tag-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      this.classList.toggle('selected');
+      const selected=[...document.querySelectorAll('.tag-btn.selected')].map(b=>b.dataset.tag);
+      $('tradeTags').value=selected.join(',');
+    });
   });
   // Checklist
   for(let i=1;i<=9;i++){const el=$('c'+i);if(el)el.addEventListener('change',compute);}
   // Buttons
   $('openTradeBtn').addEventListener('click',openTrade);
-  $('resetBtn').addEventListener('click',()=>{$('entryInput').value='';$('slInput').value='';$('tpInput').value='';$('tpInput').value='';$('entryConfirmation').value='';$('manualLot').value='';compute();});
-  $('clearManualLot').addEventListener('click',()=>{$('manualLot').value='';compute();showToast('Manual lot cleared — auto-calculate active');});
-  // Journal
-  $('searchInput').addEventListener('input',renderJournal);
-  $('filterPair').addEventListener('change',renderJournal);
-  $('filterStatus').addEventListener('change',renderJournal);
-  $('filterStrategy').addEventListener('change',renderJournal);
-  $('reportBtn').addEventListener('click',()=>$('reportModal').classList.add('show'));
-  $('exportBtn').addEventListener('click',()=>{
-    const data=trades.map(t=>t.data);
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-    a.download='journal-'+new Date().toISOString().slice(0,10)+'.json';a.click();showToast('Journal exported');
-  });
-  // Calculators
-  $('calcPosBtn').addEventListener('click',calcPosition);
-  $('calcRRBtn').addEventListener('click',calcRR);
-  $('calcPVBtn').addEventListener('click',calcPipValue);
-  $('calcPTBtn').addEventListener('click',calcProfitTarget);
-  // Psychology
-  $('savePsychBtn').addEventListener('click',savePsych);
-  // Plan
-  $('savePlanBtn').addEventListener('click',savePlan);
-  $('saveReviewBtn').addEventListener('click',()=>{
-    const v=$('weeklyReview').value.trim();if(!v){showToast('Write a review first');return;}
-    db.collection('weeklyReviews').add({userId:currentUser.uid,content:v,date:new Date().toISOString(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
-      .then(ref=>{weeklyReviews.unshift({id:ref.id,data:{content:v,date:new Date().toISOString()}});renderReviews();$('weeklyReview').value='';showToast('Review saved');});
-  });
-  // Settings
-  $('depositBtn').addEventListener('click',deposit);
-  $('withdrawBtn').addEventListener('click',withdraw);
-  $('setBroker').addEventListener('change',function(){broker=this.value;saveBal();refreshAll();showToast('Broker: '+broker);});
-  $('setAccType').addEventListener('change',function(){accountType=this.value;saveBal();refreshAll();showToast('Account type: '+accountType);});
-  // Report modal
-  $('reportRange').addEventListener('change',function(){$('customRange').style.display=this.value==='custom'?'block':'none';});
-  $('dlCSV').addEventListener('click',()=>exportCSV($('reportRange').value));
-  $('closeReport').addEventListener('click',()=>closeModal('reportModal'));
-  // Modal close on background click
-  document.querySelectorAll('.modal-bg').forEach(el=>el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');}));
-  // Keyboard
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal('editModal');closeModal('reportModal');}if(e.ctrlKey&&e.key==='Enter')openTrade();});
-}
-
-// ── INIT ──
-initNav();
-initAuth();
-initEvents();
-setDir('long');
-setTimeout(()=>{
-  compute();calcPosition();calcRR();calcPipValue();calcProfitTarget();
-  showToast('Welcome back, Victor 📈');
-},800);
-</script>
-</body>
-</html>
+  $('resetBtn').addEventListener('click',()=>{
+    $('entryInput').value='';$('slInput').value='';$('tpInput').value='';
+    $('entryConfirmation').value='';$('lotSizeInput').value='';
+    docume
