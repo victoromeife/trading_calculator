@@ -401,7 +401,10 @@ body{
   .toast { bottom: 32px; }
 
   /* Calc & settings cards look better */
-  #page-calc .card, #page-settings .card { max-width: 480px; }
+  #page-settings .card { max-width: 480px; }
+  #page-calc { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  #page-calc .card { max-width: none; margin-bottom: 0; }
+  #page-calc .card:last-child { grid-column: 1 / -1; max-width: 480px; }
   #page-home .stat-row { max-width: 640px; }
   #page-journal .card { max-width: 720px; }
 }
@@ -553,8 +556,10 @@ body{
 
     <!-- CALCULATOR -->
     <div class="page" id="page-calc">
+
+      <!-- 1. Position Size -->
       <div class="card">
-        <div class="card-title">Position Size</div>
+        <div class="card-title">1 · Position Size</div>
         <div class="field">
           <label>Account Balance ($)</label>
           <input type="number" id="cBal" value="100" step="1"/>
@@ -580,6 +585,8 @@ body{
             <option value="GBPUSD">GBPUSD</option>
             <option value="USDJPY">USDJPY</option>
             <option value="AUDUSD">AUDUSD</option>
+            <option value="GBPJPY">GBPJPY</option>
+            <option value="EURJPY">EURJPY</option>
             <option value="XAUUSD">XAUUSD</option>
             <option value="BTCUSD">BTCUSD</option>
           </select>
@@ -592,6 +599,111 @@ body{
         </div>
         <p class="calc-hint">Use this before opening a trade so you know how many lots to put on the New Trade form.</p>
       </div>
+
+      <!-- 2. Risk : Reward -->
+      <div class="card">
+        <div class="card-title">2 · Risk : Reward</div>
+        <div class="row-2">
+          <div class="field">
+            <label>Entry</label>
+            <input type="number" id="rrEntry" step="any" placeholder="1.08500"/>
+          </div>
+          <div class="field">
+            <label>Stop Loss</label>
+            <input type="number" id="rrSL" step="any" placeholder="1.08000"/>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Take Profit</label>
+            <input type="number" id="rrTP" step="any" placeholder="1.09500"/>
+          </div>
+          <div class="field">
+            <label>Pair</label>
+            <select id="rrPair">
+              <option value="EURUSD">EURUSD</option>
+              <option value="GBPUSD">GBPUSD</option>
+              <option value="USDJPY">USDJPY</option>
+              <option value="AUDUSD">AUDUSD</option>
+              <option value="GBPJPY">GBPJPY</option>
+              <option value="EURJPY">EURJPY</option>
+              <option value="XAUUSD">XAUUSD</option>
+              <option value="BTCUSD">BTCUSD</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn primary" id="calcRRBtn">Calculate R:R</button>
+        <div class="result-box" id="rrResult" style="margin-top:14px;display:none;">
+          <div class="result-row"><span class="lbl">SL Distance</span><span class="val red" id="rrSLPips">—</span></div>
+          <div class="result-row"><span class="lbl">TP Distance</span><span class="val green" id="rrTPPips">—</span></div>
+          <div class="result-row"><span class="lbl">Risk : Reward</span><span class="val gold" id="rrValue">—</span></div>
+        </div>
+        <p class="calc-hint">Aim for at least 1:2 so your winners are bigger than your losers.</p>
+      </div>
+
+      <!-- 3. Pip Value -->
+      <div class="card">
+        <div class="card-title">3 · Pip Value</div>
+        <div class="row-2">
+          <div class="field">
+            <label>Pair</label>
+            <select id="pvPair">
+              <option value="EURUSD">EURUSD</option>
+              <option value="GBPUSD">GBPUSD</option>
+              <option value="USDJPY">USDJPY</option>
+              <option value="AUDUSD">AUDUSD</option>
+              <option value="GBPJPY">GBPJPY</option>
+              <option value="EURJPY">EURJPY</option>
+              <option value="XAUUSD">XAUUSD</option>
+              <option value="BTCUSD">BTCUSD</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Lot Size</label>
+            <input type="number" id="pvLot" value="0.01" step="0.01" min="0.01"/>
+          </div>
+        </div>
+        <button class="btn primary" id="calcPVBtn">Calculate Pip Value</button>
+        <div class="result-box" id="pvResult" style="margin-top:14px;display:none;">
+          <div class="result-row"><span class="lbl">Per pip</span><span class="val gold" id="pvOne">—</span></div>
+          <div class="result-row"><span class="lbl">Per 10 pips</span><span class="val" id="pvTen" style="color:var(--blue)">—</span></div>
+          <div class="result-row"><span class="lbl">Per 100 pips</span><span class="val green" id="pvHundred">—</span></div>
+        </div>
+        <p class="calc-hint">Shows how much money you make or lose per pip with your lot size. Uses your Settings broker &amp; account type.</p>
+      </div>
+
+      <!-- 4. Profit Target -->
+      <div class="card">
+        <div class="card-title">4 · Profit Target Planner</div>
+        <div class="row-2">
+          <div class="field">
+            <label>Balance ($)</label>
+            <input type="number" id="ptBal" value="100" step="1"/>
+          </div>
+          <div class="field">
+            <label>Target profit %</label>
+            <input type="number" id="ptPct" value="10" step="1"/>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Risk % per trade</label>
+            <input type="number" id="ptRisk" value="1" step="0.1"/>
+          </div>
+          <div class="field">
+            <label>Avg R:R (e.g. 2)</label>
+            <input type="number" id="ptRR" value="2" step="0.1"/>
+          </div>
+        </div>
+        <button class="btn primary" id="calcPTBtn">Calculate Plan</button>
+        <div class="result-box" id="ptResult" style="margin-top:14px;display:none;">
+          <div class="result-row"><span class="lbl">Profit Target</span><span class="val green" id="ptTarget">—</span></div>
+          <div class="result-row"><span class="lbl">Risk per Trade</span><span class="val red" id="ptRiskAmt">—</span></div>
+          <div class="result-row"><span class="lbl">Winning Trades Needed</span><span class="val gold" id="ptNeeded">—</span></div>
+        </div>
+        <p class="calc-hint">Rough idea of how many good trades you need to hit a profit goal (assumes you win at your average R:R).</p>
+      </div>
+
     </div>
 
     <!-- SETTINGS -->
@@ -1030,6 +1142,48 @@ function calcLot(){
   $('calcResult').style.display = 'block';
 }
 
+function calcRR(){
+  const entry = parseFloat($('rrEntry').value)||0;
+  const sl = parseFloat($('rrSL').value)||0;
+  const tp = parseFloat($('rrTP').value)||0;
+  const pair = $('rrPair').value;
+  if(!entry || !sl || !tp){ showToast('Enter entry, SL and TP'); return; }
+  const slP = pipDist(entry, sl, pair, broker);
+  const tpP = pipDist(entry, tp, pair, broker);
+  const rr = slP > 0 ? tpP / slP : 0;
+  $('rrSLPips').textContent = fmt(slP,1)+' pips';
+  $('rrTPPips').textContent = fmt(tpP,1)+' pips';
+  $('rrValue').textContent = '1:'+fmt(rr,2);
+  $('rrValue').className = 'val '+(rr>=2?'green':'gold');
+  $('rrResult').style.display = 'block';
+}
+
+function calcPipValue(){
+  const pair = $('pvPair').value;
+  const lot = parseFloat($('pvLot').value)||0.01;
+  const pv = pipVal(pair, lot, broker, accountType);
+  $('pvOne').textContent = '$'+fmt(pv,4);
+  $('pvTen').textContent = '$'+fmt(pv*10,2);
+  $('pvHundred').textContent = '$'+fmt(pv*100,2);
+  $('pvResult').style.display = 'block';
+}
+
+function calcProfitTarget(){
+  const bal = parseFloat($('ptBal').value)||100;
+  const pct = parseFloat($('ptPct').value)||10;
+  const rPct = parseFloat($('ptRisk').value)||1;
+  const rr = parseFloat($('ptRR').value)||2;
+  const target = bal * (pct/100);
+  const riskPerT = bal * (rPct/100);
+  // Each winning trade at R:R gives reward = risk * rr
+  const rewardPerWin = riskPerT * rr;
+  const needed = rewardPerWin > 0 ? target / rewardPerWin : 0;
+  $('ptTarget').textContent = '$'+fmt(target);
+  $('ptRiskAmt').textContent = '$'+fmt(riskPerT);
+  $('ptNeeded').textContent = fmt(needed,1);
+  $('ptResult').style.display = 'block';
+}
+
 function refreshAll(){
   $('balChip').textContent = '$'+fmt(balance);
   $('setBal').textContent = '$'+fmt(balance);
@@ -1154,6 +1308,12 @@ function goPage(page){
   const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
   if(nav) nav.classList.add('active');
   if(page==='new') compute();
+  if(page==='calc'){
+    if(balance>0){
+      $('cBal').value = fmt(balance);
+      $('ptBal').value = fmt(balance);
+    }
+  }
 }
 
 function initEvents(){
@@ -1196,6 +1356,9 @@ function initEvents(){
   });
 
   $('calcLotBtn').addEventListener('click', calcLot);
+  $('calcRRBtn').addEventListener('click', calcRR);
+  $('calcPVBtn').addEventListener('click', calcPipValue);
+  $('calcPTBtn').addEventListener('click', calcProfitTarget);
   $('depositBtn').addEventListener('click', deposit);
   $('withdrawBtn').addEventListener('click', withdraw);
   $('setBroker').addEventListener('change', function(){
