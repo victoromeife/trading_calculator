@@ -17,7 +17,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #0a0e17;
@@ -349,6 +349,11 @@ body.light{
   position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:1;
 }
 
+.strat-rule-count{
+  font-size:10px;background:var(--blue-dim);color:var(--blue);
+  padding:2px 10px;border-radius:12px;margin-left:8px;
+}
+
 /* Desktop Styles */
 @media (min-width: 900px) {
   body { overflow: auto; }
@@ -444,7 +449,11 @@ body.light{
 }
 
 @media (max-width: 480px) {
-  .stat-row.four{grid-template-columns:1fr 1fr;}
+  .stat-row.four{grid-template-columns:1fr 1fr; gap:8px;}
+  .stat-row.four .stat{padding:10px 6px;}
+  .stat-row.four .stat-val{font-size:13px !important;}
+  .stat-row.four .stat-lbl{font-size:9px;}
+  .stat-row.three .stat-val{font-size:15px;}
   .row-3{grid-template-columns:1fr 1fr;}
   .trigger-pills{grid-template-columns:1fr 1fr 1fr;}
   .topbar .logo{font-size:15px;}
@@ -627,16 +636,9 @@ body.light{
 
       <div class="section" style="margin-top:20px;">
         <div class="field">
-          <label>Strategy</label>
+          <label>Strategy Used</label>
           <select id="strategyInput">
-            <option value="">Select strategy...</option>
-            <option value="trend">Trend Following</option>
-            <option value="breakout">Breakout</option>
-            <option value="mean-reversion">Mean Reversion</option>
-            <option value="swing">Swing Trading</option>
-            <option value="scalp">Scalping</option>
-            <option value="momentum">Momentum</option>
-            <option value="range">Range Trading</option>
+            <option value="">— Select strategy —</option>
           </select>
         </div>
         <div class="field">
@@ -664,7 +666,7 @@ body.light{
         </div>
         <div class="field">
           <label>Notes (optional)</label>
-          <textarea id="notesInput" placeholder="Why did you take this trade?"></textarea>
+          <textarea id="notesInput" placeholder="Why did you take this trade? What did you see?"></textarea>
         </div>
       </div>
 
@@ -935,6 +937,27 @@ body.light{
         </div>
       </div>
 
+
+      <div class="card">
+        <div class="card-title">
+          My Strategies
+          <span class="strat-rule-count" id="stratCount">0 rules</span>
+        </div>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:12px;line-height:1.5;">
+          Create the exact strategies you are testing. Write the rules clearly so you can follow them every time. Select the strategy when you open a trade — this will help you later see which approach is actually working.
+        </p>
+        <div class="field">
+          <label>Strategy Name</label>
+          <input type="text" id="stratName" placeholder="e.g. APA + Top Down + 15m Confirmation">
+        </div>
+        <div class="field">
+          <label>Full Rules / Description</label>
+          <textarea id="stratDesc" rows="5" placeholder="Write the full rules here so you can follow them:&#10;&#10;1. Only trade during London or Overlap&#10;2. Higher timeframe must show clear structure&#10;3. Wait for 15m confirmation candle&#10;4. Risk maximum 1%&#10;5. ..."></textarea>
+        </div>
+        <button class="btn primary sm" id="addStratBtn" style="width:auto;margin-bottom:14px;">+ Add Strategy</button>
+        <div id="stratList"></div>
+      </div>
+
       <div class="card">
         <div class="card-title">Data Management</div>
         <div class="btn-row">
@@ -970,7 +993,7 @@ body.light{
   </nav>
 </div>
 
-<div class="shortcut-hint" id="shortcutHint">⌨️ Keyboard shortcuts: Ctrl+N (New) | Ctrl+J (Journal) | Esc (Close)</div>
+<div class="shortcut-hint" id="shortcutHint">⌨️ Keyboard shortcuts: Ctrl+N (New) | Ctrl+J (Journal) | Ctrl+K (Calc) | Esc (Close)</div>
 
 <div class="modal-bg" id="tradeModal">
   <div class="modal">
@@ -994,7 +1017,19 @@ const FBCFG = {
 firebase.initializeApp(FBCFG);
 const db = firebase.firestore();
 const auth = firebase.auth();
-db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+
+// Handle persistence more safely
+try {
+  db.enablePersistence({ synchronizeTabs: true }).catch(function(err) {
+    if (err.code === 'failed-precondition') {
+      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+    } else if (err.code === 'unimplemented') {
+      console.warn('The current browser does not support all of the features required for persistence.');
+    }
+  });
+} catch(e) {
+  console.warn('Persistence not available:', e);
+}
 
 const PIP = {
   exness:{
@@ -1026,39 +1061,69 @@ let accountType = 'cent';
 let broker = 'exness';
 let journalFilter = 'all';
 let currentTradeId = null;
+let strategies = [];
 let goals = {dailyLossLimit:0, weeklyLossLimit:0, monthlyGoal:0};
 let equityChart = null;
 let theme = 'dark';
+let isLoading = false;
 
 const $ = id => document.getElementById(id);
 
 function pipCfg(pair, brkr){ return (PIP[brkr]||PIP.exness)[pair] || {pip:0.0001,val:10}; }
-function pipDist(a, b, pair, brkr) { return (b - a) / pipCfg(pair, brkr).pip; }
-function pipVal(pair,lot,brkr,acc){ const c=pipCfg(pair,brkr); return c.val*lot*(acc==='cent'?0.01:1); }
-function fmt(n,d=2){ return (Number(n)||0).toFixed(d); }
-function fmtPL(n){ return (n>=0?'+':'') + fmt(n); }
-function showToast(msg, dur=2800){
-  const t=$('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'), dur);
+
+function pipDist(a, b, pair, brkr) {
+  if (!a || !b || !pair) return 0;
+  var cfg = pipCfg(pair, brkr);
+  if (!cfg || !cfg.pip) return 0;
+  var diff = b - a;
+  if (diff === 0) return 0;
+  return diff / cfg.pip;
 }
+
+function pipVal(pair,lot,brkr,acc){ 
+  var c=pipCfg(pair,brkr); 
+  if (!c || !c.val) return 0;
+  return c.val * lot * (acc==='cent' ? 0.01 : 1); 
+}
+
+function fmt(n,d){ 
+  if (d === undefined) d = 2;
+  if (isNaN(n) || !isFinite(n)) return '0'.padEnd(d+2, '0');
+  return Number(n).toFixed(d); 
+}
+
+function fmtPL(n){ 
+  if (isNaN(n) || !isFinite(n)) return '0.00';
+  return (n>=0?'+':'') + fmt(n); 
+}
+
+function showToast(msg, dur){
+  if (dur === undefined) dur = 2800;
+  var t=$('toast'); 
+  t.textContent=msg; 
+  t.classList.add('show');
+  clearTimeout(t._t); 
+  t._t=setTimeout(function(){ t.classList.remove('show'); }, dur);
+}
+
 function closeModal(){ $('tradeModal').classList.remove('show'); }
 
 function getSession() {
-  const h = new Date().getHours();
-  if (h >= 12 && h < 15) return 'overlap';
-  if (h >= 0 && h < 8) return 'asian';
-  if (h >= 7 && h < 15) return 'london';
-  if (h >= 12 && h < 20) return 'newyork';
+  var h = new Date().getHours();
+  if (h >= 12 && h < 16) return 'overlap';
+  if (h >= 7 && h < 12) return 'london';
+  if (h >= 16 && h < 21) return 'newyork';
+  if (h >= 0 && h < 7) return 'asian';
   return 'unknown';
 }
 
 function getSessionLabel(s) {
-  const map = {asian:'Asian', london:'London', newyork:'New York', overlap:'Overlap', unknown:'—'};
+  var map = {asian:'Asian', london:'London', newyork:'New York', overlap:'Overlap', unknown:'—'};
   return map[s] || s;
 }
 
 function initAuth(){
-  auth.onAuthStateChanged(user=>{
+  auth.onAuthStateChanged(function(user){
     currentUser = user;
     if(user){
       $('authBtn').textContent = 'Out';
@@ -1077,34 +1142,36 @@ function initAuth(){
       refreshAll();
     }
   });
-  $('authBtn').addEventListener('click', ()=>{
+  $('authBtn').addEventListener('click', function(){
     if(currentUser) auth.signOut();
-    else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>showToast(e.message));
+    else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){ showToast(e.message); });
   });
-  $('signOutBtn').addEventListener('click', ()=>auth.signOut());
+  $('signOutBtn').addEventListener('click', function(){ auth.signOut(); });
 }
 
 async function loadAll(){
-  if(!currentUser) return;
+  if(!currentUser || isLoading) return;
+  isLoading = true;
   try{
-    const [tSnap, sSnap, gSnap] = await Promise.all([
+    var [tSnap, sSnap, gSnap] = await Promise.all([
       db.collection('trades').where('userId','==',currentUser.uid).get(),
       db.collection('userSettings').where('userId','==',currentUser.uid).limit(1).get(),
       db.collection('userGoals').where('userId','==',currentUser.uid).limit(1).get()
     ]);
-    trades = tSnap.docs.map(d=>({id:d.id, data:d.data()})).sort((a,b)=> new Date(b.data.date)-new Date(a.data.date));
+    trades = tSnap.docs.map(function(d){ return {id:d.id, data:d.data()}; }).sort(function(a,b){ return new Date(b.data.date)-new Date(a.data.date); });
     if(!sSnap.empty){
-      const s = sSnap.docs[0].data();
+      var s = sSnap.docs[0].data();
       balance = s.balance || 0;
       accountType = s.accountType || 'cent';
       broker = s.broker || 'exness';
       balanceHistory = s.history || [];
+      strategies = s.strategies || [];
       $('setBroker').value = broker;
       $('setAccType').value = accountType;
     } else {
       await db.collection('userSettings').add({
         userId:currentUser.uid, balance:0, accountType:'cent', broker:'exness',
-        history:[], updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        history:[], strategies:[], updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
     if(!gSnap.empty){
@@ -1114,26 +1181,34 @@ async function loadAll(){
       $('monthlyGoal').value = goals.monthlyGoal || '';
     }
     refreshAll();
-  }catch(e){ console.error(e); showToast('Load error'); }
+  }catch(e){ 
+    console.error(e); 
+    showToast('Load error: ' + (e.message || 'unknown'));
+  }
+  isLoading = false;
 }
 
 async function saveBal(){
   if(!currentUser) return;
   try{
-    const q = await db.collection('userSettings').where('userId','==',currentUser.uid).limit(1).get();
-    const payload = {
-      balance, accountType, broker, history: balanceHistory,
+    var q = await db.collection('userSettings').where('userId','==',currentUser.uid).limit(1).get();
+    var payload = {
+      balance: balance,
+      accountType: accountType,
+      broker: broker,
+      history: balanceHistory,
+      strategies: strategies,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     if(q.empty) await db.collection('userSettings').add({userId:currentUser.uid, ...payload});
     else await q.docs[0].ref.update(payload);
-  }catch(e){ console.error(e); }
+  }catch(e){ console.error('Save error:', e); }
 }
 
 async function saveGoals(){
   if(!currentUser) return;
   try{
-    const q = await db.collection('userGoals').where('userId','==',currentUser.uid).limit(1).get();
+    var q = await db.collection('userGoals').where('userId','==',currentUser.uid).limit(1).get();
     if(q.empty) await db.collection('userGoals').add({userId:currentUser.uid, ...goals});
     else await q.docs[0].ref.update(goals);
     showToast('Goals saved');
@@ -1141,19 +1216,19 @@ async function saveGoals(){
 }
 
 function compute(){
-  const entry = parseFloat($('entryInput').value)||0;
-  const sl = parseFloat($('slInput').value)||0;
-  const tp = parseFloat($('tpInput').value)||0;
-  const lot = parseFloat($('lotInput').value)||0;
-  const pair = $('pairInput').value;
+  var entry = parseFloat($('entryInput').value)||0;
+  var sl = parseFloat($('slInput').value)||0;
+  var tp = parseFloat($('tpInput').value)||0;
+  var lot = parseFloat($('lotInput').value)||0;
+  var pair = $('pairInput').value;
 
-  const pDist = (entry && sl) ? pipDist(entry, sl, pair, broker) : 0;
-  const tpDist = (entry && tp) ? pipDist(entry, tp, pair, broker) : 0;
-  const pv = pipVal(pair, 1, broker, accountType);
-  const riskAmt = (lot >= MIN_LOT && pDist > 0) ? lot * pDist * pv : 0;
-  const reward = (lot >= MIN_LOT && tpDist > 0) ? lot * tpDist * pv : 0;
-  const rr = pDist > 0 && tpDist > 0 ? tpDist / pDist : 0;
-  const riskPct = balance > 0 && riskAmt > 0 ? (riskAmt / balance * 100) : 0;
+  var pDist = (entry && sl && entry !== sl) ? Math.abs(pipDist(entry, sl, pair, broker)) : 0;
+  var tpDist = (entry && tp && entry !== tp) ? Math.abs(pipDist(entry, tp, pair, broker)) : 0;
+  var pv = pipVal(pair, 1, broker, accountType);
+  var riskAmt = (lot >= MIN_LOT && pDist > 0 && pv > 0) ? lot * pDist * pv : 0;
+  var reward = (lot >= MIN_LOT && tpDist > 0 && pv > 0) ? lot * tpDist * pv : 0;
+  var rr = pDist > 0 && tpDist > 0 ? tpDist / pDist : 0;
+  var riskPct = balance > 0 && riskAmt > 0 ? (riskAmt / balance * 100) : 0;
 
   $('rRisk').textContent = riskAmt > 0 ? '$'+fmt(riskAmt)+' ('+fmt(riskPct,1)+'%)' : '—';
   $('rRisk').className = 'val ' + (riskPct > 2 ? 'red' : '');
@@ -1168,27 +1243,30 @@ function compute(){
     $('riskHint').textContent = '⚠️ Risk is above 2% of your balance. Consider smaller lot.';
   } else if(rr > 0 && rr < 2){
     $('riskHint').textContent = '📊 R:R is under 1:2. Aim for at least 1:2.';
-  } else {
+  } else if(rr > 0 && rr >= 2) {
     $('riskHint').textContent = '✅ Looks good. Tap Open Trade when ready.';
+  } else {
+    $('riskHint').textContent = 'Enter entry, SL, TP and lot size to see risk.';
   }
 
-  return {entry, sl, tp, lot, pair, pDist, riskAmt, riskPct, rr, reward};
+  return {entry:entry, sl:sl, tp:tp, lot:lot, pair:pair, pDist:pDist, riskAmt:riskAmt, riskPct:riskPct, rr:rr, reward:reward};
 }
 
 function openTrade(){
   if(!currentUser){ showToast('Sign in first'); return; }
-  const d = compute();
+  var d = compute();
   if(!d.entry || !d.sl || !d.tp){ showToast('Fill entry, SL and TP'); return; }
   if(d.lot < MIN_LOT){ showToast('Lot size min is 0.01'); return; }
+  if(d.riskPct > 5){ showToast('⚠️ Risk is high ('+fmt(d.riskPct,1)+'%). Adjust lot size.'); return; }
 
-  const session = $('sessionInput').value || getSession();
-  const triggerPrice = parseFloat($('triggerPrice').value) || 0;
+  var session = $('sessionInput').value || getSession();
+  var triggerPrice = parseFloat($('triggerPrice').value) || 0;
 
-  const trade = {
+  var trade = {
     date: new Date().toISOString(),
     pair: d.pair,
-    direction,
-    triggerType,
+    direction: direction,
+    triggerType: triggerType,
     triggerPrice: triggerType !== 'market' ? triggerPrice : 0,
     entry: d.entry,
     sl: d.sl,
@@ -1201,20 +1279,20 @@ function openTrade(){
     pl: 0,
     rr: d.rr,
     notes: $('notesInput').value.trim(),
-    strategy: $('strategyInput').value,
+    strategy: $('strategyInput').value || '',
     session: session,
     emotion: $('emotionInput').value,
     status: triggerType === 'market' ? 'open' : 'pending',
     triggered: triggerType === 'market' ? true : false,
     balanceAtOpen: balance,
-    broker,
-    accountType
+    broker: broker,
+    accountType: accountType
   };
 
   db.collection('trades').add({
     userId: currentUser.uid, ...trade,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(ref=>{
+  }).then(function(ref){
     trades.unshift({id: ref.id, data: {...trade, id: ref.id}});
     refreshAll();
     showToast('Trade opened · '+d.pair + (triggerType !== 'market' ? ' (pending)' : ''));
@@ -1222,13 +1300,13 @@ function openTrade(){
     $('lotInput').value=''; $('notesInput').value=''; $('triggerPrice').value='';
     compute();
     goPage('home');
-  }).catch(e=>{ console.error(e); showToast('Error saving'); });
+  }).catch(function(e){ console.error(e); showToast('Error saving'); });
 }
 
 function triggerPendingTrade(id){
-  const t = trades.find(x => x.id === id);
+  var t = trades.find(function(x){ return x.id === id; });
   if(!t) return;
-  const d = t.data;
+  var d = t.data;
   if(d.status !== 'pending') return;
 
   db.collection('trades').doc(id).update({
@@ -1236,25 +1314,25 @@ function triggerPendingTrade(id){
     triggered: true,
     triggeredAt: new Date().toISOString(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
+  }).then(function(){
     d.status = 'open';
     d.triggered = true;
     d.triggeredAt = new Date().toISOString();
     refreshAll();
     showToast('✅ Trade triggered!');
-  }).catch(e=> showToast('Error triggering trade'));
+  }).catch(function(e){ showToast('Error triggering trade'); });
 }
 
 function openTradeModal(id){
-  const t = trades.find(x=>x.id===id);
+  var t = trades.find(function(x){ return x.id === id; });
   if(!t) return;
   currentTradeId = id;
-  const d = t.data;
-  const isOpen = d.status === 'open';
-  const isPending = d.status === 'pending';
+  var d = t.data;
+  var isOpen = d.status === 'open';
+  var isPending = d.status === 'pending';
   $('modalTitle').textContent = isPending ? 'Pending Trade' : (isOpen ? 'Close Trade' : 'Trade Details');
 
-  let html = `
+  var html = `
     <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;background:var(--bg3);padding:12px;border-radius:10px;">
       <span><span style="color:var(--text3);font-size:11px;">Pair</span><br><b>${d.pair}</b></span>
       <span><span style="color:var(--text3);font-size:11px;">Dir</span><br><span class="badge ${d.direction}">${d.direction}</span></span>
@@ -1312,53 +1390,57 @@ function openTradeModal(id){
   $('tradeModal').classList.add('show');
 
   if(isPending){
-    $('doTriggerBtn').onclick = ()=> {
-      triggerPendingTrade(id);
-      closeModal();
-    };
+    $('doTriggerBtn').onclick = function(){ triggerPendingTrade(id); closeModal(); };
   } else if(isOpen){
     $('doCloseBtn').onclick = closeTrade;
   } else {
-    const del = $('doDeleteBtn');
-    if(del) del.onclick = ()=> deleteTrade(id);
+    var del = $('doDeleteBtn');
+    if(del) del.onclick = function(){ deleteTrade(id); };
   }
   $('cancelModalBtn').onclick = closeModal;
 }
 
 async function closeTrade(){
-  const t = trades.find(x => x.id === currentTradeId);
+  var t = trades.find(function(x){ return x.id === currentTradeId; });
   if(!t) return;
 
-  const exitEl = $('exitPrice');
+  var exitEl = $('exitPrice');
   if(!exitEl || !exitEl.value){ showToast('Enter exit price'); return; }
 
-  const exit = parseFloat(exitEl.value);
+  var exit = parseFloat(exitEl.value);
   if(isNaN(exit) || exit === 0){ showToast('Invalid exit price'); return; }
 
-  const d = t.data;
-  const signedPips = pipDist(d.entry, exit, d.pair, d.broker || broker);
-  const directionMultiplier = d.direction === 'long' ? 1 : -1;
-  const profitPips = signedPips * directionMultiplier;
-  const pv = pipVal(d.pair, 1, d.broker || broker, d.accountType || accountType);
-  const pl = d.lotSize * profitPips * pv;
-  const rr = d.pipDist > 0 ? Math.abs(signedPips) / d.pipDist : 0;
-  const lesson = $('exitLesson')?.value || '';
+  var d = t.data;
+  var signedPips = pipDist(d.entry, exit, d.pair, d.broker || broker);
+  var directionMultiplier = d.direction === 'long' ? 1 : -1;
+  var profitPips = signedPips * directionMultiplier;
+  var pv = pipVal(d.pair, 1, d.broker || broker, d.accountType || accountType);
+  var pl = d.lotSize * profitPips * pv;
+  var rr = d.pipDist > 0 ? Math.abs(signedPips) / d.pipDist : 0;
+  var lesson = $('exitLesson')?.value || '';
 
   try {
     await db.collection('trades').doc(currentTradeId).update({
-      exit, pl, rr, status: 'closed', lesson,
+      exit: exit, pl: pl, rr: rr, status: 'closed', lesson: lesson,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    const idx = trades.findIndex(x => x.id === currentTradeId);
-    if(idx !== -1) Object.assign(trades[idx].data, {exit, pl, rr, status: 'closed', lesson});
+    var idx = trades.findIndex(function(x){ return x.id === currentTradeId; });
+    if(idx !== -1) {
+      var updatedData = trades[idx].data;
+      updatedData.exit = exit;
+      updatedData.pl = pl;
+      updatedData.rr = rr;
+      updatedData.status = 'closed';
+      updatedData.lesson = lesson;
+    }
 
     balance = Math.round((balance + pl) * 100) / 100;
     balanceHistory.push({
       date: new Date().toISOString(),
       type: 'trade',
       amount: pl,
-      balance,
+      balance: balance,
       tradeId: currentTradeId
     });
 
@@ -1373,7 +1455,7 @@ async function deleteTrade(id){
   if(!confirm('Delete this trade?')) return;
   try{
     await db.collection('trades').doc(id).delete();
-    trades = trades.filter(t=>t.id!==id);
+    trades = trades.filter(function(t){ return t.id !== id; });
     refreshAll();
     closeModal();
     showToast('Trade deleted');
@@ -1381,21 +1463,22 @@ async function deleteTrade(id){
 }
 
 async function deposit(){
-  const amt = parseFloat($('depositAmt').value);
+  var amt = parseFloat($('depositAmt').value);
   if(!amt || amt<=0){ showToast('Enter a valid amount'); return; }
   balance = Math.round((balance+amt)*100)/100;
-  balanceHistory.push({date:new Date().toISOString(), type:'deposit', amount:amt, balance});
+  balanceHistory.push({date:new Date().toISOString(), type:'deposit', amount:amt, balance:balance});
   await saveBal();
   $('depositAmt').value='';
   refreshAll();
   showToast('💰 Deposited $'+fmt(amt));
 }
+
 async function withdraw(){
-  const amt = parseFloat($('withdrawAmt').value);
+  var amt = parseFloat($('withdrawAmt').value);
   if(!amt || amt<=0){ showToast('Enter a valid amount'); return; }
   if(amt > balance){ showToast('Not enough balance'); return; }
   balance = Math.round((balance-amt)*100)/100;
-  balanceHistory.push({date:new Date().toISOString(), type:'withdrawal', amount:-amt, balance});
+  balanceHistory.push({date:new Date().toISOString(), type:'withdrawal', amount:-amt, balance:balance});
   await saveBal();
   $('withdrawAmt').value='';
   refreshAll();
@@ -1403,16 +1486,17 @@ async function withdraw(){
 }
 
 function calcLot(){
-  const bal = parseFloat($('cBal').value)||100;
-  const riskPct = parseFloat($('cRisk').value)||1;
-  const entry = parseFloat($('cEntry').value)||0;
-  const sl = parseFloat($('cSL').value)||0;
-  const pair = $('cPair').value;
+  var bal = parseFloat($('cBal').value)||100;
+  var riskPct = parseFloat($('cRisk').value)||1;
+  var entry = parseFloat($('cEntry').value)||0;
+  var sl = parseFloat($('cSL').value)||0;
+  var pair = $('cPair').value;
   if(!entry || !sl){ showToast('Enter entry and SL'); return; }
-  const riskAmt = bal * (riskPct/100);
-  const pDist = pipDist(entry, sl, pair, broker);
-  const pv = pipVal(pair, 1, broker, accountType);
-  let lot = pDist > 0 ? riskAmt / (pDist * pv) : 0;
+  if(entry === sl){ showToast('Entry and SL cannot be the same'); return; }
+  var riskAmt = bal * (riskPct/100);
+  var pDist = Math.abs(pipDist(entry, sl, pair, broker));
+  var pv = pipVal(pair, 1, broker, accountType);
+  var lot = pDist > 0 && pv > 0 ? riskAmt / (pDist * pv) : 0;
   lot = Math.max(MIN_LOT, Math.round(lot*1000)/1000);
   $('crRisk').textContent = '$'+fmt(riskAmt);
   $('crPips').textContent = fmt(pDist,1);
@@ -1421,14 +1505,15 @@ function calcLot(){
 }
 
 function calcRR(){
-  const entry = parseFloat($('rrEntry').value)||0;
-  const sl = parseFloat($('rrSL').value)||0;
-  const tp = parseFloat($('rrTP').value)||0;
-  const pair = $('rrPair').value;
+  var entry = parseFloat($('rrEntry').value)||0;
+  var sl = parseFloat($('rrSL').value)||0;
+  var tp = parseFloat($('rrTP').value)||0;
+  var pair = $('rrPair').value;
   if(!entry || !sl || !tp){ showToast('Enter entry, SL and TP'); return; }
-  const slP = pipDist(entry, sl, pair, broker);
-  const tpP = pipDist(entry, tp, pair, broker);
-  const rr = slP > 0 ? tpP / slP : 0;
+  if(entry === sl || entry === tp){ showToast('Prices cannot be equal'); return; }
+  var slP = Math.abs(pipDist(entry, sl, pair, broker));
+  var tpP = Math.abs(pipDist(entry, tp, pair, broker));
+  var rr = slP > 0 ? tpP / slP : 0;
   $('rrSLPips').textContent = fmt(slP,1)+' pips';
   $('rrTPPips').textContent = fmt(tpP,1)+' pips';
   $('rrValue').textContent = '1:'+fmt(rr,2);
@@ -1437,9 +1522,9 @@ function calcRR(){
 }
 
 function calcPipValue(){
-  const pair = $('pvPair').value;
-  const lot = parseFloat($('pvLot').value)||0.01;
-  const pv = pipVal(pair, lot, broker, accountType);
+  var pair = $('pvPair').value;
+  var lot = parseFloat($('pvLot').value)||0.01;
+  var pv = pipVal(pair, lot, broker, accountType);
   $('pvOne').textContent = '$'+fmt(pv,4);
   $('pvTen').textContent = '$'+fmt(pv*10,2);
   $('pvHundred').textContent = '$'+fmt(pv*100,2);
@@ -1447,14 +1532,14 @@ function calcPipValue(){
 }
 
 function calcProfitTarget(){
-  const bal = parseFloat($('ptBal').value)||100;
-  const pct = parseFloat($('ptPct').value)||10;
-  const rPct = parseFloat($('ptRisk').value)||1;
-  const rr = parseFloat($('ptRR').value)||2;
-  const target = bal * (pct/100);
-  const riskPerT = bal * (rPct/100);
-  const rewardPerWin = riskPerT * rr;
-  const needed = rewardPerWin > 0 ? target / rewardPerWin : 0;
+  var bal = parseFloat($('ptBal').value)||100;
+  var pct = parseFloat($('ptPct').value)||10;
+  var rPct = parseFloat($('ptRisk').value)||1;
+  var rr = parseFloat($('ptRR').value)||2;
+  var target = bal * (pct/100);
+  var riskPerT = bal * (rPct/100);
+  var rewardPerWin = riskPerT * rr;
+  var needed = rewardPerWin > 0 ? target / rewardPerWin : 0;
   $('ptTarget').textContent = '$'+fmt(target);
   $('ptRiskAmt').textContent = '$'+fmt(riskPerT);
   $('ptNeeded').textContent = fmt(needed,1);
@@ -1462,17 +1547,16 @@ function calcProfitTarget(){
 }
 
 function updateMarketHours(){
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const timeStr = (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  var now = new Date();
+  var h = now.getHours();
+  var m = now.getMinutes();
   
   $('mhAsian').textContent = '00:00 - 08:00' + (h>=0 && h<8 ? ' 🔵' : '');
   $('mhLondon').textContent = '07:00 - 15:00' + (h>=7 && h<15 ? ' 🟢' : '');
   $('mhNY').textContent = '12:00 - 20:00' + (h>=12 && h<20 ? ' 🔴' : '');
   $('mhOverlap').textContent = '12:00 - 15:00' + (h>=12 && h<15 ? ' 🟣' : '');
   
-  const session = getSession();
+  var session = getSession();
   $('currentSession').textContent = getSessionLabel(session);
   $('currentSession').style.color = session === 'overlap' ? 'var(--purple)' : 
                                      session === 'asian' ? 'var(--blue)' : 
@@ -1481,18 +1565,18 @@ function updateMarketHours(){
 }
 
 function exportCSV() {
-  const from = $('filterFrom')?.value ? new Date($('filterFrom').value) : null;
-  const to = $('filterTo')?.value ? new Date($('filterTo').value + 'T23:59:59') : null;
+  var from = $('filterFrom')?.value ? new Date($('filterFrom').value) : null;
+  var to = $('filterTo')?.value ? new Date($('filterTo').value + 'T23:59:59') : null;
 
-  let list = trades.filter(t => t.data.status === 'closed');
-  if (from) list = list.filter(t => new Date(t.data.date) >= from);
-  if (to) list = list.filter(t => new Date(t.data.date) <= to);
+  var list = trades.filter(function(t){ return t.data.status === 'closed'; });
+  if (from) list = list.filter(function(t){ return new Date(t.data.date) >= from; });
+  if (to) list = list.filter(function(t){ return new Date(t.data.date) <= to; });
 
   if (!list.length) { showToast('No closed trades in this period'); return; }
 
-  const headers = ['Date','Pair','Direction','Trigger','Entry','SL','TP','Exit','Lots','P&L','R:R','Strategy','Session','Emotion','Notes','Lesson'];
-  const rows = list.map(t => {
-    const d = t.data;
+  var headers = ['Date','Pair','Direction','Trigger','Entry','SL','TP','Exit','Lots','P&L','R:R','Strategy','Session','Emotion','Notes','Lesson'];
+  var rows = list.map(function(t){
+    var d = t.data;
     return [
       new Date(d.date).toLocaleString(),
       d.pair,
@@ -1505,18 +1589,18 @@ function exportCSV() {
       d.lotSize,
       d.pl || 0,
       d.rr ? '1:' + Number(d.rr).toFixed(2) : '',
-      d.strategy || '',
-      d.session || '',
-      d.emotion || '',
-      (d.notes || '').replace(/,/g, ';'),
-      (d.lesson || '').replace(/,/g, ';')
+      (d.strategy || '').replace(/,/g, ';'),
+      (d.session || '').replace(/,/g, ';'),
+      (d.emotion || '').replace(/,/g, ';'),
+      (d.notes || '').replace(/,/g, ';').replace(/\n/g, ' '),
+      (d.lesson || '').replace(/,/g, ';').replace(/\n/g, ' ')
     ].join(',');
   });
 
-  const csv = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  var csv = [headers.join(','), ...rows].join('\n');
+  var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
   a.href = url;
   a.download = 'trade_journal_' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
@@ -1525,10 +1609,10 @@ function exportCSV() {
 }
 
 function exportJSON(){
-  const data = {trades, balanceHistory, balance, broker, accountType, goals, exportedAt: new Date().toISOString()};
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  var data = {trades: trades, balanceHistory: balanceHistory, balance: balance, broker: broker, accountType: accountType, goals: goals, strategies: strategies, exportedAt: new Date().toISOString()};
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
   a.href = url;
   a.download = 'trade_journal_backup_' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
@@ -1537,30 +1621,27 @@ function exportJSON(){
 }
 
 function importJSON(file){
-  const reader = new FileReader();
-  reader.onload = async (e) => {
+  var reader = new FileReader();
+  reader.onload = async function(e) {
     try {
-      const data = JSON.parse(e.target.result);
+      var data = JSON.parse(e.target.result);
       if(!data.trades || !data.balanceHistory) { showToast('Invalid backup file'); return; }
       
-      // Confirm before overwriting
       if(!confirm('This will replace all your current data. Continue?')) return;
       
-      // Clear existing trades
-      const tradeSnap = await db.collection('trades').where('userId','==',currentUser.uid).get();
-      for(const doc of tradeSnap.docs) await doc.ref.delete();
+      var tradeSnap = await db.collection('trades').where('userId','==',currentUser.uid).get();
+      for(var doc of tradeSnap.docs) await doc.ref.delete();
       
-      // Import trades
-      for(const t of data.trades){
+      for(var t of data.trades){
         await db.collection('trades').add({...t.data, userId: currentUser.uid});
       }
       
-      // Update settings
       balance = data.balance || 0;
       balanceHistory = data.balanceHistory || [];
       broker = data.broker || 'exness';
       accountType = data.accountType || 'cent';
       if(data.goals) goals = data.goals;
+      if(data.strategies) strategies = data.strategies;
       
       await saveBal();
       await saveGoals();
@@ -1572,20 +1653,19 @@ function importJSON(file){
 }
 
 function renderCalendar(){
-  const container = $('tradeCalendar');
+  var container = $('tradeCalendar');
   if(!container) return;
   
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
   
-  // Get trade days
-  const tradeDays = {};
-  trades.forEach(t => {
-    const d = new Date(t.data.date);
-    const key = d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear();
+  var tradeDays = {};
+  trades.forEach(function(t){
+    var d = new Date(t.data.date);
+    var key = d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear();
     if(!tradeDays[key]) tradeDays[key] = {wins:0, losses:0, total:0};
     tradeDays[key].total++;
     if(t.data.status === 'closed'){
@@ -1594,44 +1674,44 @@ function renderCalendar(){
     }
   });
   
-  let html = '<div class="calendar-grid">';
-  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
-    html += `<div style="font-size:10px;color:var(--text3);text-align:center;font-weight:600;">${d}</div>`;
+  var html = '<div class="calendar-grid">';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(function(d){
+    html += '<div style="font-size:10px;color:var(--text3);text-align:center;font-weight:600;">'+d+'</div>';
   });
   
-  for(let i=0; i<firstDay; i++) html += '<div class="cal-day empty"></div>';
+  for(var i=0; i<firstDay; i++) html += '<div class="cal-day empty"></div>';
   
-  for(let day=1; day<=daysInMonth; day++){
-    const key = day + '-' + month + '-' + year;
-    const td = tradeDays[key];
-    let cls = 'cal-day';
+  for(var day=1; day<=daysInMonth; day++){
+    var key = day + '-' + month + '-' + year;
+    var td = tradeDays[key];
+    var cls = 'cal-day';
     if(td){
       cls += ' has-trade';
       if(td.wins > td.losses) cls += ' win';
       else if(td.losses > td.wins) cls += ' loss';
     }
-    html += `<div class="${cls}">${day}</div>`;
+    html += '<div class="'+cls+'">'+day+'</div>';
   }
   html += '</div>';
   container.innerHTML = html;
 }
 
 function renderEquityChart(){
-  const canvas = $('equityChart');
+  var canvas = $('equityChart');
   if(!canvas) return;
   
-  const sorted = [...balanceHistory].sort((a,b) => new Date(a.date) - new Date(b.date));
+  var sorted = [...balanceHistory].sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
   if(sorted.length < 2) {
     canvas.parentElement.innerHTML = '<div class="empty" style="padding:20px;"><p style="font-size:13px;">Not enough data for chart</p></div>';
     return;
   }
   
-  const labels = sorted.map(h => new Date(h.date).toLocaleDateString());
-  const data = sorted.map(h => h.balance);
+  var labels = sorted.map(function(h){ return new Date(h.date).toLocaleDateString(); });
+  var data = sorted.map(function(h){ return h.balance; });
   
   if(equityChart) equityChart.destroy();
   
-  const ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d');
   equityChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -1675,24 +1755,22 @@ function renderEquityChart(){
 }
 
 function renderAdvancedStats(){
-  const closed = trades.filter(t=>t.data.status==='closed');
-  const pls = closed.map(t=>t.data.pl||0);
+  var closed = trades.filter(function(t){ return t.data.status === 'closed'; });
+  var pls = closed.map(function(t){ return t.data.pl||0; });
   
-  // Sharpe ratio (simplified)
   if(pls.length > 1){
-    const avg = pls.reduce((a,b)=>a+b,0)/pls.length;
-    const variance = pls.reduce((a,b)=>a + Math.pow(b-avg,2),0)/pls.length;
-    const stdDev = Math.sqrt(variance);
-    const sharpe = stdDev > 0 ? (avg / stdDev) : 0;
+    var avg = pls.reduce(function(a,b){ return a+b; }, 0) / pls.length;
+    var variance = pls.reduce(function(a,b){ return a + Math.pow(b-avg, 2); }, 0) / pls.length;
+    var stdDev = Math.sqrt(variance);
+    var sharpe = stdDev > 0 ? (avg / stdDev) : 0;
     $('homeSharpe').textContent = sharpe.toFixed(2);
     $('homeSharpe').className = 'stat-val ' + (sharpe > 0.5 ? 'green' : sharpe > 0 ? 'gold' : 'red');
   }
   
-  // Consecutive wins/losses
-  let maxWinStreak = 0, maxLossStreak = 0;
-  let currentWinStreak = 0, currentLossStreak = 0;
-  closed.forEach(t => {
-    const pl = t.data.pl || 0;
+  var maxWinStreak = 0, maxLossStreak = 0;
+  var currentWinStreak = 0, currentLossStreak = 0;
+  closed.forEach(function(t){
+    var pl = t.data.pl || 0;
     if(pl > 0){ currentWinStreak++; currentLossStreak=0; }
     else if(pl < 0){ currentLossStreak++; currentWinStreak=0; }
     else { currentWinStreak=0; currentLossStreak=0; }
@@ -1701,6 +1779,70 @@ function renderAdvancedStats(){
   });
   $('homeConsec').textContent = maxWinStreak + 'W / ' + maxLossStreak + 'L';
 }
+
+function renderStrategies() {
+  var list = $('stratList');
+  var select = $('strategyInput');
+  var count = $('stratCount');
+  if (!list) return;
+
+  var ruleCount = 0;
+  strategies.forEach(function(s){
+    if (s.desc) {
+      var lines = s.desc.split('\n').filter(function(l){ return l.trim().match(/^\d+\./); });
+      ruleCount += lines.length;
+    }
+  });
+  if (count) count.textContent = (strategies.length > 0 ? strategies.length + ' strategies' : '0 strategies') + (ruleCount > 0 ? ' · ' + ruleCount + ' rules' : '');
+
+  if (!strategies.length) {
+    list.innerHTML = '<p style="font-size:12px;color:var(--text3);">No strategies yet. Add one above.</p>';
+  } else {
+    list.innerHTML = strategies.map(function(s, i){
+      var lines = (s.desc || '').split('\n').filter(function(l){ return l.trim().match(/^\d+\./); });
+      var preview = s.desc ? s.desc.split('\n').slice(0, 3).join('\n') : '';
+      if (s.desc && s.desc.split('\n').length > 3) preview += '\n...';
+      return '<div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:8px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<strong style="font-size:14px;">' + s.name + '</strong>' +
+          '<button class="btn danger sm" style="width:auto;padding:4px 10px;font-size:11px;" onclick="deleteStrategy(' + i + ')">Delete</button>' +
+        '</div>' +
+        (s.desc ? '<p style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap;">' + preview + '</p>' : '') +
+        (lines.length > 0 ? '<div style="font-size:11px;color:var(--text3);margin-top:4px;">📋 ' + lines.length + ' rules defined</div>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  if (select) {
+    var current = select.value;
+    select.innerHTML = '<option value="">— Select strategy —</option>' +
+      strategies.map(function(s){ return '<option value="' + s.name + '">' + s.name + '</option>'; }).join('');
+    select.value = current;
+  }
+}
+
+function addStrategy() {
+  var name = ($('stratName')?.value || '').trim();
+  var desc = ($('stratDesc')?.value || '').trim();
+  if (!name) { showToast('Enter strategy name'); return; }
+  if (strategies.some(function(s){ return s.name === name; })) { showToast('Strategy name already exists'); return; }
+  strategies.push({ name: name, desc: desc, created: new Date().toISOString() });
+  $('stratName').value = '';
+  $('stratDesc').value = '';
+  saveBal();
+  renderStrategies();
+  showToast('✅ Strategy added');
+}
+
+function deleteStrategy(index) {
+  if (!confirm('Delete this strategy?')) return;
+  strategies.splice(index, 1);
+  saveBal();
+  renderStrategies();
+  showToast('Strategy deleted');
+}
+
+window.deleteStrategy = deleteStrategy;
 
 function refreshAll(){
   $('balChip').textContent = '$'+fmt(balance);
@@ -1714,34 +1856,35 @@ function refreshAll(){
   updateMarketHours();
   checkRiskLimits();
   renderGoalsProgress();
+  renderStrategies();
 }
 
 function renderHome(){
-  const closed = trades.filter(t=>t.data.status==='closed');
-  const open = trades.filter(t=>t.data.status==='open');
-  const pending = trades.filter(t=>t.data.status==='pending');
-  const totalPL = closed.reduce((s,t)=>s+(t.data.pl||0),0);
-  const wins = closed.filter(t=>(t.data.pl||0)>0);
-  const losses = closed.filter(t=>(t.data.pl||0)<0);
-  const winCount = wins.length;
-  const lossCount = losses.length;
-  const wr = closed.length ? ((winCount/closed.length)*100).toFixed(0)+'%' : '—';
-  const rrArr = closed.filter(t=>t.data.rr>0).map(t=>t.data.rr);
-  const avgRR = rrArr.length ? (rrArr.reduce((a,b)=>a+b)/rrArr.length).toFixed(2) : '—';
+  var closed = trades.filter(function(t){ return t.data.status === 'closed'; });
+  var open = trades.filter(function(t){ return t.data.status === 'open'; });
+  var pending = trades.filter(function(t){ return t.data.status === 'pending'; });
+  var totalPL = closed.reduce(function(s,t){ return s+(t.data.pl||0); }, 0);
+  var wins = closed.filter(function(t){ return (t.data.pl||0) > 0; });
+  var losses = closed.filter(function(t){ return (t.data.pl||0) < 0; });
+  var winCount = wins.length;
+  var lossCount = losses.length;
+  var wr = closed.length ? ((winCount/closed.length)*100).toFixed(0)+'%' : '—';
+  var rrArr = closed.filter(function(t){ return t.data.rr > 0; }).map(function(t){ return t.data.rr; });
+  var avgRR = rrArr.length ? (rrArr.reduce(function(a,b){ return a+b; }, 0)/rrArr.length).toFixed(2) : '—';
 
-  const grossProfit = wins.reduce((s,t)=>s+(t.data.pl||0),0);
-  const grossLoss = Math.abs(losses.reduce((s,t)=>s+(t.data.pl||0),0));
-  const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '—');
-  const avgWin = winCount ? grossProfit / winCount : 0;
-  const avgLoss = lossCount ? grossLoss / lossCount : 0;
-  const winRateNum = closed.length ? winCount / closed.length : 0;
-  const expectancy = closed.length ? (winRateNum * avgWin - (1 - winRateNum) * avgLoss) : 0;
+  var grossProfit = wins.reduce(function(s,t){ return s+(t.data.pl||0); }, 0);
+  var grossLoss = Math.abs(losses.reduce(function(s,t){ return s+(t.data.pl||0); }, 0));
+  var profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : (grossProfit > 0 ? '∞' : '—');
+  var avgWin = winCount ? grossProfit / winCount : 0;
+  var avgLoss = lossCount ? grossLoss / lossCount : 0;
+  var winRateNum = closed.length ? winCount / closed.length : 0;
+  var expectancy = closed.length ? (winRateNum * avgWin - (1 - winRateNum) * avgLoss) : 0;
 
-  let maxDD = 0, peak = 0;
-  const sortedHist = [...balanceHistory].sort((a,b)=> new Date(a.date) - new Date(b.date));
-  sortedHist.forEach(h => {
+  var maxDD = 0, peak = 0;
+  var sortedHist = [...balanceHistory].sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+  sortedHist.forEach(function(h){
     if(h.balance > peak) peak = h.balance;
-    const dd = peak - h.balance;
+    var dd = peak - h.balance;
     if(dd > maxDD) maxDD = dd;
   });
 
@@ -1760,100 +1903,97 @@ function renderHome(){
   $('homeExpect').className = 'stat-val ' + (expectancy >= 0 ? 'green' : 'red');
   $('homeDD').textContent = maxDD ? '$'+fmt(maxDD) : '—';
 
-  // Open trades list
-  const allOpen = [...open, ...pending];
+  var allOpen = [...open, ...pending];
   if(!allOpen.length){
     $('homeOpenList').innerHTML = '<div class="empty"><p>No open trades</p><small>Tap + to log a new trade</small></div>';
   } else {
-    $('homeOpenList').innerHTML = allOpen.map(t=>{
-      const d=t.data;
-      const isPending = d.status === 'pending';
-      return `<div class="trade-item" data-id="${t.id}">
-        <div class="ti-left">
-          <div class="ti-pair">${d.pair} <span class="badge ${d.direction}">${d.direction}</span>
-            <span class="badge ${isPending ? 'pending' : 'open'}">${isPending ? 'pending' : 'open'}</span>
-            ${d.triggerType !== 'market' ? `<span class="badge limit">${d.triggerType}</span>` : ''}
-          </div>
-          <div class="ti-meta">Entry ${d.entry} · ${fmt(d.lotSize,3)} lots</div>
-        </div>
-        <div class="ti-right">
-          <div class="ti-pl" style="color:${isPending ? 'var(--blue)' : 'var(--gold)'}">${isPending ? '⏳' : 'TP '+d.tp}</div>
-          <div class="ti-rr">${isPending ? 'Trigger: '+d.triggerPrice : 'SL '+d.sl}</div>
-        </div>
-      </div>`;
+    $('homeOpenList').innerHTML = allOpen.map(function(t){
+      var d=t.data;
+      var isPending = d.status === 'pending';
+      return '<div class="trade-item" data-id="'+t.id+'">' +
+        '<div class="ti-left">' +
+          '<div class="ti-pair">'+d.pair+' <span class="badge '+d.direction+'">'+d.direction+'</span>' +
+            '<span class="badge '+(isPending ? 'pending' : 'open')+'">'+(isPending ? 'pending' : 'open')+'</span>' +
+            (d.triggerType !== 'market' ? '<span class="badge limit">'+d.triggerType+'</span>' : '') +
+          '</div>' +
+          '<div class="ti-meta">Entry '+d.entry+' · '+fmt(d.lotSize,3)+' lots</div>' +
+        '</div>' +
+        '<div class="ti-right">' +
+          '<div class="ti-pl" style="color:'+(isPending ? 'var(--blue)' : 'var(--gold)')+'">'+(isPending ? '⏳' : 'TP '+d.tp)+'</div>' +
+          '<div class="ti-rr">'+(isPending ? 'Trigger: '+d.triggerPrice : 'SL '+d.sl)+'</div>' +
+        '</div>' +
+      '</div>';
     }).join('');
   }
 
-  // Recent closed
-  const recent = closed.slice(0,6);
+  var recent = closed.slice(0,6);
   if(!recent.length){
     $('homeRecent').innerHTML = '<div class="empty"><p>No closed trades yet</p></div>';
   } else {
-    $('homeRecent').innerHTML = recent.map(t=>{
-      const d=t.data;
-      return `<div class="trade-item" data-id="${t.id}">
-        <div class="ti-left">
-          <div class="ti-pair">${d.pair} <span class="badge ${d.direction}">${d.direction}</span>
-            ${d.strategy ? `<span style="font-size:10px;color:var(--text3);">${d.strategy}</span>` : ''}
-          </div>
-          <div class="ti-meta">${new Date(d.date).toLocaleDateString()} · ${d.session ? getSessionLabel(d.session) : ''}</div>
-        </div>
-        <div class="ti-right">
-          <div class="ti-pl" style="color:${(d.pl||0)>=0?'var(--green)':'var(--red)'}">${fmtPL(d.pl)}</div>
-          <div class="ti-rr">${d.rr?'1:'+fmt(d.rr,2):''}</div>
-        </div>
-      </div>`;
+    $('homeRecent').innerHTML = recent.map(function(t){
+      var d=t.data;
+      return '<div class="trade-item" data-id="'+t.id+'">' +
+        '<div class="ti-left">' +
+          '<div class="ti-pair">'+d.pair+' <span class="badge '+d.direction+'">'+d.direction+'</span>' +
+            (d.strategy ? '<span style="font-size:10px;color:var(--text3);">'+d.strategy+'</span>' : '') +
+          '</div>' +
+          '<div class="ti-meta">'+new Date(d.date).toLocaleDateString()+' · '+(d.session ? getSessionLabel(d.session) : '')+'</div>' +
+        '</div>' +
+        '<div class="ti-right">' +
+          '<div class="ti-pl" style="color:'+((d.pl||0)>=0?'var(--green)':'var(--red)')+'">'+fmtPL(d.pl)+'</div>' +
+          '<div class="ti-rr">'+(d.rr?'1:'+fmt(d.rr,2):'')+'</div>' +
+        '</div>' +
+      '</div>';
     }).join('');
   }
 
-  document.querySelectorAll('#homeOpenList .trade-item, #homeRecent .trade-item').forEach(el=>{
-    el.onclick = ()=> openTradeModal(el.dataset.id);
+  document.querySelectorAll('#homeOpenList .trade-item, #homeRecent .trade-item').forEach(function(el){
+    el.onclick = function(){ openTradeModal(el.dataset.id); };
   });
 }
 
 function renderJournal(){
-  let list = trades;
-  if(journalFilter==='open') list = trades.filter(t=>t.data.status==='open');
-  else if(journalFilter==='closed') list = trades.filter(t=>t.data.status==='closed');
-  else if(journalFilter==='win') list = trades.filter(t=>t.data.status==='closed'&&(t.data.pl||0)>0);
-  else if(journalFilter==='loss') list = trades.filter(t=>t.data.status==='closed'&&(t.data.pl||0)<0);
-  else if(journalFilter==='pending') list = trades.filter(t=>t.data.status==='pending');
+  var list = trades;
+  if(journalFilter==='open') list = trades.filter(function(t){ return t.data.status === 'open'; });
+  else if(journalFilter==='closed') list = trades.filter(function(t){ return t.data.status === 'closed'; });
+  else if(journalFilter==='win') list = trades.filter(function(t){ return t.data.status === 'closed' && (t.data.pl||0) > 0; });
+  else if(journalFilter==='loss') list = trades.filter(function(t){ return t.data.status === 'closed' && (t.data.pl||0) < 0; });
+  else if(journalFilter==='pending') list = trades.filter(function(t){ return t.data.status === 'pending'; });
 
-  // Date filter
-  const from = $('filterFrom')?.value ? new Date($('filterFrom').value) : null;
-  const to = $('filterTo')?.value ? new Date($('filterTo').value + 'T23:59:59') : null;
-  if(from) list = list.filter(t => new Date(t.data.date) >= from);
-  if(to) list = list.filter(t => new Date(t.data.date) <= to);
+  var from = $('filterFrom')?.value ? new Date($('filterFrom').value) : null;
+  var to = $('filterTo')?.value ? new Date($('filterTo').value + 'T23:59:59') : null;
+  if(from) list = list.filter(function(t){ return new Date(t.data.date) >= from; });
+  if(to) list = list.filter(function(t){ return new Date(t.data.date) <= to; });
 
   if(!list.length){
     $('journalList').innerHTML = '<div class="empty"><p>No trades match</p></div>';
     return;
   }
-  $('journalList').innerHTML = list.map(t=>{
-    const d=t.data;
-    const isPending = d.status === 'pending';
-    const plColor = isPending ? 'var(--blue)' : (d.status==='open' ? 'var(--gold)' : ((d.pl||0)>=0?'var(--green)':'var(--red)'));
-    const plText = isPending ? '⏳ Pending' : (d.status==='open' ? 'OPEN' : fmtPL(d.pl));
-    return `<div class="trade-item" data-id="${t.id}">
-      <div class="ti-left">
-        <div class="ti-pair">${d.pair} <span class="badge ${d.direction}">${d.direction}</span>
-          ${d.status==='open' ? '<span class="badge open">open</span>' : ''}
-          ${isPending ? '<span class="badge pending">pending</span>' : ''}
-          ${d.triggerType !== 'market' ? `<span class="badge limit">${d.triggerType}</span>` : ''}
-        </div>
-        <div class="ti-meta">${new Date(d.date).toLocaleDateString()} · ${fmt(d.lotSize,3)} lots
-          ${d.strategy ? ' · '+d.strategy : ''}
-        </div>
-      </div>
-      <div class="ti-right">
-        <div class="ti-pl" style="color:${plColor}">${plText}</div>
-        <div class="ti-rr">${d.rr && d.status==='closed' ? '1:'+fmt(d.rr,2) : ''}</div>
-      </div>
-    </div>`;
+  $('journalList').innerHTML = list.map(function(t){
+    var d=t.data;
+    var isPending = d.status === 'pending';
+    var plColor = isPending ? 'var(--blue)' : (d.status==='open' ? 'var(--gold)' : ((d.pl||0)>=0?'var(--green)':'var(--red)'));
+    var plText = isPending ? '⏳ Pending' : (d.status==='open' ? 'OPEN' : fmtPL(d.pl));
+    return '<div class="trade-item" data-id="'+t.id+'">' +
+      '<div class="ti-left">' +
+        '<div class="ti-pair">'+d.pair+' <span class="badge '+d.direction+'">'+d.direction+'</span>' +
+          (d.status==='open' ? '<span class="badge open">open</span>' : '') +
+          (isPending ? '<span class="badge pending">pending</span>' : '') +
+          (d.triggerType !== 'market' ? '<span class="badge limit">'+d.triggerType+'</span>' : '') +
+        '</div>' +
+        '<div class="ti-meta">'+new Date(d.date).toLocaleDateString()+' · '+fmt(d.lotSize,3)+' lots' +
+          (d.strategy ? ' · '+d.strategy : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="ti-right">' +
+        '<div class="ti-pl" style="color:'+plColor+'">'+plText+'</div>' +
+        '<div class="ti-rr">'+(d.rr && d.status==='closed' ? '1:'+fmt(d.rr,2) : '')+'</div>' +
+      '</div>' +
+    '</div>';
   }).join('');
 
-  document.querySelectorAll('#journalList .trade-item').forEach(el=>{
-    el.onclick = ()=> openTradeModal(el.dataset.id);
+  document.querySelectorAll('#journalList .trade-item').forEach(function(el){
+    el.onclick = function(){ openTradeModal(el.dataset.id); };
   });
 }
 
@@ -1862,36 +2002,36 @@ function renderHistory(){
     $('balHistory').innerHTML = '<div class="empty" style="padding:20px;"><p style="font-size:13px;">No history yet</p></div>';
     return;
   }
-  $('balHistory').innerHTML = balanceHistory.slice().reverse().slice(0,20).map(h=>{
-    const color = (h.amount||0)>=0 ? 'var(--green)' : 'var(--red)';
-    const sign = (h.amount||0)>=0 ? '+' : '';
-    return `<div class="hist-item">
-      <div>
-        <div class="hist-date">${new Date(h.date).toLocaleString()}</div>
-        <div style="font-size:11px;color:var(--text3);">${h.type||''}</div>
-      </div>
-      <div class="hist-amt" style="color:${color}">${sign}$${fmt(h.amount)}</div>
-    </div>`;
+  $('balHistory').innerHTML = balanceHistory.slice().reverse().slice(0,20).map(function(h){
+    var color = (h.amount||0)>=0 ? 'var(--green)' : 'var(--red)';
+    var sign = (h.amount||0)>=0 ? '+' : '';
+    return '<div class="hist-item">' +
+      '<div>' +
+        '<div class="hist-date">'+new Date(h.date).toLocaleString()+'</div>' +
+        '<div style="font-size:11px;color:var(--text3);">'+(h.type||'')+'</div>' +
+      '</div>' +
+      '<div class="hist-amt" style="color:'+color+'">'+sign+'$'+fmt(h.amount)+'</div>' +
+    '</div>';
   }).join('');
 }
 
 function checkRiskLimits(){
   if(!goals.dailyLossLimit && !goals.weeklyLossLimit) return;
   
-  const today = new Date().toDateString();
-  const todayPL = trades.filter(t => {
+  var today = new Date().toDateString();
+  var todayPL = trades.filter(function(t){
     return t.data.status === 'closed' && new Date(t.data.date).toDateString() === today;
-  }).reduce((s,t) => s + (t.data.pl||0), 0);
+  }).reduce(function(s,t){ return s + (t.data.pl||0); }, 0);
   
   if(goals.dailyLossLimit && todayPL < -goals.dailyLossLimit){
     showToast('⚠️ Daily loss limit reached: $'+fmt(Math.abs(todayPL)), 4000);
   }
   
-  const weekStart = new Date();
+  var weekStart = new Date();
   weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-  const weekPL = trades.filter(t => {
+  var weekPL = trades.filter(function(t){
     return t.data.status === 'closed' && new Date(t.data.date) >= weekStart;
-  }).reduce((s,t) => s + (t.data.pl||0), 0);
+  }).reduce(function(s,t){ return s + (t.data.pl||0); }, 0);
   
   if(goals.weeklyLossLimit && weekPL < -goals.weeklyLossLimit){
     showToast('⚠️ Weekly loss limit reached: $'+fmt(Math.abs(weekPL)), 4000);
@@ -1899,24 +2039,22 @@ function checkRiskLimits(){
 }
 
 function renderGoalsProgress(){
-  // This would show progress bars for goals - simplified for now
-  const goal = goals.monthlyGoal || 0;
+  var goal = goals.monthlyGoal || 0;
   if(goal > 0){
-    const monthStart = new Date();
+    var monthStart = new Date();
     monthStart.setDate(1);
-    const monthPL = trades.filter(t => {
+    var monthPL = trades.filter(function(t){
       return t.data.status === 'closed' && new Date(t.data.date) >= monthStart;
-    }).reduce((s,t) => s + (t.data.pl||0), 0);
-    // Could render progress bar here
+    }).reduce(function(s,t){ return s + (t.data.pl||0); }, 0);
   }
 }
 
 function goPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const pg = $('page-'+page);
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var pg = $('page-'+page);
   if(pg) pg.classList.add('active');
-  const nav = document.querySelector(`.nav-item[data-page="${page}"]`);
+  var nav = document.querySelector('.nav-item[data-page="'+page+'"]');
   if(nav) nav.classList.add('active');
   if(page==='new') compute();
   if(page==='calc'){
@@ -1926,57 +2064,52 @@ function goPage(page){
   if(page==='home') renderEquityChart();
 }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', function(e){
   if(e.ctrlKey && e.key === 'n'){ e.preventDefault(); goPage('new'); }
   if(e.ctrlKey && e.key === 'j'){ e.preventDefault(); goPage('journal'); }
+  if(e.ctrlKey && e.key === 'k'){ e.preventDefault(); goPage('calc'); }
   if(e.ctrlKey && e.key === 'h'){ e.preventDefault(); goPage('home'); }
   if(e.key === 'Escape'){ closeModal(); }
 });
 
-// Gesture support (swipe)
-let touchStartX = 0, touchStartY = 0;
-document.addEventListener('touchstart', (e) => {
+var touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', function(e){
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
 }, {passive: true});
 
-document.addEventListener('touchend', (e) => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
+document.addEventListener('touchend', function(e){
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
   if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5){
-    // Swipe left/right - could navigate but keeping simple
     if(dx > 0) showToast('👈 Swipe to navigate (use bottom nav)');
   }
 }, {passive: true});
 
 function initEvents(){
-  document.querySelectorAll('.nav-item').forEach(btn=>{
-    btn.addEventListener('click', ()=> goPage(btn.dataset.page));
+  document.querySelectorAll('.nav-item').forEach(function(btn){
+    btn.addEventListener('click', function(){ goPage(btn.dataset.page); });
   });
 
-  // Theme toggle
-  $('themeBtn').addEventListener('click', ()=>{
+  $('themeBtn').addEventListener('click', function(){
     theme = theme === 'dark' ? 'light' : 'dark';
     document.body.classList.toggle('light', theme === 'light');
     $('themeBtn').textContent = theme === 'dark' ? '🌙' : '☀️';
     localStorage.setItem('theme', theme);
   });
-  const savedTheme = localStorage.getItem('theme');
+  var savedTheme = localStorage.getItem('theme');
   if(savedTheme === 'light') { theme = 'light'; document.body.classList.add('light'); $('themeBtn').textContent = '☀️'; }
 
-  // Direction
-  $('dirLong').addEventListener('click', ()=>{
+  $('dirLong').addEventListener('click', function(){
     direction='long'; $('dirLong').classList.add('active'); $('dirShort').classList.remove('active'); compute();
   });
-  $('dirShort').addEventListener('click', ()=>{
+  $('dirShort').addEventListener('click', function(){
     direction='short'; $('dirShort').classList.add('active'); $('dirLong').classList.remove('active'); compute();
   });
 
-  // Trigger type
-  ['trigMarket','trigLimit','trigStop'].forEach(id => {
+  ['trigMarket','trigLimit','trigStop'].forEach(function(id){
     $(id).addEventListener('click', function(){
-      document.querySelectorAll('.trigger-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.trigger-pill').forEach(function(p){ p.classList.remove('active'); });
       this.classList.add('active');
       triggerType = this.dataset.trigger;
       $('triggerPriceField').style.display = triggerType === 'market' ? 'none' : 'block';
@@ -1984,33 +2117,31 @@ function initEvents(){
     });
   });
 
-  ['entryInput','slInput','tpInput','lotInput','pairInput'].forEach(id=>{
-    const el=$(id);
+  ['entryInput','slInput','tpInput','lotInput','pairInput'].forEach(function(id){
+    var el=$(id);
     if(el){ el.addEventListener('input', compute); el.addEventListener('change', compute); }
   });
 
-  // Date filters
   $('filterFrom').addEventListener('change', renderJournal);
   $('filterTo').addEventListener('change', renderJournal);
 
-  // Show shortcut hint on desktop
   if(window.innerWidth > 900) $('shortcutHint').classList.add('show');
-  window.addEventListener('resize', ()=>{
+  window.addEventListener('resize', function(){
     if(window.innerWidth > 900) $('shortcutHint').classList.add('show');
     else $('shortcutHint').classList.remove('show');
   });
 
   $('openTradeBtn').addEventListener('click', openTrade);
-  $('resetFormBtn').addEventListener('click', ()=>{
-    ['entryInput','slInput','tpInput','lotInput','triggerPrice','notesInput'].forEach(id => {
+  $('resetFormBtn').addEventListener('click', function(){
+    ['entryInput','slInput','tpInput','lotInput','triggerPrice','notesInput'].forEach(function(id){
       $(id).value = '';
     });
     compute();
   });
 
-  document.querySelectorAll('.filter-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
       chip.classList.add('active');
       journalFilter = chip.dataset.f;
       renderJournal();
@@ -2030,52 +2161,52 @@ function initEvents(){
     accountType=this.value; saveBal(); showToast('Account: '+accountType);
   });
 
-  $('tradeModal').addEventListener('click', e=>{
+  $('tradeModal').addEventListener('click', function(e){
     if(e.target===$('tradeModal')) closeModal();
   });
 
   $('exportCsvBtn').addEventListener('click', exportCSV);
+  if($('addStratBtn')) $('addStratBtn').addEventListener('click', addStrategy);
   $('exportJsonBtn').addEventListener('click', exportJSON);
-  $('importJsonBtn').addEventListener('click', ()=> $('importFile').click());
-  $('importFile').addEventListener('change', (e)=>{
+  $('importJsonBtn').addEventListener('click', function(){ $('importFile').click(); });
+  $('importFile').addEventListener('change', function(e){
     if(e.target.files.length) importJSON(e.target.files[0]);
     e.target.value = '';
   });
 
-  $('saveGoalsBtn').addEventListener('click', ()=>{
+  $('saveGoalsBtn').addEventListener('click', function(){
     goals.dailyLossLimit = parseFloat($('dailyLossLimit').value) || 0;
     goals.weeklyLossLimit = parseFloat($('weeklyLossLimit').value) || 0;
     goals.monthlyGoal = parseFloat($('monthlyGoal').value) || 0;
     saveGoals();
   });
 
-  $('clearDataBtn').addEventListener('click', async ()=>{
+  $('clearDataBtn').addEventListener('click', async function(){
     if(!confirm('Delete ALL your data? This cannot be undone!')) return;
     if(!currentUser) return;
     try{
-      const snap = await db.collection('trades').where('userId','==',currentUser.uid).get();
-      for(const doc of snap.docs) await doc.ref.delete();
-      const sSnap = await db.collection('userSettings').where('userId','==',currentUser.uid).get();
-      for(const doc of sSnap.docs) await doc.ref.delete();
-      trades=[]; balanceHistory=[]; balance=0;
+      var snap = await db.collection('trades').where('userId','==',currentUser.uid).get();
+      for(var doc of snap.docs) await doc.ref.delete();
+      var sSnap = await db.collection('userSettings').where('userId','==',currentUser.uid).get();
+      for(var doc of sSnap.docs) await doc.ref.delete();
+      trades=[]; balanceHistory=[]; balance=0; strategies=[];
       refreshAll();
       showToast('All data cleared');
     }catch(e){ showToast('Error clearing data'); }
   });
 
-  // Update market hours every minute
   setInterval(updateMarketHours, 60000);
 }
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
   });
 }
-window.addEventListener('beforeinstallprompt', e=>{
+window.addEventListener('beforeinstallprompt', function(e){
   e.preventDefault();
   if(!sessionStorage.getItem('installTip')){
-    setTimeout(()=>showToast('📲 Add to Home Screen for quick access'), 3500);
+    setTimeout(function(){ showToast('📲 Add to Home Screen for quick access'); }, 3500);
     sessionStorage.setItem('installTip','1');
   }
 });
