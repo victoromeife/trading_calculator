@@ -1257,7 +1257,8 @@ function openTrade(){
   var d = compute();
   if(!d.entry || !d.sl || !d.tp){ showToast('Fill entry, SL and TP'); return; }
   if(d.lot < MIN_LOT){ showToast('Lot size min is 0.01'); return; }
-  if(d.riskPct > 5){ showToast('⚠️ Risk is high ('+fmt(d.riskPct,1)+'%). Adjust lot size.'); return; }
+
+  // Risk limit removed - you can now log any trade regardless of risk percentage
 
   var session = $('sessionInput').value || getSession();
   var triggerPrice = parseFloat($('triggerPrice').value) || 0;
